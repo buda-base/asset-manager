@@ -64,8 +64,9 @@ def file_numbers_are_sequence(file_name_list: List[str]) -> bool:
     # prevents errors like
     # W1_Ihowdy42.jpg
     # _W1_Ihowdy42.jpg
-    if not all(x = 1 for x in file_sequence_count.values()):
+    if not all(x == 1 for x in file_sequence_count.values()):
         return False
 
-
+    # insert other tests here
+    return True
 
