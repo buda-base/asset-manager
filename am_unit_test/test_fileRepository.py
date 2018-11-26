@@ -1,5 +1,5 @@
-import os
 import tempfile
+import unittest
 from pathlib import Path
 from typing import List
 from unittest import TestCase
@@ -15,59 +15,73 @@ class TestFileRepository(TestCase):
     _fileSysRoots: List[Path] = []
     _fileSystem: DepthFileSys
     _fileSysRoot: str
+    _expected_works = ('Work1', 'Work2',)
+    _expected_volumes = ('Work1_Volume2', 'Work1_volume1', 'heemsterizer',)
+    _expected_pages = ('IMG_001.h00pstyfreen', 'IMG_002.h00opstyfreen',)
 
     _repos: List[FileRepository]
 
     def test_GetWork(self):
         # Create a path for work
-        expected_name: str = 'Work1'
-        rep = FileRepository(self._fileSysRoots[0],'images')
-        w = rep.get_work(expected_name)
-        self.assertEqual(w.work_name,expected_name)
+        for expected_name in self._expected_works:
+            rep = FileRepository(self._fileSysRoots[0], 'images')
+            w = rep.get_work(expected_name)
+            self.assertEqual(w.work_name, expected_name)
 
-        # Repository doesn't automatically initialize volumes
-        self.assertIsNone(w.volumes,"Volumes not null")
+    def test_work_no_volumes(self):
+        for expected_name in self._expected_works:
+            rep = FileRepository(self._fileSysRoots[0], 'images')
+            w = rep.get_work(expected_name)
+            # Repository doesn't automatically initialize volumes
+            self.assertEqual(0, len(w.volumes), "Volumes not empty")
 
-        # Repository doesnt initialize metadata
-        self.assertIsNone(w.metadata,)
-
-
-
-    def test_GetMetadata(self):
-        self.fail()
-
-    def test_GetVolumes(self):
+    def test_work_no_metadata(self):
         expected_name: str = 'Work1'
         rep = FileRepository(self._fileSysRoots[0], 'images')
         w = rep.get_work(expected_name)
-        volumes = rep.get_volumes(w)
-        contents = []
-        for volume in volumes:
-            contents.append(volume.get_contents)
+        # Repository doesnt initialize metadata
+        self.assertIsNone(w.metadata, )
 
-    def test_GetPages(self):
+    def test_GetVolumes(self):
+        for expected_name in self._expected_works:
+            rep = FileRepository(self._fileSysRoots[0], 'images')
+            w = rep.get_work(expected_name)
+            volumes = rep.get_volumes(w)
+            volNames = sorted([v.name for v in volumes])
+            self.assertListEqual(sorted(self._expected_volumes), volNames, "Returned volumes not same")
+
+    def test_volumes_pages_empty(self):
+        for expected_name in self._expected_works:
+            rep = FileRepository(self._fileSysRoots[0], 'images')
+            w = rep.get_work(expected_name)
+            for vol in rep.get_volumes(w):
+                self.assertListEqual(vol.pages, [], f"{vol.name} should have empty page list")
+
+
+    def test_pages(self):
+        for expected_name in self._expected_works:
+            rep = FileRepository(self._fileSysRoots[0], 'images')
+            w = rep.get_work(expected_name)
+            for vol in rep.get_volumes(w):
+                vol.pages = rep.get_pages(vol)
+                self.assertListEqual(vol.pages,sorted(self._expected_pages))
+
+
+    @unittest.expectedFailure
+    def test_GetMetadata(self):
         self.fail()
 
-    def test_root(self):
-        self.fail()
-
-    def setUp(self):
-        """
-        Make the repository
-        :return:
-        """
-   #      self._repos = [FileRepository(Path(p), 'archive') for p in self._fileSysRoots]
 
     @classmethod
     def setUpClass(cls):
-        # add as many roots as you want
-        cls._fileSysRoots = (tempfile.mkdtemp(prefix='root1'),)
-        cls._fileSystem = DepthFileSys(cls._fileSysRoots, ('Work1', 'Work2'), ('images', 'archive',),
-                                       ('IMG_001.h00pstyfreen', 'IMG_002.h00opstyfreen',))
+        # DepthFileSys supports multiple roots
+        cls._fileSysRoots = (tempfile.mkdtemp(prefix='root'),)
+        cls._fileSystem = DepthFileSys(cls._fileSysRoots, cls._expected_works, ('images', 'archive',),
+                                       cls._expected_volumes, cls._expected_pages)
 
-        cls.assertIsInstance(cls,cls._fileSystem,DepthFileSys,"its not a dfs")
+        cls.assertIsInstance(cls, cls._fileSystem, DepthFileSys, "its not a dfs")
 
     @classmethod
     def tearDownClass(cls):
         for root in cls._fileSysRoots:
-            shutil.rmtree(root,ignore_errors=True)
+            shutil.rmtree(root, ignore_errors=True)

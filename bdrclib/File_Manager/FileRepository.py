@@ -1,9 +1,10 @@
 from os import scandir
 from pathlib import Path
 
-from bdrclib.Entities.Work import Work
-from bdrclib.Entities.Metadata import Metadata
-from bdrclib.Entities import Volume
+from Entities.Work import Work
+from Entities.Volume import Volume
+from Entities.Metadata import Metadata
+from Entities.Page import Page
 from bdrclib.Repository.repository_base import RepositoryBase
 
 
@@ -47,7 +48,7 @@ class FileRepository(RepositoryBase):
         :param work:
         :return:
         """
-        volumes_path = self.root_path / work.work_name / self.image_group_root
+        volumes_path = Path(self.root_path,work.work_name ,self.image_group_root)
         return [Volume(f.name, work) for f in scandir(volumes_path) if f.is_dir()]
 
     def get_pages(self, volume: Volume):
@@ -57,7 +58,7 @@ class FileRepository(RepositoryBase):
         :param volume:
         :return:
         """
-        content_path = self.root_path / volume.work.work_name / self._image_group_root
+        content_path = Path (self.root_path, volume.work.work_name, self._image_group_root, volume.name)
         return [f.name for f in scandir(content_path) if f.is_file()]
 
     #    ----- region properties
