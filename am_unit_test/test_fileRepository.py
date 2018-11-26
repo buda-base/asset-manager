@@ -1,8 +1,8 @@
 import tempfile
-import unittest
+import unittest as u
 from pathlib import Path
 from typing import List
-from unittest import TestCase
+#  from unittest import TestCase
 import shutil
 
 from am_unit_test.DepthFileSys import DepthFileSys
@@ -11,7 +11,7 @@ from am_unit_test.DepthFileSys import DepthFileSys
 from bdrclib.File_Manager.FileRepository import FileRepository
 
 
-class TestFileRepository(TestCase):
+class TestFileRepository(u.TestCase):
     _fileSysRoots: List[Path] = []
     _fileSystem: DepthFileSys
     _fileSysRoot: str
@@ -47,8 +47,8 @@ class TestFileRepository(TestCase):
             rep = FileRepository(self._fileSysRoots[0], 'images')
             w = rep.get_work(expected_name)
             volumes = rep.get_volumes(w)
-            volNames = sorted([v.name for v in volumes])
-            self.assertListEqual(sorted(self._expected_volumes), volNames, "Returned volumes not same")
+            vol_names = sorted([v.name for v in volumes])
+            self.assertListEqual(sorted(self._expected_volumes), vol_names, "Returned volumes not same")
 
     def test_volumes_pages_empty(self):
         for expected_name in self._expected_works:
@@ -57,20 +57,17 @@ class TestFileRepository(TestCase):
             for vol in rep.get_volumes(w):
                 self.assertListEqual(vol.pages, [], f"{vol.name} should have empty page list")
 
-
     def test_pages(self):
         for expected_name in self._expected_works:
             rep = FileRepository(self._fileSysRoots[0], 'images')
             w = rep.get_work(expected_name)
             for vol in rep.get_volumes(w):
                 vol.pages = rep.get_pages(vol)
-                self.assertListEqual(vol.pages,sorted(self._expected_pages))
+                self.assertListEqual(vol.pages, sorted(self._expected_pages))
 
-
-    @unittest.expectedFailure
+    @u.expectedFailure
     def test_GetMetadata(self):
         self.fail()
-
 
     @classmethod
     def setUpClass(cls):
@@ -79,9 +76,11 @@ class TestFileRepository(TestCase):
         cls._fileSystem = DepthFileSys(cls._fileSysRoots, cls._expected_works, ('images', 'archive',),
                                        cls._expected_volumes, cls._expected_pages)
 
+        # noinspection PyCallByClass
         cls.assertIsInstance(cls, cls._fileSystem, DepthFileSys, "its not a dfs")
 
     @classmethod
     def tearDownClass(cls):
         for root in cls._fileSysRoots:
+            # noinspection PyTypeChecker
             shutil.rmtree(root, ignore_errors=True)

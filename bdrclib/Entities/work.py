@@ -1,20 +1,19 @@
-from bdrclib.Entities.EntityBase import EntityBase
-from bdrclib.Entities.Volume import Volume
-from bdrclib.Entities.Metadata import Metadata
+# from Entities import  *  #Volume, Metadata, EntityBase
+import Entities
 
 
-class Work(EntityBase):
+class Work(Entities.EntityBase):
     """
     A collection of Volumes, with metadata
     """
 
-    def __init__(self,handle: str):
+    def __init__(self, handle: object) -> object:
         self.volumes = []
         self.metadata = None
         self.work_name = handle
 
-    _volumes: [Volume]
-    _metadata: Metadata
+    _volumes: [Entities.Volume]
+    _metadata: Entities.Metadata
     _work_name: str
 
     @property
@@ -41,4 +40,3 @@ class Work(EntityBase):
     def work_name(self, value: str):
         assert isinstance(value, str)
         self._work_name = value
-

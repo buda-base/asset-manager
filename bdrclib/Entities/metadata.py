@@ -1,4 +1,4 @@
-from bdrclib.Entities.EntityBase import EntityBase
+from Entities import EntityBase
 
 
 class Metadata(EntityBase):

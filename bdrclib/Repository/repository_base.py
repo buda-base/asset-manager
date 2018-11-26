@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from bdrclib.Entities import Volume, Work, Metadata
+from bdrclib.Entities import volume, work, metadata
 
 class RepositoryBase(ABC):
 
     @abstractmethod
-    def get_work(self, workHandle: object) -> Work:
+    def get_work(self, workHandle: object) -> work:
         """
         Retrieves a work by name
         :param work_name:
@@ -13,11 +13,11 @@ class RepositoryBase(ABC):
         pass
 
     @abstractmethod
-    def get_metadata(self, work: Work) -> Metadata:
+    def get_metadata(self, work: work) -> metadata:
         pass
 
     @abstractmethod
-    def get_volumes(self, work: Work) -> list:
+    def get_volumes(self, work: work) -> list:
         """
         retrieves Volume objects for a work
         :param Work: 
@@ -26,7 +26,7 @@ class RepositoryBase(ABC):
         pass
 
     @abstractmethod
-    def get_content(self, volume: Volume):
+    def get_content(self, volume: volume):
         """
         Retrieves image bytes for a volume
         :param volume:

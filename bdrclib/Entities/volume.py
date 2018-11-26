@@ -2,12 +2,16 @@
 Section of a work
 """
 
-from bdrclib.Entities.EntityBase import EntityBase
+from Entities import EntityBase
 
 
 class Volume(EntityBase):
     _pages: list
-    _work: object
+
+    # Suprpisingly hard to get a class back-reference:
+    # a Work is defined to contain Volume objects, and a Volume
+    # points back to a work, yet...
+    _work: EntityBase
     _name: str
 
     def __init__(self, name: str, work: object):
@@ -25,12 +29,12 @@ class Volume(EntityBase):
         self._pages = value
 
     @property
-    def work(self) -> object:
+    def work(self) -> EntityBase:
         return self._work
 
     @work.setter
-    def work(self, value: object):
-        assert isinstance(value, object)
+    def work(self, value: EntityBase):
+        assert isinstance(value, EntityBase)
         self._work = value
 
     @property

@@ -1,11 +1,8 @@
 from os import scandir
 from pathlib import Path
 
-from Entities.Work import Work
-from Entities.Volume import Volume
-from Entities.Metadata import Metadata
-from Entities.Page import Page
-from bdrclib.Repository.repository_base import RepositoryBase
+from Entities import Work, Volume, Metadata
+from Repository.repository_base import RepositoryBase
 
 
 class FileRepository(RepositoryBase):

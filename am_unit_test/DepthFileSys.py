@@ -1,7 +1,7 @@
 import collections
 import os
 from pathlib import Path
-from typing import List, Any, Union, Tuple
+from typing import List, Any, Union
 
 
 class DepthFileSys:
@@ -51,7 +51,7 @@ class DepthFileSys:
 
         root: tuple = args[0]
         if not self.is_non_string_iterable(root):
-            raise TypeError(f"{root_path} must be an iterable object.")
+            raise TypeError(f"{root} must be an iterable object.")
 
         # sweet that these operations return empty objects,
         # not None
