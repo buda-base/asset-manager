@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest import TestCase
 
+import random
+
 # objects under test
 from am_test_tests import name_ends_with_numbers, file_numbers_are_sequence
 
@@ -85,7 +87,6 @@ class FileSequenceTests(TestCase):
         :return:
         """
         files = [f"{seed}{x}.ext" for x in range(5)]
-        import random
         random.shuffle(files)
         self.assertTrue(file_numbers_are_sequence(files), f"Random file list {files[0]} should have worked")
 
@@ -108,6 +109,31 @@ class FileSequenceTests(TestCase):
 
         files = [f"Im 42 {seed}"]
         self.assertFalse(file_numbers_are_sequence(files), f"fake numeric {files[0]} should have failed.")
+
+    def do_test_random_numbers(self, seed: str):
+        """
+        Most random number sequences should fail
+        :param seed:
+        :return:
+        """
+        starts = list(range(20,137,13))
+        random.shuffle(starts)
+
+        files = [f"{seed}{x}.ext" for x in starts]
+        self.assertFalse(file_numbers_are_sequence(files),"Random sequences of files should fail.")
+
+    def do_test_padded_numbers(self, seed:str):
+        """
+        Validate that padded numbers still parse
+        :return:
+        """
+        files = [ f"{seed}{x:8}" for x in range (23,104)]
+        self.assertTrue(file_numbers_are_sequence(files)," Blank padded files should pass.")
+
+        files = [ f"{seed}{x:08}" for x in range (23,104)]
+        self.assertTrue(file_numbers_are_sequence(files), "Zero padded files should pass.")
+
+
 
     # --------------    END REAL TEST SECTION     -------------------------
 
@@ -133,7 +159,10 @@ class FileSequenceTests(TestCase):
         self.do_test_duplicate_numbers(self._no_folder)
 
     def test_random_numbers(self):
-        self.assertWarns("Not implemented")
+        self.do_test_random_numbers(self._pathPrefix)
+        self.do_test_random_numbers(self._no_folder)
 
     def test_zero_fill(self):
-        self.assertWarns("Not implemented")  # --------------    END TEST DRIVER SECTION -------------------------
+        self.do_test_padded_numbers(self._pathPrefix)
+        self.do_test_padded_numbers(self._no_folder)
+    # --------------    END TEST DRIVER SECTION -------------------------
