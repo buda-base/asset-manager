@@ -7,7 +7,10 @@ from typing import List
 import re
 
 # regexp for a stem ending in one or more unicode digits
-_file_number_re = '^.*(?P<sequence>\d+)'
+# only tracked last digit digits '^.*(?P<sequence>\d+)'
+#
+# Depends on pathlib.Path().stem removing the trailing .
+_file_number_re = '(\d+)$'
 
 def name_ends_with_numbers(file_name_list: List[str]) -> bool:
     """
@@ -23,9 +26,11 @@ def name_ends_with_numbers(file_name_list: List[str]) -> bool:
     """
     global _file_number_re
 
+    gc = re.compile(_file_number_re)
+
     last_passed: re.match = None
     for v in file_name_list:
-        last_passed = re.fullmatch(_file_number_re, Path(v).stem)
+        last_passed = gc.search(Path(v).stem)
         if not last_passed:
             break
     return last_passed is not None
@@ -38,22 +43,36 @@ def file_numbers_are_sequence(file_name_list: List[str]) -> bool:
     :param file_name_list:
     :return:
     """
+
+    global _file_number_re
+
+    gc = re.compile(_file_number_re)
+
+    if 0 == len(file_name_list):
+        return False
+
     file_sequence_count = defaultdict(int)
 
     # build a dictionary of sequences
     for f in file_name_list:
-        cur_file_match:re.match = re.fullmatch(_file_number_re, Path(f).stem)
-        file_name_seq: int = int(cur_file_match.group('sequence'))
+        cur_file_match = gc.search(Path(f).stem)
+
+        # Pretty basic failure: no number at all
+        if not cur_file_match:
+            return False
+
+        file_name_seq: int = int(cur_file_match.group(1))
         file_sequence_count[file_name_seq] += 1
 
-    # First, test that the dictionary length = the file name length
-    sequence_length =  len(file_sequence_count)
     if len(file_name_list) !=  len(file_sequence_count):
-        return False
+            return False
 
-    # next test that the keys are a list without gaps
+            # next test that the keys are a list without gaps
+    # First, test that the dictionary length = the file name length
     sequence_keys = sorted(file_sequence_count.keys())
-    lastFile:int = 0
+
+    # Start the test with one less than the lowest integer
+    lastFile:int = sequence_keys[0] - 1
     for idx in range(len(sequence_keys)):
         this_seq = sequence_keys[idx]
         if this_seq != lastFile + 1:
