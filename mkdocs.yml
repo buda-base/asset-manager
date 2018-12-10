@@ -1,1 +1,19 @@
-site_name: My Docs
+site_name: Buddhist Digital Resource Center Asset Manager
+site_description: Project documentation and User Manual for Asset Manager
+site_author: Jim Katz
+
+theme: windmill
+
+pages:
+- Introduction: index.md
+- Building:
+    - About: building/about.md
+    - Design: building/design.md
+- Resources: resources.md
+
+extra_css:
+    - css/style.css
+    - css/tooltip.css
+
+extra:
+  logo: images/bdrc-white.png
