@@ -1,15 +1,16 @@
-site_name: Buddhist Digital Resource Center Asset Manager
-site_description: Project documentation and User Manual for Asset Manager
-site_author: Jim Katz
+site_name: 'Buddhist Digital Resource Center Asset Manager'
+site_description: 'Project documentation and User Manual for Asset Manager'
+site_author: 'Jim Katz'
 
 theme: windmill
 
-pages:
-- Introduction: index.md
+nav:
+- Home: 'index.md'
 - Building:
-    - About: building/about.md
-    - Design: building/design.md
-- Resources: resources.md
+    - About: 'design/about.md'
+    - Design: 'design/design.md'
+- Resources:
+    resources: 'resources.md'
 
 extra_css:
     - css/style.css
