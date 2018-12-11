@@ -4,13 +4,12 @@ site_author: 'Jim Katz'
 
 theme: windmill
 
-nav:
+pages:
 - Home: 'index.md'
 - Building:
     - About: 'design/about.md'
     - Design: 'design/design.md'
-- Resources:
-    resources: 'resources.md'
+- Resources: 'resources.md'
 
 extra_css:
     - css/style.css
