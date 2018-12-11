@@ -1,8 +1,8 @@
 site_name: 'Buddhist Digital Resource Center Asset Manager'
 site_description: 'Project documentation and User Manual for Asset Manager'
-# site_author: 'Jim Katz'
+site_author: 'Jim Katz'
 
-# theme: cinder
+theme: cinder
 
 nav:
 - Home: index.md
