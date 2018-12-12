@@ -10,19 +10,19 @@ if you require access, please request to `jimk AT tbrc DOT org`
 ### [Asset Manager](https://trello.com/b/a1AAIrFl/asset-manager)
 
 ## Other Images
-![App buckets](images/2018/12/AppBuckets.png)
+![App buckets](../images/2018/12/AppBuckets.png)
 
-![Screen Shots](images/2018/12/AppScreenShots.png)
+![Screen Shots](../images/2018/12/AppScreenShots.png)
 
-![File Validation](images/2018/12/FileValidation.png)
+![File Validation](../images/2018/12/FileValidation.png)
 
-![Components](images/2018/12/Components.png)
+![Components](../images/2018/12/Components.png)
 
-![Image Processing](images/2018/12/ImageProcessing.png)
+![Image Processing](../images/2018/12/ImageProcessing.png)
 
-![Functions](images/2018/12/Functions.png)
+![Functions](../images/2018/12/Functions.png)
 
-![Schedule](images/2018/12/Schedule.png)
+![Schedule](../images/2018/12/Schedule.png)
 
 ## Other Documents
 
@@ -37,4 +37,3 @@ These documents are maintained in a shared Google Drive Folder, [Asset Manager](
 [Asset Manager v-1.0](https://drive.google.com/open?id=1QvMgnUNnCYawPOplDbWkkzuWrpw0avWL3OWzf5Qxd24)
 
 [Asset Manager Notes](https://docs.google.com/document/d/1g6YK2PQe4PNEpOcQS3aprsJMuUI37CHJdobLRl20nnY/edit?usp=sharing) Clearest statement of workflow.
-
