@@ -6,7 +6,9 @@ theme: readthedocs
 
 nav:
 - Home: index.md
-- Requirements: req/requirements.md
+- Requirements:
+  - req/requirements.md
+  - req/tests.md
 - Building:
     - Design: design/design.md
 - Resources:
