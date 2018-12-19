@@ -11,10 +11,10 @@ The Asset Manager project intends to meet two important BDRC needs:
 
 ## Definitions
 
-**Work** A Work is the denomination of submitted content. The work's name is it's "key" field, and is its well-known name.
-**Submittal** A submittal, or submission, is the content od the "work," along with metadata which directs its entry into the Asset Manager (for example, the work name)
+**Work** A Work is the denomination of submitted content. The work's name is its "key" field, and is its well-known name.
+**Submittal** A submittal, or submission, is the content of the "work," along with metadata which directs its entry into the Asset Manager (for example, the work name)
 
-As in any good software practice, the public name of a work or submittal is editable, while it's internal identifier remains unchanged.
+As in any good software practice, the public name of a work or submittal is editable, while its internal identifier remains unchanged.
 
 ## Scope of Asset Manager
 ### Acquisition channels
@@ -119,11 +119,11 @@ These requirements are drawn from
 
 See [Test Requirements](tests.md) for detailed requirements.
 
-Number of files per folder
-File Type Requirement
-Canonical paths
-Audit biblio-sheet
-Validate upload package
+- Number of files per folder
+- File Type Requirement
+- Canonical paths
+- Audit biblio-sheet
+- Validate upload package
 
 # Detailed Requirements
 ## Audit Tool
@@ -132,6 +132,9 @@ The Audit Tool has to be deployable by BDRC onto any MacOS or Windows 7+ PC with
 
 ### Invocation
 ![Audit Tool workflow](images/2018/12/audit-tool-workflow.png)
+
+### Configuration
+The user should be able to set some test parameters (for example, resolution) differently for each test instance.
 
 #### Launch
 The Audit Tool should be callable from the command line of either platform.
@@ -149,7 +152,7 @@ Either of these prompts can be given as arguments
 2. The system runs each test in turn, and records the results.
 3. The system displays the results.
 
-[Test Requirements](tests.md)documents each test's parameters and success criteria.
+[Test Requirements](tests.md) documents each test's parameters and success criteria.
 
 ##### Enter biblio-data
 The system prompts the user for the bibliographical data. It saves the data in a format which the package builder will include. The biblio-data might be what the scanning operator or their project manager input into the spreadsheet (see [Bibliographic Data Sheet](https://buda-base.github.io/digitization-guidelines/#standards/standards-en/))
@@ -185,6 +188,6 @@ The sign-offs are only required for the Asset Manager to intake the submittal pa
 
 
 ##### Package Uploader
-Upload the package. If the package passes the `Validate upload package` test, this facility transfers it to a resource where further processing can occur.[^Todiscuss]
+Upload the package. If the package passes the `Validate upload package` test, this facility transfers it to a resource where further processing can occur. [^12b45fa9]
 
-[^Todiscuss]: This should be a separate, controlled facility. We don't want DPEs or FRs to upload.
+[^12b45fa9]: This should be a separate, controlled facility. We don't want DPEs or FRs to upload.
