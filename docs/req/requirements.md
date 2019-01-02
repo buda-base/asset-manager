@@ -164,6 +164,8 @@ The biblio sheet must include at a minimum:
 - Work Name
 - Volumes Names
 - Scan Date
+- BDRC Contract identifier
+- Scanning Requirements specific to the contract
 - Info on person who scanned the document (BDRC ref number, or email, or name, or some combination)
 - **Any other information the Asset Manager requires** This will be an ongoing requirement. The Audit tool validation mechanism may be changed with every release. If needed, it will provide the Excel template for the biblio-data.
 
