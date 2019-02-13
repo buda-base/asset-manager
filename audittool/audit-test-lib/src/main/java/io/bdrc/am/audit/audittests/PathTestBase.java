@@ -12,7 +12,6 @@ abstract public class PathTestBase extends AuditTestBase {
      */
     PathTestBase(final String testName) {
         super(testName);
-        SetParams(testName);
     }
 
     protected class NoDirTest implements ITestOperation {
@@ -37,14 +36,19 @@ abstract public class PathTestBase extends AuditTestBase {
             TestWrapper(new NoDirTest() );
     }
 
-    public void SetParams(Object ... params) throws IllegalArgumentException {
+    /**
+     * Every subclass of AuditTestBase implements their own
+     * parameter set.
+     * @param params array of parameters, implementation dependent
+     * @throws IllegalArgumentException when the input is null
+     */
+    public void setParams(Object ... params) throws IllegalArgumentException {
         if ((params == null) || (params.length < 1)){
             throw new IllegalArgumentException("Directory to test required, but not given.");
         }
 
         // For this class, the only thing we care about is the path
         _path = params[0].toString();
-
     }
 
     // region properties

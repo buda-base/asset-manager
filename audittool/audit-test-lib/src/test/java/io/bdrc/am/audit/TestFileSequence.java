@@ -31,7 +31,8 @@ public class TestFileSequence extends AuditTestTestBase{
     @Test
     public void TestPassingFiles() throws IOException {
         File fileRoot = _fileSequenceBuilder.BuildPassingFiles();
-        FileSequence fst = new FileSequence(fileRoot.getAbsolutePath());
+        FileSequence fst = new FileSequence(logger);
+        fst.setParams(fileRoot.getAbsolutePath());
         fst.LaunchTest();
 
         assertTrue("Test did not pass when it should",fst.IsTestPassed());
@@ -41,7 +42,8 @@ public class TestFileSequence extends AuditTestTestBase{
     @Test
     public void TestMissingFiles() throws IOException {
         File fileRoot = _fileSequenceBuilder.BuildMissingFiles(2);
-        FileSequence fst = new FileSequence(fileRoot.getAbsolutePath());
+        FileSequence fst = new FileSequence(logger);
+        fst.setParams(fileRoot.getAbsolutePath());
         fst.LaunchTest();
 
         assertTrue("Test did not pass when it should",fst.IsTestFailed());
@@ -53,7 +55,8 @@ public class TestFileSequence extends AuditTestTestBase{
     @Test
     public void TestDuplicateFiles() throws IOException {
         File fileRoot = _fileSequenceBuilder.BuildDuplicateFiles(2);
-        FileSequence fst = new FileSequence(fileRoot.getAbsolutePath());
+        FileSequence fst = new FileSequence(logger);
+        fst.setParams(fileRoot.getAbsolutePath());
         fst.LaunchTest();
 
         assertTrue("Test passed",fst.IsTestFailed());
@@ -70,7 +73,8 @@ public class TestFileSequence extends AuditTestTestBase{
 
     @Test
     public void TestNotExist() {
-        FileSequence st = new FileSequence("/MrMxyzptlk");
+        FileSequence st = new FileSequence(logger);
+        st.setParams("/MrMxyzptlk");
         st.LaunchTest();
 
         assertTrue(st.IsTestFailed());
@@ -85,7 +89,8 @@ public class TestFileSequence extends AuditTestTestBase{
     @Test
     public void setPath() {
         final String whanThatAprille = "WhanThatAprille";
-        FileSequence st = new FileSequence(whanThatAprille);
+        FileSequence st = new FileSequence(logger);
+        st.setParams(whanThatAprille);
         assertEquals(st.getPath(),whanThatAprille);
     }
 }

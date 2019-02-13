@@ -22,6 +22,9 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param testName the test name
      */
     AuditTestBase(String testName) {
+
+        // in case caller forgets.
+        // Base classes generally set logger from constructor
         sysLogger = LoggerFactory.getLogger(this.getClass());
 
         _testName = testName;
@@ -87,6 +90,10 @@ public abstract class AuditTestBase implements IAuditTest {
         }
     }
 
+    public void setLogger(Logger logger) {
+        sysLogger = logger;
+    }
+
 
     // IAuditTest interface
 
@@ -95,11 +102,17 @@ public abstract class AuditTestBase implements IAuditTest {
      */
     public abstract void LaunchTest();
 
-    public abstract void SetParams(Object ... params );
+    /**
+     * Set all test parameters (not logging or framework)
+     * @param params implementation dependent optional parameters
+     */
+    public abstract void setParams(Object ... params );
 
     // region fields
     private TestResult _testResult;
     private String _testName;
+
+    // package private implies most of protected
     Logger sysLogger;
     // endregion
 }

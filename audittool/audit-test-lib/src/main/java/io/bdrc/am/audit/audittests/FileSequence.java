@@ -2,6 +2,7 @@ package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
 
 import java.nio.file.*;
 import java.util.Map;
@@ -9,9 +10,9 @@ import java.util.TreeMap;
 
 public class FileSequence extends PathTestBase {
 
-    public FileSequence(String pathName) {
+    public FileSequence(Logger logger) {
         super("FileSequence");
-        SetParams(pathName);
+        sysLogger = logger ;
         _pm = new PropertyManager("/auditTool.properties");
         _sequenceLength = getSequenceLength();
 
@@ -130,7 +131,7 @@ public class FileSequence extends PathTestBase {
         }
 
         private void GenerateFileMissingMessages(final TreeMap<Integer, String> filenames) {
-            int curEntry = 1;
+            Integer curEntry = 1;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
                 Integer k = entry.getKey();
                 while (curEntry++ < k) {

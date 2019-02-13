@@ -24,7 +24,8 @@ public class NoFilesInRootTest extends AuditTestTestBase {
     @Test
     public void TestNotExistFails() {
         String rootPath = "/MrMxyzptlk";
-        NoFilesInRoot st = new NoFilesInRoot(rootPath);
+        NoFilesInRoot st = new NoFilesInRoot(logger);
+        st.setParams(rootPath);
         st.LaunchTest();
         logger.debug("Calling {} for {}","TestNotExistFails", rootPath );
         assertTrue(st.IsTestFailed());
@@ -41,7 +42,8 @@ public class NoFilesInRootTest extends AuditTestTestBase {
         String dirname = "/Users/jimk/tmp";
 
         logger.debug("Testing {} on {}", "NonExDirWithContentFails", dirname);
-        NoFilesInRoot st = new NoFilesInRoot(dirname);
+        NoFilesInRoot st = new NoFilesInRoot(logger);
+        st.setParams(dirname);
         st.LaunchTest();
 
         // Should fail
@@ -54,22 +56,23 @@ public class NoFilesInRootTest extends AuditTestTestBase {
         TestMessage tm = errors.get(0);
         assertEquals(Outcome.FILES_IN_MAIN_FOLDER,tm.getOutcome());
 
-        // Dont test text, just log it.
-        logger.info("Structure Files in directory {} passed", tm.getMessage());
-
     }
 
     @Test
     public void setPath() {
         final String whanThatAprille = "WhanThatAprille";
         logger.debug("Calling {} on {}", "setPath", whanThatAprille);
-        NoFilesInRoot st = new NoFilesInRoot(whanThatAprille);
+        NoFilesInRoot st = new NoFilesInRoot(logger);
+        st.setParams(whanThatAprille);
         assertEquals(st.getPath(),whanThatAprille);
     }
 
     @Test
     public void getTestName() {
-        assertEquals("NoFilesInRoot",(new NoFilesInRoot("Dontcare").getTestName()));
+        NoFilesInRoot dontcare = new NoFilesInRoot(logger);
+        dontcare.setParams("Dontcare");
+        String dcTestName = dontcare.getTestName();
+        assertEquals("NoFilesInRoot",dcTestName);
 
     }
 }

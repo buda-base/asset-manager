@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.Outcome;
+import org.slf4j.Logger;
 
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
@@ -22,12 +23,11 @@ public class NoFilesInRoot extends PathTestBase  {
     /**
      * Tests for no files in root directory.
      *
-     * @param pathName Tested path
      */
-    public NoFilesInRoot(String pathName)
+    public NoFilesInRoot(Logger logger)
     {
         super("NoFilesInRoot");
-        SetParams(pathName);
+        sysLogger = logger;
     }
     //endregion
 
