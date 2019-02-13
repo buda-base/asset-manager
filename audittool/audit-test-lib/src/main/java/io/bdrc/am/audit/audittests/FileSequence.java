@@ -133,7 +133,6 @@ public class FileSequence extends PathTestBase {
             int curEntry = 1;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
                 Integer k = entry.getKey();
-                String v = entry.getValue();
                 while (curEntry++ < k) {
                     FailTest(Outcome.FILE_SEQUENCE, String.format("File Sequence %4d missing", curEntry));
                 }
@@ -167,8 +166,8 @@ public class FileSequence extends PathTestBase {
     }
 
     // region fields
-    int _sequenceLength;
-    PropertyManager _pm ;
+    private int _sequenceLength;
+    private PropertyManager _pm ;
     // endregion
 
 }

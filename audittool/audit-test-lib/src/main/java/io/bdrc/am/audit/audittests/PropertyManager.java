@@ -13,10 +13,10 @@ public class PropertyManager {
     /**
      * Load all properties
      */
-    public void LoadProperties() {
+    void LoadProperties() {
         if (_AuditTestLibProperties != null) {
-            logger.debug(String.format("Existing properties with length %d",_AuditTestLibProperties.size()));
-            _AuditTestLibProperties.forEach((k,v)  ->  logger.debug("key :" + k + ":   value :" +  v + ":"));
+            logger.debug(String.format("Existing properties with length %d", _AuditTestLibProperties.size()));
+            _AuditTestLibProperties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
             return;
         }
         logger.debug("Load Properties");

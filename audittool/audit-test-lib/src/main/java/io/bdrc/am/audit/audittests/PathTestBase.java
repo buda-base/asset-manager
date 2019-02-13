@@ -1,6 +1,5 @@
 package io.bdrc.am.audit.audittests;
 
-import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.Outcome;
 
 import java.io.File;
@@ -11,7 +10,7 @@ abstract public class PathTestBase extends AuditTestBase {
      *
      * @param testName the test name
      */
-    public PathTestBase(final String testName) {
+    PathTestBase(final String testName) {
         super(testName);
         SetParams(testName);
     }
@@ -34,7 +33,7 @@ abstract public class PathTestBase extends AuditTestBase {
     /**
      * Hook for all subclasses to test base class
      */
-    protected void RunBaseTests() {
+    void RunBaseTests() {
             TestWrapper(new NoDirTest() );
     }
 

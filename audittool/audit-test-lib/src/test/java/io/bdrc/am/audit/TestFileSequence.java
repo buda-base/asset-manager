@@ -69,7 +69,7 @@ public class TestFileSequence extends AuditTestTestBase{
     }
 
     @Test
-    public void TestNotExist() throws IOException {
+    public void TestNotExist() {
         FileSequence st = new FileSequence("/MrMxyzptlk");
         st.LaunchTest();
 
@@ -83,7 +83,7 @@ public class TestFileSequence extends AuditTestTestBase{
 
 
     @Test
-    public void setPath() throws IOException {
+    public void setPath() {
         final String whanThatAprille = "WhanThatAprille";
         FileSequence st = new FileSequence(whanThatAprille);
         assertEquals(st.getPath(),whanThatAprille);

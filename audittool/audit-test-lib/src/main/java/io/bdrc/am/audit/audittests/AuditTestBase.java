@@ -21,7 +21,7 @@ public abstract class AuditTestBase implements IAuditTest {
      *
      * @param testName the test name
      */
-    public AuditTestBase(String testName) {
+    AuditTestBase(String testName) {
         sysLogger = LoggerFactory.getLogger(this.getClass());
 
         _testName = testName;
@@ -31,8 +31,8 @@ public abstract class AuditTestBase implements IAuditTest {
         /*
          * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
          */
-        _propertyManager = new PropertyManager("/auditTool.properties");
-        _propertyManager.LoadProperties();
+        final PropertyManager propertyManager = new PropertyManager("/auditTool.properties");
+        propertyManager.LoadProperties();
     }
 
     /**
@@ -41,12 +41,12 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param why           enum of outcome
      * @param failedElement element which failed test
      */
-    protected void FailTest(Outcome why, String ...failedElement) {
+    void FailTest(Outcome why, String ...failedElement) {
         _testResult.setOutcome(Outcome.FAIL);
         _testResult.AddError(why, failedElement);
     }
 
-    protected void PassTest() {
+    void PassTest() {
         _testResult.setOutcome(Outcome.PASS);
     }
 
@@ -64,11 +64,6 @@ public abstract class AuditTestBase implements IAuditTest {
         return _testResult;
     }
 
-    protected void setTestResult(TestResult value) {
-        _testResult= value;
-    }
-
-
     public String getTestName() {
         return _testName;
     }
@@ -77,7 +72,7 @@ public abstract class AuditTestBase implements IAuditTest {
      * Wrap execution of a test interface
      * @param testOperation: the method which implements the test
      */
-    public void TestWrapper(ITestOperation testOperation) {
+    void TestWrapper(ITestOperation testOperation) {
         try {
             // TODO: Create get logger name
             sysLogger.info(String.format("invoking test operation %s", testOperation.getName()));
@@ -105,7 +100,6 @@ public abstract class AuditTestBase implements IAuditTest {
     // region fields
     private TestResult _testResult;
     private String _testName;
-    protected Logger sysLogger;
-    private PropertyManager _propertyManager;
+    Logger sysLogger;
     // endregion
 }

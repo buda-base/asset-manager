@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 class AuditTestTestBase {
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     AuditTestTestBase () {
 
     }

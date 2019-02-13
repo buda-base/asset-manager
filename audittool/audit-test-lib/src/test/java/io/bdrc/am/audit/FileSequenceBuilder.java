@@ -5,11 +5,11 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
-public class FileSequenceBuilder {
+class FileSequenceBuilder {
 
     private TemporaryFolder _rootFolder;
 
-    public FileSequenceBuilder(TemporaryFolder root) {
+    FileSequenceBuilder(TemporaryFolder root) {
         _rootFolder = root;
     }
 
@@ -26,7 +26,7 @@ public class FileSequenceBuilder {
      *                       [0] is the number of files to create (default 12)
      *                       [1] is interval between file name numeric suffixes (default 1)
      *                       [2] is the number of each file to create (default 1)
-     * @throws IOException   if underlying Files calls fail
+     * @throws IOException if underlying Files calls fail
      */
     private static void GenerateEmptyFiles(final File testRoot, int... intervalParams) throws IOException {
 
@@ -51,7 +51,7 @@ public class FileSequenceBuilder {
     }
 
 
-    public File BuildPassingFiles() throws IOException {
+    File BuildPassingFiles() throws IOException {
 
         for (int i = 0; i < 4; i++) {
             File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
@@ -60,28 +60,18 @@ public class FileSequenceBuilder {
         }
         return _rootFolder.getRoot();
     }
-
-    public File BuildEmptyFolders() throws IOException {
-
-        for (int i = 0; i < 2; i++) {
-            _rootFolder.newFolder(String.format("folder_%d", i));
-            // no files in folder
-
-        }
-        return _rootFolder.getRoot();
-    }
-
-    public File BuildNoFolders() {
-        return _rootFolder.getRoot();
-    }
-
-    public File BuildFilesOnly() throws IOException {
-        GenerateEmptyFiles(_rootFolder.getRoot());
-        return _rootFolder.getRoot();
-    }
+//
+//    public File BuildNoFolders() {
+//        return _rootFolder.getRoot();
+//    }
+//
+//    public File BuildFilesOnly() throws IOException {
+//        GenerateEmptyFiles(_rootFolder.getRoot());
+//        return _rootFolder.getRoot();
+//    }
 
 
-    public File BuildDuplicateFiles(int numberOfDups) throws IOException {
+    File BuildDuplicateFiles(int numberOfDups) throws IOException {
 
         for (int i = 0; i < 4; i++) {
             File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
@@ -93,13 +83,13 @@ public class FileSequenceBuilder {
         return _rootFolder.getRoot();
     }
 
-    public File BuildMissingFiles(int everyOther) throws IOException {
+    File BuildMissingFiles(int everyOther) throws IOException {
 
         for (int i = 0; i < 4; i++) {
             File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
 
             // build folders with missing files
-            GenerateEmptyFiles(testRoot, 12,everyOther);
+            GenerateEmptyFiles(testRoot, 12, everyOther);
         }
         return _rootFolder.getRoot();
     }
