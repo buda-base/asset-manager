@@ -41,19 +41,27 @@ public class NoFilesInRoot extends PathTestBase  {
         public void run() throws java.io.IOException {
 
             // Directory must have nothing in it but directories
+
+            // Creating the filter
+            DirectoryStream.Filter<Path> filter = entry -> !(entry.toFile().isHidden());
+
             Path dir = Paths.get(getPath());
-            try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir)) {
+            try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, filter)) {
 
                 for (Path entry : pathDirectoryStream) {
                     if (!Files.isDirectory(entry)) {
-                        FailTest(Outcome.FILES_IN_MAIN_FOLDER, getPath());
-                        return;
+                        FailTest(Outcome.FILES_IN_MAIN_FOLDER, getPath(),entry.toString());
+                        // return;
                     }
                 }
             } catch (DirectoryIteratorException die) {
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
             }
-            PassTest();
+
+            // Because we have a "non-set" state
+            if (!IsTestFailed()) {
+                PassTest();
+            }
         }
     }
 

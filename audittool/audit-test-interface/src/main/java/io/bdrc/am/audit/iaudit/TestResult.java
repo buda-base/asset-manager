@@ -23,6 +23,11 @@ public class TestResult {
         _outcome = outcome;
     }
 
+    public Boolean Passed()
+    {
+        return getOutcome() == Outcome.PASS;
+    }
+
     private Outcome _outcome;
 
     public ArrayList<TestMessage> getErrors() {
