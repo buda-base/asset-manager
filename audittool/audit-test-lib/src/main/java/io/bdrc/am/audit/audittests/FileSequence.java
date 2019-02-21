@@ -57,9 +57,9 @@ public class FileSequence extends PathTestBase {
                     // add the files in the directory to a buffer. Along the way
                     // make sure everything in this folder is a file
                     for (Path aFile : Files.newDirectoryStream(entry,filter)) {
-                        sysLogger.debug("Not a File {}", aFile.toString());
+                        sysLogger.debug("File {}", aFile.toString());
                         if (!aFile.toFile().isFile()) {
-                            sysLogger.error(String.format("Not a File %s", aFile.toString()));
+                            sysLogger.error("Not a File {}", aFile.toString());
                             FailTest(Outcome.DIR_IN_IMAGES_FOLDER, aFile.toString(), entry.toString());
                         }
 

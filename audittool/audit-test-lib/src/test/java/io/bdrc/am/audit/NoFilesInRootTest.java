@@ -6,8 +6,12 @@ import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestMessage;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -15,6 +19,8 @@ import static org.junit.Assert.*;
 public class NoFilesInRootTest extends AuditTestTestBase {
 
 
+    @Rule
+    public TemporaryFolder _temporaryFolder = new TemporaryFolder();
 
     @After
     public void tearDown()
@@ -37,22 +43,23 @@ public class NoFilesInRootTest extends AuditTestTestBase {
     }
 
     @Test
-    public void NonExDirWithContentFails() {
-        // TODO: Synthetic file stream
-        String dirname = "/Users/jimk/tmp";
+    public void NonExDirWithContentFails() throws IOException {
+        String fileRoot = (new FileSequenceBuilder( _temporaryFolder))
+                .BuildFilesOnly()
+                .getAbsolutePath();
 
-        logger.debug("Testing {} on {}", "NonExDirWithContentFails", dirname);
+        logger.debug("Testing {} on {}", "NonExDirWithContentFails", fileRoot);
         NoFilesInRoot st = new NoFilesInRoot(logger);
-        st.setParams(dirname);
+        st.setParams(fileRoot);
         st.LaunchTest();
 
         // Should fail
         assertTrue(st.IsTestFailed());
 
-        // should be one error
+        // should be as many errors as files in the synthetic directory
         TestResult tr = st.getTestResult();
         ArrayList<TestMessage> errors = tr.getErrors();
-        assertEquals(1, errors.size());
+        assertEquals(12, errors.size());
         TestMessage tm = errors.get(0);
         assertEquals(Outcome.FILES_IN_MAIN_FOLDER,tm.getOutcome());
 

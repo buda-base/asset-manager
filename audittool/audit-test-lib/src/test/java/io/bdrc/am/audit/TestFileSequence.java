@@ -41,7 +41,7 @@ public class TestFileSequence extends AuditTestTestBase{
 
     @Test
     public void TestMissingFiles() throws IOException {
-        File fileRoot = _fileSequenceBuilder.BuildMissingFiles(2);
+        File fileRoot = _fileSequenceBuilder.BuildMissingFiles();
         FileSequence fst = new FileSequence(logger);
         fst.setParams(fileRoot.getAbsolutePath());
         fst.LaunchTest();
@@ -54,7 +54,7 @@ public class TestFileSequence extends AuditTestTestBase{
 
     @Test
     public void TestDuplicateFiles() throws IOException {
-        File fileRoot = _fileSequenceBuilder.BuildDuplicateFiles(2);
+        File fileRoot = _fileSequenceBuilder.BuildDuplicateFiles();
         FileSequence fst = new FileSequence(logger);
         fst.setParams(fileRoot.getAbsolutePath());
         fst.LaunchTest();

@@ -60,36 +60,38 @@ class FileSequenceBuilder {
         }
         return _rootFolder.getRoot();
     }
-//
+
+    //
 //    public File BuildNoFolders() {
 //        return _rootFolder.getRoot();
 //    }
 //
-//    public File BuildFilesOnly() throws IOException {
-//        GenerateEmptyFiles(_rootFolder.getRoot());
-//        return _rootFolder.getRoot();
-//    }
+    File BuildFilesOnly() throws IOException {
+        File testRoot = _rootFolder.newFolder("test");
+        GenerateEmptyFiles(testRoot);
+        return testRoot;
+    }
 
 
-    File BuildDuplicateFiles(int numberOfDups) throws IOException {
+    File BuildDuplicateFiles() throws IOException {
 
         for (int i = 0; i < 4; i++) {
             File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
 
             // build folders with missing files
-            GenerateEmptyFiles(testRoot, 12, 1, numberOfDups);
+            GenerateEmptyFiles(testRoot, 12, 1, 2);
 
         }
         return _rootFolder.getRoot();
     }
 
-    File BuildMissingFiles(int everyOther) throws IOException {
+    File BuildMissingFiles() throws IOException {
 
         for (int i = 0; i < 4; i++) {
             File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
 
             // build folders with missing files
-            GenerateEmptyFiles(testRoot, 12, everyOther);
+            GenerateEmptyFiles(testRoot, 12, 2);
         }
         return _rootFolder.getRoot();
     }
