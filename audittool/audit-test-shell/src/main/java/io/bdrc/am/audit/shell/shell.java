@@ -9,9 +9,7 @@ import io.bdrc.am.audit.iaudit.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -36,37 +34,47 @@ public class shell {
     public static void main(String[] args) {
 
         // Get the jar to examine
-        ArrayList<String> testArgs = (new ArgParser(args)).getArgs();
+        ArrayList<String> dirsToTest = (new ArgParser(args)).getDirs();
 
         Logger sysLogger = LoggerFactory.getLogger("sys");
         for (String testName : TestDictionary.keySet()) {
 
             Logger testLogger = LoggerFactory.getLogger(TestDictionary.get(testName));
 
-
-            // use working dir as argument if none given
-            if (testArgs.size() == 0) {
-                testArgs.add(Paths.get("").toAbsolutePath().toString());
-            }
+            ResolvePaths(dirsToTest);
 
             // Cant use Object[] directly
-            String[] runArgs = new String[testArgs.size()];
-            runArgs = testArgs.toArray(runArgs);
+            String[] runArgs = new String[dirsToTest.size()];
+           dirsToTest.toArray(runArgs);
 
-            StringBuilder argString = new StringBuilder();
-            for ( String arg : runArgs) {
-                argString.append(arg);
-            }
-            sysLogger.info("Test {} invoked. Parms {}", testName, argString.toString() );
-            TestResult tr = RunTest(testLogger, TestDictionary.get(testName), runArgs);
+           for (String aTestDir : dirsToTest) {
+               sysLogger.info("Test {} invoked. Params :{}:", testName, aTestDir);
+               TestResult tr = RunTest(testLogger, TestDictionary.get(testName),aTestDir  );
 
-            for (TestMessage tm : tr.getErrors()) {
-                sysLogger.info("> Outcome: {}: {}",tm.getOutcome().toString(), tm.getMessage());
-            }
-            sysLogger.info("Test {} result {}", testName, tr.Passed()? "Passed": "Failed");
+               for (TestMessage tm : tr.getErrors()) {
+                   sysLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
+               }
+               String resultLogString = String.format("Test %s result %s", testName, tr.Passed() ? "Passed" : "Failed");
+               if (tr.Passed()) {
+                   sysLogger.info(resultLogString);
+               } else {
+                   sysLogger.error(resultLogString);
+               }
+           }
 
         }
     }
+
+    /**
+     * In place replacement of paths with their resolved value
+     * @param resolveDirs list of paths to resolve
+     */
+    private static void ResolvePaths(final ArrayList<String> resolveDirs) {
+        for (int i= 0 ; i < resolveDirs.size(); i++) {
+            resolveDirs.set(i, Paths.get(resolveDirs.get(i)).toAbsolutePath().toString());
+        }
+    }
+
 
     /**
      * Shell to run a test instance, given its class
