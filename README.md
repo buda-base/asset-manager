@@ -2,10 +2,11 @@
 
 ## Development
 ### Requires:
-- Python 3.7.1 (in virtualenv if possible)
+- Java 1.8
 - Mkdocs version 1.0.4
 
 ### Build:
+#### docs
 - clone the repository
 - `$cd  <repository>`
 - `mkdocs serve` to test locally

@@ -1,7 +1,6 @@
 package io.bdrc.am.audit.shell;
 
-import io.bdrc.am.audit.audittests.FileSequence;
-import io.bdrc.am.audit.audittests.NoFilesInRoot;
+import io.bdrc.am.audit.audittests.TestDictionary;
 import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestMessage;
@@ -20,26 +19,35 @@ public class shell {
     // this is a placeholder for true dynamic linking:
     // See http://ronmamo.github.io/reflections/index.html?org/reflections/Reflections.html
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private static Hashtable<String, Class> TestDictionary;
+    // private static Hashtable<String, Class> TestDictionary;
 
-    static {
-        TestDictionary = new Hashtable<String, Class>() {
-            {
-                put("FileSequence", FileSequence.class);
-                put("NoFilesInFolder", NoFilesInRoot.class);
-            }
-        };
-    }
+//    static {
+//        TestDictionary = new Hashtable<String, Class>() {
+//            {
+//                put("FileSequence", FileSequence.class);
+//                put("NoFilesInFolder", NoFilesInRoot.class);
+//            }
+//        };
+//    }
 
+
+/*
+  Call with an implementation of audit test library in the
+  classpath
+  @param args  See usage
+  */
     public static void main(String[] args) {
+
+
+        Hashtable<String, Class> td = (new TestDictionary()).getTestDictionary();
 
         // Get the jar to examine
         ArrayList<String> dirsToTest = (new ArgParser(args)).getDirs();
 
         Logger sysLogger = LoggerFactory.getLogger("sys");
-        for (String testName : TestDictionary.keySet()) {
+        for (String testName : td.keySet()) {
 
-            Logger testLogger = LoggerFactory.getLogger(TestDictionary.get(testName));
+            Logger testLogger = LoggerFactory.getLogger(td.get(testName));
 
             ResolvePaths(dirsToTest);
 
@@ -49,7 +57,7 @@ public class shell {
 
            for (String aTestDir : dirsToTest) {
                sysLogger.info("Test {} invoked. Params :{}:", testName, aTestDir);
-               TestResult tr = RunTest(testLogger, TestDictionary.get(testName),aTestDir  );
+               TestResult tr = RunTest(testLogger, td.get(testName), aTestDir);
 
                for (TestMessage tm : tr.getErrors()) {
                    sysLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
