@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/asset-manager.iml" filepath="$PROJECT_DIR$/.idea/asset-manager.iml" />
       <module fileurl="file://$PROJECT_DIR$/audittool/audit-test-interface/audit-test-interface.iml" filepath="$PROJECT_DIR$/audittool/audit-test-interface/audit-test-interface.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audittool/audit-test-lib/audit-test-lib.iml" filepath="$PROJECT_DIR$/audittool/audit-test-lib/audit-test-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/audittool/audit-test-shell/audit-test-shell.iml" filepath="$PROJECT_DIR$/audittool/audit-test-shell/audit-test-shell.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audittool/audit-tool.iml" filepath="$PROJECT_DIR$/audittool/audit-tool.iml" />
     </modules>
   </component>
 </project>

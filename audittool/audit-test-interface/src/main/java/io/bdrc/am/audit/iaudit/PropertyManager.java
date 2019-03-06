@@ -1,7 +1,9 @@
-package io.bdrc.am.audit.audittests;
+package io.bdrc.am.audit.iaudit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -13,10 +15,10 @@ public class PropertyManager {
     /**
      * Load all properties
      */
-    void LoadProperties() {
-        if (_AuditTestLibProperties != null) {
-            logger.debug(String.format("Existing properties with length %d", _AuditTestLibProperties.size()));
-            _AuditTestLibProperties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
+    public void LoadProperties() {
+        if (_Properties != null) {
+            logger.debug(String.format("Existing properties with length %d", _Properties.size()));
+            _Properties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
             return;
         }
         logger.debug("Load Properties");
@@ -28,12 +30,12 @@ public class PropertyManager {
                 throw new Exception("Cant open resource " + _resourcePath);
             }
 
-            _AuditTestLibProperties = new Properties();
-            _AuditTestLibProperties.load(props);
+            _Properties = new Properties();
+            _Properties.load(props);
 
         } catch (Exception e) {
             logger.error("Caught exception, setting properties to defaults", e);
-            _AuditTestLibProperties = BuildDefaultProperties();
+            _Properties = BuildDefaultProperties();
         }
     }
 
@@ -53,7 +55,7 @@ public class PropertyManager {
     /**
      * No public access. Use accessors by type (getPropertyInt, getPropertyString)
      */
-    private Properties _AuditTestLibProperties = null;
+    private Properties _Properties = null;
 
     private String _resourcePath;
 
@@ -68,7 +70,7 @@ public class PropertyManager {
         // LoadProperties is cheap to recall
         LoadProperties();
 
-        String resourceValue = _AuditTestLibProperties.getProperty(resourceName);
+        String resourceValue = _Properties.getProperty(resourceName);
         int rc;
         try {
             rc = Integer.parseInt(resourceValue);
@@ -83,7 +85,7 @@ public class PropertyManager {
     private Logger logger;
 
     public PropertyManager(String resourcePath) {
-        logger = LogManager.getLogger(getClass().getCanonicalName());
+        logger = LoggerFactory.getLogger(getClass());
         _resourcePath = resourcePath;
     }
 

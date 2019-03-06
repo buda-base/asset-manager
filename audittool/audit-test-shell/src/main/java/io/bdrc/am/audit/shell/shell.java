@@ -1,10 +1,6 @@
 package io.bdrc.am.audit.shell;
 
-import io.bdrc.am.audit.audittests.TestDictionary;
-import io.bdrc.am.audit.iaudit.IAuditTest;
-import io.bdrc.am.audit.iaudit.Outcome;
-import io.bdrc.am.audit.iaudit.TestMessage;
-import io.bdrc.am.audit.iaudit.TestResult;
+import io.bdrc.am.audit.iaudit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,20 +11,6 @@ import java.util.Hashtable;
 
 
 public class shell {
-
-    // this is a placeholder for true dynamic linking:
-    // See http://ronmamo.github.io/reflections/index.html?org/reflections/Reflections.html
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    // private static Hashtable<String, Class> TestDictionary;
-
-//    static {
-//        TestDictionary = new Hashtable<String, Class>() {
-//            {
-//                put("FileSequence", FileSequence.class);
-//                put("NoFilesInFolder", NoFilesInRoot.class);
-//            }
-//        };
-//    }
 
 
 /*

@@ -1,11 +1,10 @@
-package io.bdrc.am.audit;
+package io.bdrc.am.audit.iaudit;
 
-import io.bdrc.am.audit.audittests.PropertyManager;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class PropertyManagerTest extends AuditTestTestBase {
+public class PropertyManagerTest  {
 
     public PropertyManagerTest() {
         propertyPath = "/testResource.properties";

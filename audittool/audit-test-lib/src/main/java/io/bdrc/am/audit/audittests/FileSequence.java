@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.Outcome;
+import io.bdrc.am.audit.iaudit.PropertyManager;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
