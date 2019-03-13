@@ -1,7 +1,7 @@
 package io.bdrc.am.audit.iaudit;
 
 
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +15,7 @@ public class PropertyManager {
     /**
      * Load all properties
      */
-    public void LoadProperties() {
+    private void LoadProperties() {
         if (_Properties != null) {
             logger.debug(String.format("Existing properties with length %d", _Properties.size()));
             _Properties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
@@ -77,6 +77,17 @@ public class PropertyManager {
         } catch (Exception e) {
             logger.error(String.format("Could not parse resource %s string value %s", resourceName, resourceValue));
             throw e;
+        }
+
+        return rc;
+    }
+
+    public String getPropertyString(String resourceName) {
+
+        LoadProperties();
+        String rc = _Properties.getProperty(resourceName);
+        if (StringUtils.isEmpty(rc)) {
+            rc = "";
         }
 
         return rc;
