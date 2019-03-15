@@ -13,7 +13,7 @@ public class PropertyManagerTest  {
     @Test
     public void getPropertyInt() {
         final String testProperty = "hibbidy.hobbidy.ima.freemstalizer";
-        int actualValue = new PropertyManager(propertyPath).getPropertyInt(testProperty);
+        int actualValue = new ClassPropertyManager(propertyPath, getClass()).getPropertyInt(testProperty);
         // region private fields
         final int expectedSequenceLength = 1234;
         assertEquals(expectedSequenceLength, actualValue);

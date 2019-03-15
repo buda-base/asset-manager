@@ -5,10 +5,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class PropertyManager {
+public abstract class PropertyManager {
+
+    public abstract InputStream LoadStream() throws IOException;
 
     //  region property resources
 
@@ -25,17 +28,19 @@ public class PropertyManager {
         try {
             // hard-wired name of system property resource file
 
-            InputStream props = PropertyManager.class.getResourceAsStream(_resourcePath);
-            if (props == null) {
-                throw new Exception("Cant open resource " + _resourcePath);
-            }
+            _Properties = new Properties(BuildDefaultProperties());
 
-            _Properties = new Properties();
-            _Properties.load(props);
+            InputStream props = LoadStream();
+            if (props == null) {
+                logger.error("Cant open resource {}", _resourcePath);
+            } else {
+                _Properties.load(props);
+                props.close();
+            }
 
         } catch (Exception e) {
             logger.error("Caught exception, setting properties to defaults", e);
-            _Properties = BuildDefaultProperties();
+            //  _Properties = BuildDefaultProperties();
         }
     }
 
@@ -47,7 +52,7 @@ public class PropertyManager {
     private Properties BuildDefaultProperties() {
         return new Properties() {
             {
-                put("io.bdrc.am.audittests.FileSequence.SequenceLength", "4");
+                put("io.bdrc.am.audit.audittests.FileSequence.SequenceLength", "4");
             }
         };
     }
@@ -55,9 +60,9 @@ public class PropertyManager {
     /**
      * No public access. Use accessors by type (getPropertyInt, getPropertyString)
      */
-    private Properties _Properties = null;
+    private Properties _Properties;
 
-    private String _resourcePath;
+    String _resourcePath;
 
     /**
      * Read integer resource from in core dictionary
@@ -69,6 +74,7 @@ public class PropertyManager {
 
         // LoadProperties is cheap to recall
         LoadProperties();
+        _Properties.forEach((k, v) -> logger.debug("key :{}: value :{}:", k, _Properties.getProperty(k.toString())));
 
         String resourceValue = _Properties.getProperty(resourceName);
         int rc;
@@ -98,6 +104,7 @@ public class PropertyManager {
     public PropertyManager(String resourcePath) {
         logger = LoggerFactory.getLogger(getClass());
         _resourcePath = resourcePath;
+        _Properties = null;
     }
 
 

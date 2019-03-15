@@ -43,5 +43,8 @@
       </set>
     </option>
   </component>
+  <component name="ProjectResources">
+    <resource url="http://maven.apache.org/ASSEMBLY/2.0.0" location="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="1.8.0_191" project-jdk-type="JavaSDK" />
 </project>
