@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public abstract class PropertyManager {
 
-    public abstract InputStream LoadStream() throws IOException;
+    protected abstract InputStream LoadStream() throws IOException;
 
     //  region property resources
 
@@ -62,7 +62,7 @@ public abstract class PropertyManager {
      */
     private Properties _Properties;
 
-    String _resourcePath;
+    final String _resourcePath;
 
     /**
      * Read integer resource from in core dictionary
@@ -99,9 +99,9 @@ public abstract class PropertyManager {
         return rc;
     }
 
-    private Logger logger;
+    final private Logger logger;
 
-    public PropertyManager(String resourcePath) {
+    PropertyManager(String resourcePath) {
         logger = LoggerFactory.getLogger(getClass());
         _resourcePath = resourcePath;
         _Properties = null;

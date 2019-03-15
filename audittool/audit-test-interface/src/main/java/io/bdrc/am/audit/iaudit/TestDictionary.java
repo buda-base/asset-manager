@@ -14,7 +14,7 @@ public class TestDictionary {
         return _TestDictionary;
     }
 
-    private Hashtable<String, Class> _TestDictionary ;
+    final private Hashtable<String, Class> _TestDictionary;
 
 
 }

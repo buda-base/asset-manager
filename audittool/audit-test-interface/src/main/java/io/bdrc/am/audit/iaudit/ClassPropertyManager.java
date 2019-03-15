@@ -8,7 +8,7 @@ public class ClassPropertyManager extends PropertyManager {
         return _clazz.getResourceAsStream(_resourcePath);
     }
 
-    private Class _clazz;
+    final private Class _clazz;
 
     public ClassPropertyManager(String resourcePath, Class clazz) {
         super(resourcePath);
