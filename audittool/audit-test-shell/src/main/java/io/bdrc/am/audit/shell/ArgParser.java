@@ -14,8 +14,6 @@ class ArgParser {
     private CommandLine cl ;
 
     private final Character pathOption = 'p';
-    private final Character debugOption = 'd';
-    private final Character dirsSeparator = ';';
 
     private Boolean isParsed ;
 
@@ -27,7 +25,9 @@ ArgParser (String [] args) {
 
     Options options = new Options();
 
+    final Character debugOption = 'd';
     options.addOption(debugOption.toString(), "debug", false, "Show debugging information");
+    final Character dirsSeparator = ';';
     options.addOption(Option.builder(pathOption.toString())
             .required()
             .longOpt("paths")

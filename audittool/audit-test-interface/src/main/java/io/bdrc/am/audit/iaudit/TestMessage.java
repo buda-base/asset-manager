@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import static java.util.Arrays.copyOf;
 
 class TestMessageFormat {
-    int argCount;
+    final int argCount;
     String formatString ;
 
     TestMessageFormat(int argc, String argFormat) {
@@ -21,7 +21,7 @@ public class TestMessage {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private static final Hashtable<Outcome, TestMessageFormat> MessageDict;
 
-    private static TestMessageFormat DefaultTestMessageFormat;
+    final private static TestMessageFormat DefaultTestMessageFormat;
 
     static {
         MessageDict = new Hashtable<Outcome, TestMessageFormat>() {

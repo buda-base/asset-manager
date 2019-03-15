@@ -45,7 +45,7 @@ public class shell {
     private static final String testDictPropertyName = "testDictionaryClassName";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
-    private static Logger sysLogger = LoggerFactory.getLogger(shell.class); //("root");
+    private final static Logger sysLogger = LoggerFactory.getLogger(shell.class); //("root");
 
     public static void main(String[] args) {
 

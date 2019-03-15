@@ -6,7 +6,5 @@ import org.slf4j.LoggerFactory;
 class AuditTestTestBase {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
-    AuditTestTestBase () {
 
-    }
 }

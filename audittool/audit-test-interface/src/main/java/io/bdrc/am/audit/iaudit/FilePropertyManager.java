@@ -10,7 +10,6 @@ public class FilePropertyManager extends PropertyManager {
     @Override
     public InputStream LoadStream() throws IOException {
         FileInputStream fileInputStream = null;
-        String cr = new java.io.File(".").getCanonicalPath();
         File external = new File(_resourcePath);
         if (external.exists()) {
             fileInputStream = new FileInputStream(external);

@@ -20,7 +20,7 @@ public class PropertyManagerTest  {
     }
 
 
-    private String propertyPath;
+    final private String propertyPath;
     // end region
 
 }
