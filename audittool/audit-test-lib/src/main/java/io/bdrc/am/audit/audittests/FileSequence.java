@@ -1,9 +1,11 @@
 package io.bdrc.am.audit.audittests;
 
+import io.bdrc.am.audit.iaudit.ClassPropertyManager;
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.PropertyManager;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.*;
 import java.util.Map;
@@ -11,17 +13,33 @@ import java.util.TreeMap;
 
 public class FileSequence extends PathTestBase {
 
+    /**
+     * Create test with external logger
+     * @param logger diagnostic logger, not for results
+     */
     public FileSequence(Logger logger) {
         super("FileSequence");
         sysLogger = logger ;
-        _pm = new PropertyManager("/auditTool.properties");
+        _pm = new ClassPropertyManager("/auditTool.properties",getClass());
         _sequenceLength = getSequenceLength();
 
     }
 
+
+    /**
+     * Constructor with builtin logger
+     * Useful if you want your slf4j profile to drive logging.
+     * note base class must pass its test (such as directory exists)
+     * IDC about https://stackoverflow.com/questions/285177/how-do-i-call-one-constructor-from-another-in-java
+     * The factory method is not the simplest way to write an external library.
+     */
+    public FileSequence() {
+        this(LoggerFactory.getLogger(FileSequence.class));
+    }
+
     /**
      * Internal class to pass to TestWrapper.
-     * note base class must pass its test (such as directory exists)
+
      */
     public class FileSequenceOperation implements ITestOperation {
 
@@ -169,7 +187,8 @@ public class FileSequence extends PathTestBase {
 
     // region fields
     private int _sequenceLength;
-    private PropertyManager _pm ;
+    private ClassPropertyManager _pm ;
+
     // endregion
 
 }
