@@ -64,15 +64,14 @@ public class IsInstanceTest extends AuditTestTestBase {
         URL libUrl = (new URI(jarUrlStr)).toURL();
         Hashtable<String, Class> libTests = getTestDictionary(libUrl, dictName);
 
-        for ( Class c : libTests.values()) {
-          IAuditTest thisTest = (IAuditTest)(c.getDeclaredConstructor(Logger.class).newInstance(logger));
-          thisTest.setParams("/ImNotHere");
-          thisTest.LaunchTest();
-          TestResult tr = thisTest.getTestResult();
-          Assert.assertNotNull(tr);
-          Assert.assertSame(Outcome.FAIL,tr.getOutcome());
-          Assert.assertEquals(Outcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
+        for (Class c : libTests.values()) {
+            IAuditTest thisTest = (IAuditTest) (c.getDeclaredConstructor(Logger.class).newInstance(logger));
+            thisTest.setParams("/ImNotHere");
+            thisTest.LaunchTest();
+            TestResult tr = thisTest.getTestResult();
+            Assert.assertNotNull(tr);
+            Assert.assertSame(Outcome.FAIL, tr.getOutcome());
+            Assert.assertEquals(Outcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
         }
     }
-
 }
