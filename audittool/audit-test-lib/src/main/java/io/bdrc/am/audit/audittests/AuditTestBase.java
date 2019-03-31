@@ -33,9 +33,12 @@ public abstract class AuditTestBase implements IAuditTest {
 
         /*
          * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
+         *
          */
-        final PropertyManager propertyManager = new PropertyManager("/auditTool.properties");
-        propertyManager.LoadProperties();
+        // this.getClass() works because were in the same package (?)
+        final ClassPropertyManager _propertyManager =
+                new io.bdrc.am.audit.iaudit.ClassPropertyManager("/auditTool" +
+                ".properties",getClass());
     }
 
     /**
