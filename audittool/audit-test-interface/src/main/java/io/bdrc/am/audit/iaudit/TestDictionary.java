@@ -6,15 +6,13 @@ import java.util.Hashtable;
 public class TestDictionary {
 
     public TestDictionary() {
-        _TestDictionary = new Hashtable<String,Class>();
+        _TestDictionary = new Hashtable<>();
     }
 
 
-    public Hashtable<String, Class> getTestDictionary() {
+    public Hashtable<String, AuditTestConfig> getTestDictionary() {
         return _TestDictionary;
     }
 
-    final private Hashtable<String, Class> _TestDictionary;
-
-
+    final private Hashtable<String, AuditTestConfig> _TestDictionary;
 }
