@@ -13,9 +13,11 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -49,10 +51,13 @@ public class shell {
 
     public static void main(String[] args) {
 
+        Path resourceFile = resolveResourceFile("shell.properties");
+        FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
 
-        Hashtable<String, Class<IAuditTest>> td = null;
+        Hashtable<String, AuditTestConfig> td = null;
         try {
-            td = LoadDictionaryFromProperty("testJar");
+
+            td = LoadDictionaryFromProperty("testJar", shellProperties);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,20 +66,25 @@ public class shell {
         ArrayList<String> dirsToTest = (new ArgParser(args)).getDirs();
 
         assert td != null;
-        assert td.keySet() != null;
         for (String testName : td.keySet()) {
 
-            Class testClass = td.get(testName);
-            if (testClass == null) {
-                sysLogger.error("Test found for {} does not have a Class Entry", testName);
+            AuditTestConfig testConfig = td.get(testName);
+
+            // Do we have a value at all?
+            if (testConfig == null) {
+                sysLogger.error("No test config found for {}. Contact library provider.",
+                        testName);
                 continue;
             }
+
+            // Is this test an  IAuditTest?
+            Class<?> testClass = testConfig.getTestClass();
             if (!IAuditTest.class.isAssignableFrom(testClass)) {
                 sysLogger.error("Test found for {} does not implement IAudit", testName);
                 continue;
             }
 
-            Logger testLogger = LoggerFactory.getLogger(td.get(testName));
+            Logger testLogger = LoggerFactory.getLogger(testClass);
 
             ResolvePaths(dirsToTest);
 
@@ -82,8 +92,15 @@ public class shell {
             String[] runArgs = new String[dirsToTest.size()];
             dirsToTest.toArray(runArgs);
 
+            // descriptive
+            String testDesc = testConfig.getFullName();
+            List<String> argProperties = ResolveArgNames(testConfig.getArgNames(), shellProperties);
+
+
             for (String aTestDir : dirsToTest) {
-                sysLogger.info("Test {} invoked. Params :{}:", testName, aTestDir);
+                sysLogger.info("Invoking {} invoked. Params :{}:", testDesc, aTestDir);
+
+                @SuppressWarnings("unchecked")
                 TestResult tr = RunTest(testLogger, (Class<IAuditTest>) testClass, aTestDir);
 
                 for (TestMessage tm : tr.getErrors()) {
@@ -100,14 +117,31 @@ public class shell {
         }
     }
 
-    private static Hashtable<String, Class<IAuditTest>> LoadDictionaryFromProperty(final String testJarPropertyName) throws IOException {
+    /**
+     * fetch values for property based arguments
+     *
+     * @param argNames        collection of properties to find
+     * @param propertyManager handles property lookup
+     * @return copy of argNames with found values added:  argNames[x]+property value
+     */
+    private static List<String> ResolveArgNames(final List<String> argNames, PropertyManager propertyManager) {
+        ArrayList<String> argNames1 = new ArrayList<>(argNames);
+        argNames1.forEach((String t) -> t += "=" + propertyManager.getPropertyString(t));
+
+        return argNames1;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Hashtable<String, AuditTestConfig> LoadDictionaryFromProperty(final String testJarPropertyName,
+                                                                                 FilePropertyManager resources) throws IOException
+    {
         String jarPath = System.getProperty(testJarPropertyName);
 
 
         if (!(new File(jarPath)).isFile()) {
             throw new FileNotFoundException(jarPath);
         }
-        Hashtable<String, Class<IAuditTest>> result = null;
+        Hashtable<String, AuditTestConfig> result = null;
 
         String libUrlStr = "jar:file:" + jarPath + "!/";
 
@@ -121,14 +155,18 @@ public class shell {
             return result;
         }
 
-        String tdClassName = new FilePropertyManager("shell.properties").getPropertyString(shell.testDictPropertyName);
+
+        String tdClassName =
+                resources.getPropertyString(shell.testDictPropertyName);
 
         try {
             if (loader != null) {
+
                 Class<IAuditTest> testDict = (Class<IAuditTest>) Class.forName(tdClassName, true, loader); //, loader);
                 Object instance = testDict.newInstance();
                 Method method = testDict.getDeclaredMethod("getTestDictionary");
-                result = (Hashtable<String, Class<IAuditTest>>) method.invoke(instance);
+
+                result = (Hashtable<String, AuditTestConfig>) method.invoke(instance);
             }
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
             sysLogger.error(e.toString());
@@ -176,5 +214,23 @@ public class shell {
         }
         return tr;
 
+    }
+
+    /**
+     * Gets the working directory of the executable
+     * invoke with -DatHome="someDirectorySpec"
+     * if -DatHome not given, looks up environment variable ATHOME
+     * if that's empty, uses "user.dir"
+     */
+    private static Path resolveResourceFile(String resourceFileName) {
+        String resHome = System.getProperty("atHome");
+        if ((resHome == null) || resHome.isEmpty()) {
+            resHome = System.getenv("ATHOME");
+        }
+        if ((resHome == null) || resHome.isEmpty()) {
+            resHome = System.getProperty("user.dir");
+        }
+        System.out.println("Reshome is " + resHome);
+        return Paths.get(resHome, resourceFileName);
     }
 }
