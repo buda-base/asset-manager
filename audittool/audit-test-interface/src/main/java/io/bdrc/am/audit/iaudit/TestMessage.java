@@ -33,6 +33,7 @@ public class TestMessage {
                 put(Outcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Images folder %s  contains directory %s"));
                 put(Outcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
                 put(Outcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));
+                put(Outcome.DUP_SEQUENCE_FOLDER, new TestMessageFormat(1, "Folder %s contains Duplicate Sequences"));
                 put(Outcome.FILE_COUNT,  new TestMessageFormat(1,"Expected %d files in folder, found %d"));
             }
         };
@@ -44,7 +45,7 @@ public class TestMessage {
     /**
      * Constructor
      * @param outcome code
-     * @param messageBits varags of message string arguments
+     * @param messageBits varargs of message string arguments
      */
     TestMessage(Outcome outcome, String... messageBits)
     {
