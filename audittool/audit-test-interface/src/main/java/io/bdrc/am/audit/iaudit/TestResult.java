@@ -15,7 +15,8 @@ public class TestResult {
         _errors.add(new TestMessage(outcome, operand));
     }
 
-    Outcome getOutcome() {
+    // No, this CANT be made package private.
+    public Outcome getOutcome() {
         return _outcome;
     }
 
