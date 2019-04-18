@@ -2,6 +2,7 @@ package io.bdrc.am.audit;
 
 
 import io.bdrc.am.audit.iaudit.IAuditTest;
+import io.bdrc.am.audit.iaudit.AuditTestConfig;
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.Assert;
@@ -29,30 +30,30 @@ public class IsInstanceTest extends AuditTestTestBase {
 
     private final String dictName = "io.bdrc.am.audit.audittests.TestDictionary";
 
-
     /**
      * validateForShell is a test that validates that the shell will be able to locate testDictionary
      * in this jar
      *
-     * @throws URISyntaxException Requires a well formed URI
+     * @throws URISyntaxException    Requires a well formed URI
      * @throws MalformedURLException Which transforms into a well formed URL
      */
     @Test
     public void TestForShellCallable() throws URISyntaxException, MalformedURLException {
         URL libUrl = (new URI(jarUrlStr)).toURL();
 
-        Hashtable<String, Class> libTests = getTestDictionary(libUrl, dictName);
+        Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         Assert.assertNotNull(libTests);
-        Assert.assertEquals("Number of tests doesnt match",2,libTests.size());
+        Assert.assertEquals("Number of tests doesnt match", 2, libTests.size());
     }
 
     @Test
     public void TestInterfaceCallable() throws URISyntaxException, MalformedURLException {
         URL libUrl = (new URI(jarUrlStr)).toURL();
-        Hashtable<String, Class> libTests = getTestDictionary(libUrl, dictName);
+        Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
-        for ( Class c : libTests.values()) {
+        for (AuditTestConfig atc : libTests.values()) {
+            Class<?> c = atc.getTestClass();
             Assert.assertTrue(String.format("class %s doesnt implement IAuditTest",
                     c.getCanonicalName()), IAuditTest.class.isAssignableFrom(c));
         }
@@ -60,13 +61,19 @@ public class IsInstanceTest extends AuditTestTestBase {
 
 
     @Test
-    public void TestRunnable() throws URISyntaxException, MalformedURLException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    public void TestRunnable() throws URISyntaxException, MalformedURLException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException, InvocationTargetException
+    {
         URL libUrl = (new URI(jarUrlStr)).toURL();
-        Hashtable<String, Class> libTests = getTestDictionary(libUrl, dictName);
+        final Hashtable<String, String> emptySequenceTestParams = new Hashtable<>();
+        // endregion
 
-        for (Class c : libTests.values()) {
-            IAuditTest thisTest = (IAuditTest) (c.getDeclaredConstructor(Logger.class).newInstance(logger));
-            thisTest.setParams("/ImNotHere");
+        Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
+
+        for (AuditTestConfig c : libTests.values()) {
+            IAuditTest thisTest =
+                    (IAuditTest) (c.getTestClass().getDeclaredConstructor(Logger.class).newInstance(logger));
+            thisTest.setParams("/ImNotHere", emptySequenceTestParams);
             thisTest.LaunchTest();
             TestResult tr = thisTest.getTestResult();
             Assert.assertNotNull(tr);

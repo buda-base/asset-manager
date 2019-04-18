@@ -1,5 +1,6 @@
 package io.bdrc.am.audit;
 
+import io.bdrc.am.audit.iaudit.AuditTestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,7 @@ import java.util.Hashtable;
 
 class AuditTestTestBase {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     AuditTestTestBase() {
 
@@ -26,24 +27,26 @@ class AuditTestTestBase {
      * @param testDictName the test dict name
      * @return the hash table named by testDictName
      */
-    Hashtable<String, Class> getTestDictionary(URL jarUrl, String testDictName) {
 
+
+    @SuppressWarnings("unchecked")
+    Hashtable<String, AuditTestConfig> getTestDictionary(URL jarUrl, @SuppressWarnings("SameParameterValue") String testDictName) {
 
         ClassLoader loader = URLClassLoader.newInstance(
                 new URL[]{jarUrl},
                 IsInstanceTest.class.getClassLoader());
 
-        Hashtable<String, Class> result = null;
-
+        Hashtable<String, AuditTestConfig> result = null;
 
         Class testDict;
         try {
             testDict = Class.forName(testDictName, true, loader);
             Object instance = testDict.newInstance();
             Method method = testDict.getDeclaredMethod("getTestDictionary");
-            result = (Hashtable<String, Class>) method.invoke(instance);
+
+            result = (Hashtable<String, AuditTestConfig>) method.invoke(instance);
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
 
         return result;
