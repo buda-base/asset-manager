@@ -31,11 +31,14 @@ public abstract class AuditTestBase implements IAuditTest {
         _testResult = new TestResult();
         _testResult.setOutcome(Outcome.NOT_RUN);
 
-        /*
-         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
-         */
-        final PropertyManager propertyManager = new PropertyManager("/auditTool.properties");
-        propertyManager.LoadProperties();
+//        /*
+//         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
+//         *
+//         */
+//        // this.getClass() works because were in the same package (?)
+//        final ClassPropertyManager _propertyManager =
+//                new io.bdrc.am.audit.iaudit.ClassPropertyManager("/auditTool" +
+//                ".properties",getClass());
     }
 
     /**
@@ -48,6 +51,7 @@ public abstract class AuditTestBase implements IAuditTest {
         _testResult.setOutcome(Outcome.FAIL);
         _testResult.AddError(why, failedElement);
     }
+
 
     void PassTest() {
         _testResult.setOutcome(Outcome.PASS);
@@ -109,8 +113,8 @@ public abstract class AuditTestBase implements IAuditTest {
     public abstract void setParams(Object ... params );
 
     // region fields
-    private TestResult _testResult;
-    private String _testName;
+    private final TestResult _testResult;
+    private final String _testName;
 
     // package private implies most of protected
     Logger sysLogger;

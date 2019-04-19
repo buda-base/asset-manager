@@ -1,31 +1,24 @@
 package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.NoFilesInRoot;
-
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestMessage;
 import io.bdrc.am.audit.iaudit.TestResult;
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class NoFilesInRootTest extends AuditTestTestBase {
 
 
     @Rule
-    public TemporaryFolder _temporaryFolder = new TemporaryFolder();
-
-    @After
-    public void tearDown()
-    {
-    }
+    public final TemporaryFolder _temporaryFolder = new TemporaryFolder();
 
     @Test
     public void TestNotExistFails() {

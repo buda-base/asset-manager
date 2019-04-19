@@ -1,26 +1,44 @@
 package io.bdrc.am.audit.audittests;
 
+import io.bdrc.am.audit.iaudit.ClassPropertyManager;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.*;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class FileSequence extends PathTestBase {
 
+    /**
+     * Create test with external logger
+     *
+     * @param logger diagnostic logger, not for results
+     */
     public FileSequence(Logger logger) {
         super("FileSequence");
-        sysLogger = logger ;
-        _pm = new PropertyManager("/auditTool.properties");
-        _sequenceLength = getSequenceLength();
+        sysLogger = logger;
+        _pm = new ClassPropertyManager("/auditTool.properties", getClass());
+        _sequenceLength = getSequenceSubstringLength();
 
+    }
+
+
+    /**
+     * Constructor with builtin logger
+     * Useful if you want your slf4j profile to drive logging.
+     * note base class must pass its test (such as directory exists)
+     * IDC about https://stackoverflow.com/questions/285177/how-do-i-call-one-constructor-from-another-in-java
+     * The factory method is not the simplest way to write an external library.
+     */
+    public FileSequence() {
+        this(LoggerFactory.getLogger(FileSequence.class));
     }
 
     /**
      * Internal class to pass to TestWrapper.
-     * note base class must pass its test (such as directory exists)
      */
     public class FileSequenceOperation implements ITestOperation {
 
@@ -29,9 +47,8 @@ public class FileSequence extends PathTestBase {
         }
 
         public void run() throws java.io.IOException {
-
             Path dir = Paths.get(getPath());
-            int sequenceLength = getSequenceLength();
+            int sequenceLength = getSequenceSubstringLength();
 
 
 // Creating the filter
@@ -40,101 +57,123 @@ public class FileSequence extends PathTestBase {
             try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, filter)) {
 
                 // iterate over directories in path
-                for (Path entry : pathDirectoryStream)
-                {
+                for (Path entry : pathDirectoryStream) {
                     sysLogger.debug(String.format("entry %s", entry.toString()));
 
-                    TreeMap<Integer, String> filenames = new TreeMap<>();
-
                     // reiterate NoDirInImages test
-                    if (!entry.toFile().isDirectory()) {
-                        sysLogger.error("a File {}", entry.getFileName().toString());
-                        FailTest(Outcome.FILES_IN_MAIN_FOLDER, dir.toString(), entry.toString());
-                        // keep going
-                        // return;
-                    }
+                    if (!failFile(dir, entry)) {
 
-                    // add the files in the directory to a buffer. Along the way
-                    // make sure everything in this folder is a file
-                    for (Path aFile : Files.newDirectoryStream(entry,filter)) {
-                        sysLogger.debug("File {}", aFile.toString());
-                        if (!aFile.toFile().isFile()) {
-                            sysLogger.error("Not a File {}", aFile.toString());
-                            FailTest(Outcome.DIR_IN_IMAGES_FOLDER, aFile.toString(), entry.toString());
+                        // We only want to inspect specific directories
+                        if (_imageGroupParents.contains(entry.getFileName().toString())) {
+                            sequenceImageGroupParent(sequenceLength, filter, entry);
                         }
-
-                        String thisFileName = FilenameUtils.getBaseName(aFile.getFileName().toString());
-                        String fileSequence = thisFileName.substring(thisFileName.length()- sequenceLength);
-
-                        int thisFileIndex = 0;
-                        try {
-                            thisFileIndex = Integer.parseInt(fileSequence);
-                        }
-                        catch(NumberFormatException nfe) {
-                            String errorText = String.format("File %s does not end in an integer",thisFileName);
-                            sysLogger.error(errorText);
-                            FailTest(Outcome.FILE_SEQUENCE,errorText );
-                        }
-
-                        // fail if duplicate number
-                        if (filenames.containsKey(thisFileIndex)) {
-                            FailTest(Outcome.DUP_SEQUENCE, filenames.get(thisFileIndex),thisFileName);
-                            // return;
-                        }
-                        filenames.put(thisFileIndex, thisFileName);
-
                     }
-
-                    // If filenames contains entries for every number of files, the test passes.
-                    // The last element must be the same as the size, or there are files missing
-                    int lastKey, size ;
-                    lastKey = filenames.lastKey();
-                    size =  filenames.size();
-                    if ( lastKey > size) {
-                        FailTest(Outcome.FILE_SEQUENCE, String.format("Last file index is %d, but there are %d files " +
-                                "in the folder.",lastKey,size));
-                        GenerateFileMissingMessages(filenames);
-                    }
-
-                    // Because we have a "non-set" state
-                    if (!IsTestFailed()) {
-                        PassTest();
-                    }
-
-
-                    // Since we're using a sparse TreeMap, this test will never fail
-                    // find any files which don't have a number, skipping the plug
-//                    StringBuilder absentSequences = new StringBuilder();
-//                    for (int i = 1 ; i < filenames.size() ; i++)
-//                    {
-//                        if (isEmpty(filenames[i])) {
-//                            absentSequences.append(String.format("%4d, ",i));
-//                        }
-//                    }
-//                    if (!isEmpty(absentSequences.toString())) {
-//                        FailTest(Outcome.FILE_SEQUENCE,String.format("Missing sequences %s",
-//                                absentSequences.toString())) ;
-//                        return;
-//                    }
-
                 }
 
             } catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
-            }
-            catch(NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 sysLogger.error("Number Format error", nfe);
                 FailTest(Outcome.SYS_EXC, nfe.getCause().getLocalizedMessage());
 
             }
         }
 
+
+        /**
+         * Fails the test if the tested Path is not a directory
+         *
+         * @param parent container
+         * @param entry  tested Path
+         * @return false if entry is a directory
+         */
+        private Boolean failFile(Path parent, Path entry) {
+            Boolean isFile = !entry.toFile().isDirectory();
+            if (isFile) {
+                sysLogger.error("a File {}", entry.getFileName().toString());
+                FailTest(Outcome.FILES_IN_MAIN_FOLDER, parent.toString(), entry.toString());
+            }
+            return isFile;
+        }
+
+        /**
+         * Speical handling for a parent of a series of image groups
+         *
+         * @param sequenceLength   How many characters before the file extension make up the number
+         * @param filter           disregard hidden files
+         * @param imageGroupParent the directory we're testing
+         * @throws IOException on system failures
+         */
+        private void sequenceImageGroupParent(final int sequenceLength, final DirectoryStream.Filter<Path> filter, final Path imageGroupParent) throws IOException
+        {
+
+
+
+            for (Path anImageGroup : Files.newDirectoryStream(imageGroupParent, filter)) {
+                boolean firstFolderFailure = false;
+                if (failFile(imageGroupParent, anImageGroup)) {
+                    continue;
+                }
+                sysLogger.debug("ImageGroup {}", anImageGroup.toString());
+
+                TreeMap<Integer, String> filenames = new TreeMap<>();
+                for (Path imageGroupFile : Files.newDirectoryStream(anImageGroup, filter)) {
+
+                    String thisFileName = FilenameUtils.getBaseName(imageGroupFile.getFileName().toString());
+                    String fileSequence = thisFileName.substring(thisFileName.length() - sequenceLength);
+
+                    int thisFileIndex = 0;
+                    try {
+                        thisFileIndex = Integer.parseInt(fileSequence);
+                    } catch (NumberFormatException nfe) {
+                        String errorText = String.format("File %s does not end in an integer: ends with %s",
+                                thisFileName, fileSequence);
+                        sysLogger.error(errorText);
+                        if (!firstFolderFailure) {
+                            firstFolderFailure = true;
+                            FailTest(Outcome.FILE_SEQUENCE, anImageGroup.toString());
+                        }
+                        FailTest(Outcome.FILE_SEQUENCE, errorText);
+                    }
+
+                    // fail if duplicate number
+                    if (filenames.containsKey(thisFileIndex)) {
+                        if (!firstFolderFailure) {
+                            firstFolderFailure = true;
+                            FailTest(Outcome.DUP_SEQUENCE_FOLDER, anImageGroup.toString());
+                        }
+                        FailTest(Outcome.DUP_SEQUENCE, filenames.get(thisFileIndex), thisFileName);
+                    }
+                    filenames.put(thisFileIndex, thisFileName);
+
+                }
+                // If filenames contains entries for every number of files, the test passes.
+                // The last element must be the same as the size, or there are files missing
+                int lastKey, size;
+                lastKey = filenames.lastKey();
+                size = filenames.size();
+                if (lastKey > size) {
+                    FailTest(Outcome.FILE_SEQUENCE, String.format(" folder :%s: Last file index is %d, but there are " +
+                            "%d files " +
+                            "in the folder .", anImageGroup.toString(), lastKey, size));
+                    GenerateFileMissingMessages(filenames);
+                }
+
+            }
+
+            // Because we have a "non-set" state
+            if (!IsTestFailed()) {
+                PassTest();
+            }
+        }
+
+
         private void GenerateFileMissingMessages(final TreeMap<Integer, String> filenames) {
-            Integer curEntry = 1;
+            Integer curEntry = 0;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
                 Integer k = entry.getKey();
-                while (curEntry++ < k) {
+                while (++curEntry < k) {
                     FailTest(Outcome.FILE_SEQUENCE, String.format("File Sequence %4d missing", curEntry));
                 }
             }
@@ -156,19 +195,65 @@ public class FileSequence extends PathTestBase {
 
     /**
      * Get Sequence length from base class properties
+     *
      * @return the number of digits at the end of the file name which
-     *          represent the sequence
+     * represent the sequence
      */
-    private int getSequenceLength() {
+    private int getSequenceSubstringLength() {
         if (_sequenceLength == 0) {
             _sequenceLength = _pm.getPropertyInt(this.getClass().getCanonicalName() + ".SequenceLength");
         }
         return _sequenceLength;
     }
 
+    // region overrides
+
+    /**
+     * FileSequence parameters:
+     * 1: path: String
+     * 2: HashTable<String,String> Properties
+     *
+     * @param params array of parameters, implementation dependent
+     * @throws IllegalArgumentException when arguments dont contain a hashset of values
+     */
+    public void setParams(Object... params) throws IllegalArgumentException {
+        if ((params == null) || (params.length < 2)) {
+            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments not given.",
+                    getTestName()));
+        }
+        super.setParams(params[0]);
+
+        _imageGroupParents = (ArrayList<String>) filterProperties(params[1], _propertyKeys);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<String> filterProperties(Object argDict, Collection<String> seekList) {
+
+        Hashtable<String, String> parentProperties = (Hashtable<String, String>) (argDict);
+
+        ArrayList<String> foundValues = new ArrayList<>(seekList.size());
+        parentProperties.forEach((k, v) -> {
+            if (seekList.contains(k)) foundValues.add(v);
+        });
+        return foundValues;
+    }
+
+    //endregion
     // region fields
     private int _sequenceLength;
-    private PropertyManager _pm ;
+    private final ClassPropertyManager _pm;
+
+    // Special case folders, define parents of image groups. Only image group folders have to
+    // match sequence tests
+    private ArrayList<String> _imageGroupParents = new ArrayList<>();
+
+    // Extract only the values for these properties. For example, see audit-test-shell.scripts/shell.properties
+    private final ArrayList<String> _propertyKeys = new ArrayList<String>() {{
+        add("ArchiveImageGroupParent");
+        add("DerivedImageGroupParent");
+    }};
+
     // endregion
 
 }

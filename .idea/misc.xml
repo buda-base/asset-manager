@@ -33,8 +33,18 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/audittool/pom.xml" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-interface/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/audittool/audit-test-lib/pom.xml" />
+        <option value="$PROJECT_DIR$/audittool/pom.xml" />
+      </set>
+    </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8.0_191" project-jdk-type="JavaSDK" />
+  <component name="ProjectResources">
+    <resource url="http://maven.apache.org/ASSEMBLY/2.0.0" location="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="1.8.0_191" project-jdk-type="JavaSDK" />
 </project>

@@ -4,13 +4,32 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 
+/**
+ * Creates a work structure for file sequence to test. Sequence test requires:
+ * Top folder/
+ * 0 Or More arbitraryfolder names
+ * 1 Or More folder names which are "parents of Image groups"
+ * These folders are passed into the test by the SequenceTest.setParams() method.
+ */
 class FileSequenceBuilder {
 
-    private TemporaryFolder _rootFolder;
+    private final TemporaryFolder _rootFolder;
+    private final Collection<String> _imageGroupParentFolders;
+
+    FileSequenceBuilder(TemporaryFolder root, Collection<String> imageGroupParentFolders) {
+        _rootFolder = root;
+        _imageGroupParentFolders = imageGroupParentFolders;
+    }
+
 
     FileSequenceBuilder(TemporaryFolder root) {
         _rootFolder = root;
+        _imageGroupParentFolders = new ArrayList<>();
     }
 
     private static int getArray(int[] arr, int pos, int defaultValue) {
@@ -50,22 +69,25 @@ class FileSequenceBuilder {
         }
     }
 
-
     File BuildPassingFiles() throws IOException {
 
-        for (int i = 0; i < 4; i++) {
+        // Create unsearched folders
+        for (int i = 0; i < imageGroupsPerParent(); i++) {
             File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
             GenerateEmptyFiles(testRoot);
-
         }
+
+        for (int i = 0; i < imageGroupsPerParent(); i++) {
+            File testRoot = _rootFolder.newFolder(String.format("folder2_%d", i));
+            GenerateEmptyFiles(testRoot, 5, 3, 2);
+        }
+
+        BuildMissingFiles();
+
         return _rootFolder.getRoot();
     }
 
-    //
-//    public File BuildNoFolders() {
-//        return _rootFolder.getRoot();
-//    }
-//
+
     File BuildFilesOnly() throws IOException {
         File testRoot = _rootFolder.newFolder("test");
         GenerateEmptyFiles(testRoot);
@@ -73,27 +95,27 @@ class FileSequenceBuilder {
     }
 
 
-    File BuildDuplicateFiles() throws IOException {
+    File BuildMissingFiles(int... fillParameters) throws IOException {
 
-        for (int i = 0; i < 4; i++) {
-            File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
-
+        for (String igp : _imageGroupParentFolders) {
+            File testRoot = _rootFolder.newFolder(igp);
             // build folders with missing files
-            GenerateEmptyFiles(testRoot, 12, 1, 2);
-
+            BuildImageGroups(testRoot, fillParameters);
         }
         return _rootFolder.getRoot();
     }
 
-    File BuildMissingFiles() throws IOException {
-
-        for (int i = 0; i < 4; i++) {
-            File testRoot = _rootFolder.newFolder(String.format("folder_%d", i));
-
-            // build folders with missing files
-            GenerateEmptyFiles(testRoot, 12, 2);
+    void BuildImageGroups(File rootFolder, int... fillParams) throws IOException {
+        for (int i = 0; i < imageGroupsPerParent(); i++) {
+            File ig =
+                    Files.createDirectory(Paths.get(rootFolder.getAbsolutePath(), String.format("folder_%d", i))).toFile();
+            GenerateEmptyFiles(ig, fillParams);
         }
-        return _rootFolder.getRoot();
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    public int imageGroupsPerParent() {
+        return 4;
     }
 
 }

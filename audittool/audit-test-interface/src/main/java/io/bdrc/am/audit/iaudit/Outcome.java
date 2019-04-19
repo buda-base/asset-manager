@@ -1,5 +1,8 @@
 package io.bdrc.am.audit.iaudit;
 
+/**
+ * Mnemonics for outcomes. See io.bdrc.am.audit.iaudit.TestMessages for message strings
+ */
 public enum Outcome {
     NOT_RUN,
     PASS,
@@ -10,5 +13,6 @@ public enum Outcome {
     FILES_IN_MAIN_FOLDER,
     DIR_IN_IMAGES_FOLDER,
     FILE_COUNT,
-    DUP_SEQUENCE
+    DUP_SEQUENCE,
+    DUP_SEQUENCE_FOLDER
 }

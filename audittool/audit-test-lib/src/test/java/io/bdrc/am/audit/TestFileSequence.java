@@ -3,6 +3,7 @@ package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.*;
 import io.bdrc.am.audit.iaudit.*;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,6 +12,8 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import static org.junit.Assert.*;
@@ -19,21 +22,28 @@ public class TestFileSequence extends AuditTestTestBase{
 
 
     @Rule
-    public TemporaryFolder rootFolder = new TemporaryFolder();
+    public final TemporaryFolder rootFolder = new TemporaryFolder();
 
-    private FileSequenceBuilder _fileSequenceBuilder ;
+    // private FileSequenceBuilder _noIGPfileSequenceBuilder;
+    private FileSequenceBuilder _IGPfileSequenceBuilder;
+
+    private final Hashtable<String, String> _emptySequenceTestParams = new Hashtable<>();
+    private final Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
+            put("ArchiveImageGroupParent", "harkeBeepar0lYn");
+            put("DerivedImageGroupParent", "SchmengUndDreck");
+        }};
+
 
     @Before
-    public void CreateFileBuilder() {
-        _fileSequenceBuilder = new FileSequenceBuilder(rootFolder);
+    public void CreateFileBuilders() {
+       //  _noIGPfileSequenceBuilder = new FileSequenceBuilder(rootFolder);
+        _IGPfileSequenceBuilder = new FileSequenceBuilder(rootFolder,_activeSequenceTestParams.values());
     }
 
     @Test
     public void TestPassingFiles() throws IOException {
-        File fileRoot = _fileSequenceBuilder.BuildPassingFiles();
-        FileSequence fst = new FileSequence(logger);
-        fst.setParams(fileRoot.getAbsolutePath());
-        fst.LaunchTest();
+        File fileRoot =  _IGPfileSequenceBuilder.BuildPassingFiles();
+        FileSequence fst = runTest(fileRoot.getAbsolutePath(),_activeSequenceTestParams);
 
         assertTrue("Test did not pass when it should",fst.IsTestPassed());
     }
@@ -41,31 +51,32 @@ public class TestFileSequence extends AuditTestTestBase{
 
     @Test
     public void TestMissingFiles() throws IOException {
-        File fileRoot = _fileSequenceBuilder.BuildMissingFiles();
-        FileSequence fst = new FileSequence(logger);
-        fst.setParams(fileRoot.getAbsolutePath());
-        fst.LaunchTest();
-
+        File fileRoot = _IGPfileSequenceBuilder.BuildMissingFiles(12,2);
+        FileSequence fst = runTest(fileRoot.getAbsolutePath(),_activeSequenceTestParams);
         assertTrue("Test did not pass when it should",fst.IsTestFailed());
 
-        // Look at the actual errors. there should be 1, and it should have duplicates
-        // 1 .. 12 in its error array
     }
 
     @Test
     public void TestDuplicateFiles() throws IOException {
-        File fileRoot = _fileSequenceBuilder.BuildDuplicateFiles();
-        FileSequence fst = new FileSequence(logger);
-        fst.setParams(fileRoot.getAbsolutePath());
-        fst.LaunchTest();
+        File fileRoot = _IGPfileSequenceBuilder.BuildMissingFiles(12,1,2);
+        FileSequence fst = runTest(fileRoot.getAbsolutePath(),_activeSequenceTestParams);
 
         assertTrue("Test passed",fst.IsTestFailed());
         TestResult tr = fst.getTestResult();
         ArrayList<TestMessage> errors = tr.getErrors();
 
-        // we created four directories, each with 12 duplicate files
-        assertEquals(48, errors.size());
-        assertEquals(Outcome.DUP_SEQUENCE, errors.get(0).getOutcome())  ;
+        // We should have this many errors:
+        // One for each folder created, which is _activeSequenceTestParams * _IGPfileSequenceBuilder
+        // .getImageGroupsPerParent()
+        // One for each duplicate file in each folder, which should be 12 (the first Fill parameter), plus one for each
+        // folder which contains the errors ( 12 + 1 = 13)
+        int nExpected = ( _activeSequenceTestParams.size() )* _IGPfileSequenceBuilder.imageGroupsPerParent() * 13   ;
+
+        Assert.assertEquals(nExpected, errors.size());
+
+        //noinspection TestFailedLine
+        Assert.assertEquals (Outcome.DUP_SEQUENCE_FOLDER, errors.get(0).getOutcome()) ;
 
         String errorText = errors.get(0).getMessage() ;
         assertFalse("Should have a message",isEmpty(errorText));
@@ -73,10 +84,8 @@ public class TestFileSequence extends AuditTestTestBase{
 
     @Test
     public void TestNotExist() {
-        FileSequence st = new FileSequence(logger);
-        st.setParams("/MrMxyzptlk");
-        st.LaunchTest();
 
+        FileSequence st = runTest("/MrMxyzptlk",_activeSequenceTestParams);
         assertTrue(st.IsTestFailed());
         TestResult tr = st.getTestResult();
         ArrayList<TestMessage> errors = tr.getErrors();
@@ -90,8 +99,16 @@ public class TestFileSequence extends AuditTestTestBase{
     public void setPath() {
         final String whanThatAprille = "WhanThatAprille";
         FileSequence st = new FileSequence(logger);
-        st.setParams(whanThatAprille);
+        st.setParams(whanThatAprille,_emptySequenceTestParams);
         assertEquals(st.getPath(),whanThatAprille);
+    }
+
+    private FileSequence runTest(String path,Hashtable<String,String> igParents ) {
+        FileSequence st = new FileSequence(logger);
+        st.setParams(path, igParents);
+        st.LaunchTest();
+
+        return st;
     }
 }
 
