@@ -218,7 +218,8 @@ public class FileSequence extends PathTestBase {
      */
     public void setParams(Object... params) throws IllegalArgumentException {
         if ((params == null) || (params.length < 2)) {
-            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments not given.",
+            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments path, and " +
+                            "propertyDictionary not given.",
                     getTestName()));
         }
         super.setParams(params[0]);
