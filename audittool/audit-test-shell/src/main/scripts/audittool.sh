@@ -10,7 +10,7 @@ ver=1.0
 export ATHOME='<<#$CONFIG-ATHOME>>'
 #
 # This is the test library. Add your version here.
-libJar=target/audit-test-lib-${ver}-${rel}-jar-with-dependencies.jar
+libJar='<<#$TESTLIB>>'/audit-test-lib-${ver}-${rel}-jar-with-dependencies.jar
 
 #
 export LOG_PROPS=${ATHOME}/log4j2.properties
