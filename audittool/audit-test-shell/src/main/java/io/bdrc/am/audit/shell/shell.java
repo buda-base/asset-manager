@@ -47,7 +47,9 @@ public class shell {
     private static final String testDictPropertyName = "testDictionaryClassName";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
-    private final static Logger sysLogger = LoggerFactory.getLogger(shell.class); //("root");
+    private final static Logger sysLogger = LoggerFactory.getLogger("shellLogger"); //("root");
+//    private final static Logger summaryLogger = LoggerFactory.getLogger("summaryLogger"); //("root");
+    private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
 
     public static void main(String[] args) {
 
@@ -96,16 +98,16 @@ public class shell {
             String testDesc = testConfig.getFullName();
 
             // extract the property values the test needs
-            Hashtable<String,String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
+            Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
             for (String aTestDir : dirsToTest) {
-                sysLogger.info("Invoking {} invoked. Params :{}:", testDesc, aTestDir);
+                sysLogger.info("Invoking {}. Params :{}:", testDesc, aTestDir);
 
                 @SuppressWarnings("unchecked")
                 TestResult tr = RunTest(testLogger, (Class<IAuditTest>) testClass, aTestDir, propertyArgs);
 
                 for (TestMessage tm : tr.getErrors()) {
-                    sysLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
+                    detailLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
                 }
                 String resultLogString = String.format("Test %s result %s", testName, tr.Passed() ? "Passed" : "Failed");
                 if (tr.Passed()) {
@@ -125,10 +127,11 @@ public class shell {
      * @param propertyManager handles property lookup
      * @return copy of argNames with found values added:  argNames[x]+property value
      */
-    private static Hashtable<String,String> ResolveArgNames(final List<String> argNames,
-                                                          PropertyManager propertyManager) {
-        Hashtable<String,String> argNames1 = new Hashtable<>();
-        argNames.forEach((String t) -> argNames1.put(t,propertyManager.getPropertyString(t)));
+    private static Hashtable<String, String> ResolveArgNames(final List<String> argNames,
+                                                             PropertyManager propertyManager)
+    {
+        Hashtable<String, String> argNames1 = new Hashtable<>();
+        argNames.forEach((String t) -> argNames1.put(t, propertyManager.getPropertyString(t)));
 
         return argNames1;
     }
@@ -195,7 +198,7 @@ public class shell {
      * @param testLogger Logger for the test. Not the same as the shell logger
      * @params array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
      */
-    private static TestResult RunTest(Logger testLogger, Class<IAuditTest> testClass, Object ... params) {
+    private static TestResult RunTest(Logger testLogger, Class<IAuditTest> testClass, Object... params) {
 
         String className = testClass.getCanonicalName();
 
