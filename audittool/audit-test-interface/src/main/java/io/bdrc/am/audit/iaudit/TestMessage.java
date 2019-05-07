@@ -32,9 +32,10 @@ public class TestMessage {
                 put(Outcome.FILES_IN_MAIN_FOLDER,  new TestMessageFormat(2,"Root folder %s contains file %s"));
                 put(Outcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Images folder %s  contains directory %s"));
                 put(Outcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
+                put(Outcome.DIR_FAILS_SEQUENCE, new TestMessageFormat(1, "Folder %s fails sequence test."));
                 put(Outcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));
                 put(Outcome.DUP_SEQUENCE_FOLDER, new TestMessageFormat(1, "Folder %s contains Duplicate Sequences"));
-                put(Outcome.FILE_COUNT,  new TestMessageFormat(1,"Expected %d files in folder, found %d"));
+                put(Outcome.FILE_COUNT,  new TestMessageFormat(3,"Folder %s expected %s files in folder , found %s"));
             }
         };
 
