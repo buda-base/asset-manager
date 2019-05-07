@@ -25,8 +25,11 @@ public class TestDictionary {
     private final Hashtable<String, AuditTestConfig> _TestDictionary = new Hashtable<String, AuditTestConfig>() {
         {
             put("FileSequence", new AuditTestConfig("File Sequence Test",
+
+                    // This statement asserts that the caller has to provide values for these
+                    // arguments
                     Arrays.asList(
-                            "ArchiveGroupParent", "DerivedImageGroupParent"),
+                            "ArchiveImageGroupParent", "DerivedImageGroupParent"),
                     "FileSequence", FileSequence.class));
 
             //noinspection ArraysAsListWithZeroOrOneArgument

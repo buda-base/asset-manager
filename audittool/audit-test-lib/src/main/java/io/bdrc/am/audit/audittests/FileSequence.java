@@ -121,6 +121,9 @@ public class FileSequence extends PathTestBase {
                 for (Path imageGroupFile : Files.newDirectoryStream(anImageGroup, filter)) {
 
                     String thisFileName = FilenameUtils.getBaseName(imageGroupFile.getFileName().toString());
+
+                    // BUG: Dont parse by sequence length. Requirements call for parsing backeward from last .
+                    // to first non int, up to field length.
                     String fileSequence = thisFileName.substring(thisFileName.length() - sequenceLength);
 
                     int thisFileIndex = 0;
@@ -132,7 +135,7 @@ public class FileSequence extends PathTestBase {
                         sysLogger.error(errorText);
                         if (!firstFolderFailure) {
                             firstFolderFailure = true;
-                            FailTest(Outcome.FILE_SEQUENCE, anImageGroup.toString());
+                            FailTest(Outcome.DIR_FAILS_SEQUENCE, anImageGroup.toString());
                         }
                         FailTest(Outcome.FILE_SEQUENCE, errorText);
                     }
@@ -141,7 +144,7 @@ public class FileSequence extends PathTestBase {
                     if (filenames.containsKey(thisFileIndex)) {
                         if (!firstFolderFailure) {
                             firstFolderFailure = true;
-                            FailTest(Outcome.DUP_SEQUENCE_FOLDER, anImageGroup.toString());
+                            FailTest(Outcome.DIR_FAILS_SEQUENCE, anImageGroup.toString());
                         }
                         FailTest(Outcome.DUP_SEQUENCE, filenames.get(thisFileIndex), thisFileName);
                     }
@@ -150,13 +153,11 @@ public class FileSequence extends PathTestBase {
                 }
                 // If filenames contains entries for every number of files, the test passes.
                 // The last element must be the same as the size, or there are files missing
-                int lastKey, size;
+                Integer lastKey, size;
                 lastKey = filenames.lastKey();
                 size = filenames.size();
                 if (lastKey > size) {
-                    FailTest(Outcome.FILE_SEQUENCE, String.format(" folder :%s: Last file index is %d, but there are " +
-                            "%d files " +
-                            "in the folder .", anImageGroup.toString(), lastKey, size));
+                    FailTest(Outcome.FILE_COUNT, anImageGroup.toString(), lastKey.toString(), size.toString() );
                     GenerateFileMissingMessages(filenames);
                 }
 
@@ -218,7 +219,8 @@ public class FileSequence extends PathTestBase {
      */
     public void setParams(Object... params) throws IllegalArgumentException {
         if ((params == null) || (params.length < 2)) {
-            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments not given.",
+            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments path, and " +
+                            "propertyDictionary not given.",
                     getTestName()));
         }
         super.setParams(params[0]);
