@@ -3,7 +3,11 @@ package io.bdrc.am.audit.audittests;
 import io.bdrc.am.audit.iaudit.Outcome;
 
 import java.io.File;
+import java.util.ArrayList;
 
+/**
+ *
+ */
 abstract public class PathTestBase extends AuditTestBase {
     /**
      * new AuditTestBase
@@ -60,6 +64,7 @@ abstract public class PathTestBase extends AuditTestBase {
     // endregion
 
     // region property fields
-    private String _path;
+    protected String _path;
     // endregion
+
 }
