@@ -179,7 +179,7 @@ public class FileSequence extends ImageGroupParents {
         private String trailingDigits(String source, int maxTrailing) {
             int beginScan = source.length() -1;
 
-            while((maxTrailing-- >= 0) && Character.isDigit(source.charAt(beginScan))) {
+            while((maxTrailing-- > 0) && Character.isDigit(source.charAt(beginScan))) {
                 beginScan--;
             }
 
