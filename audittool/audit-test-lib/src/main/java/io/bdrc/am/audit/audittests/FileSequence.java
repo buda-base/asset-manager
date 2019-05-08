@@ -124,7 +124,7 @@ public class FileSequence extends ImageGroupParents {
 
                     // BUG: Dont parse by sequence length. Requirements call for parsing backeward from last .
                     // to first non int, up to field length.
-                    String fileSequence = thisFileName.substring(thisFileName.length() - sequenceLength);
+                    String fileSequence = trailingDigits(thisFileName,sequenceLength);
 
                     int thisFileIndex = 0;
                     try {
@@ -169,7 +169,22 @@ public class FileSequence extends ImageGroupParents {
             }
         }
 
+        /**
+         * Scan a string from the end to the beginning until either 'maxTrailing' digits are found, or a non-digit
+         * is found. Returns the String of those digits.
+         * @param source source string
+         * @param maxTrailing maximum number to look back
+         * @return the integer represented by up to the last 'maxTrailing' digits in the string. Stops when a non-digit
+         */
+        private String trailingDigits(String source, int maxTrailing) {
+            int beginScan = source.length() -1;
 
+            while((maxTrailing-- >= 0) && Character.isDigit(source.charAt(beginScan))) {
+                beginScan--;
+            }
+
+            return source.substring(++beginScan);
+        }
         private void GenerateFileMissingMessages(final TreeMap<Integer, String> filenames) {
             Integer curEntry = 0;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {

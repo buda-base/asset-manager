@@ -55,11 +55,24 @@ class FileSequenceBuilder {
         int interval = getArray(intervalParams, 1, 1);
         int nEach = getArray(intervalParams, 2, 1);
 
+        String[] fileNameLengths = {
+                "_%d.sfx",
+                "_%01d.sfx",
+                "_%02d.sfx",
+                "_%03d.sfx",
+                "_%04d.sfx",
+        };
+        Integer fileNameLengthsIndex = 0;
+
         for (int j = 1; j < nFiles + 1; j++) {
+
 
             // dont create every file, for failure tests
             if ((j % interval) == 0) {
-                String fileName = String.format("%04d.sfx", j);
+
+                // For asset-manager-7: create random length file names
+                fileNameLengthsIndex = nextFileNameLengthIndex(fileNameLengths, fileNameLengthsIndex);
+                String fileName = String.format(fileNameLengths[fileNameLengthsIndex], j);
                 for (int each = 0; each < nEach; each++) {
 
                     //noinspection ResultOfMethodCallIgnored
@@ -87,7 +100,6 @@ class FileSequenceBuilder {
         return _rootFolder.getRoot();
     }
 
-
     File BuildFilesOnly() throws IOException {
         File testRoot = _rootFolder.newFolder("test");
         GenerateEmptyFiles(testRoot);
@@ -111,6 +123,13 @@ class FileSequenceBuilder {
                     Files.createDirectory(Paths.get(rootFolder.getAbsolutePath(), String.format("folder_%d", i))).toFile();
             GenerateEmptyFiles(ig, fillParams);
         }
+    }
+
+    private static Integer nextFileNameLengthIndex(String []fileNameLengths, int fileNameLengthsIndex) {
+        if (++fileNameLengthsIndex == fileNameLengths.length) {
+            fileNameLengthsIndex = 0;
+        }
+        return fileNameLengthsIndex;
     }
 
     @SuppressWarnings("SameReturnValue")
