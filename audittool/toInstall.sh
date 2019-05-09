@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
-cp audit-test-lib/target/output/audit-test-lib-1.0-SNAPSHOT-jar-with-dependencies.jar install
-cp audit-test-shell/target/output/audit-test-shell-1.0-SNAPSHOT.jar install
+VER=${1:-"0.8"}
+REL=${2:-"SNAPSHOT-2"}
+
+cp audit-test-lib/target/audit-test-lib-${VER}-${REL}-jar-with-dependencies.jar install
+cp audit-test-shell/target/audit-test-shell-${VER}-${REL}-*.zip install
