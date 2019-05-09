@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 
-public class FileSequence extends PathTestBase {
+public class FileSequence extends ImageGroupParents {
 
     /**
      * Create test with external logger
@@ -98,7 +98,7 @@ public class FileSequence extends PathTestBase {
         }
 
         /**
-         * Speical handling for a parent of a series of image groups
+         * Special handling for a parent of a series of image groups
          *
          * @param sequenceLength   How many characters before the file extension make up the number
          * @param filter           disregard hidden files
@@ -124,7 +124,7 @@ public class FileSequence extends PathTestBase {
 
                     // BUG: Dont parse by sequence length. Requirements call for parsing backeward from last .
                     // to first non int, up to field length.
-                    String fileSequence = thisFileName.substring(thisFileName.length() - sequenceLength);
+                    String fileSequence = trailingDigits(thisFileName,sequenceLength);
 
                     int thisFileIndex = 0;
                     try {
@@ -169,7 +169,22 @@ public class FileSequence extends PathTestBase {
             }
         }
 
+        /**
+         * Scan a string from the end to the beginning until either 'maxTrailing' digits are found, or a non-digit
+         * is found. Returns the String of those digits.
+         * @param source source string
+         * @param maxTrailing maximum number to look back
+         * @return the integer represented by up to the last 'maxTrailing' digits in the string. Stops when a non-digit
+         */
+        private String trailingDigits(String source, int maxTrailing) {
+            int beginScan = source.length() -1;
 
+            while((maxTrailing-- > 0) && Character.isDigit(source.charAt(beginScan))) {
+                beginScan--;
+            }
+
+            return source.substring(++beginScan);
+        }
         private void GenerateFileMissingMessages(final TreeMap<Integer, String> filenames) {
             Integer curEntry = 0;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
@@ -207,54 +222,13 @@ public class FileSequence extends PathTestBase {
         return _sequenceLength;
     }
 
-    // region overrides
 
-    /**
-     * FileSequence parameters:
-     * 1: path: String
-     * 2: HashTable<String,String> Properties
-     *
-     * @param params array of parameters, implementation dependent
-     * @throws IllegalArgumentException when arguments dont contain a hashset of values
-     */
-    public void setParams(Object... params) throws IllegalArgumentException {
-        if ((params == null) || (params.length < 2)) {
-            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments path, and " +
-                            "propertyDictionary not given.",
-                    getTestName()));
-        }
-        super.setParams(params[0]);
-
-        _imageGroupParents = (ArrayList<String>) filterProperties(params[1], _propertyKeys);
-
-    }
-
-    @SuppressWarnings("unchecked")
-    private Collection<String> filterProperties(Object argDict, Collection<String> seekList) {
-
-        Hashtable<String, String> parentProperties = (Hashtable<String, String>) (argDict);
-
-        ArrayList<String> foundValues = new ArrayList<>(seekList.size());
-        parentProperties.forEach((k, v) -> {
-            if (seekList.contains(k)) foundValues.add(v);
-        });
-        return foundValues;
-    }
 
     //endregion
     // region fields
     private int _sequenceLength;
     private final ClassPropertyManager _pm;
 
-    // Special case folders, define parents of image groups. Only image group folders have to
-    // match sequence tests
-    private ArrayList<String> _imageGroupParents = new ArrayList<>();
-
-    // Extract only the values for these properties. For example, see audit-test-shell.scripts/shell.properties
-    private final ArrayList<String> _propertyKeys = new ArrayList<String>() {{
-        add("ArchiveImageGroupParent");
-        add("DerivedImageGroupParent");
-    }};
 
     // endregion
 

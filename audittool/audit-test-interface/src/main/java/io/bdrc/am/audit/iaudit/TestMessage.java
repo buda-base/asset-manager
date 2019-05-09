@@ -30,7 +30,10 @@ public class TestMessage {
                 put(Outcome.PASS, new TestMessageFormat(1,"Test %s passed."));
                 put(Outcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not exist."));
                 put(Outcome.FILES_IN_MAIN_FOLDER,  new TestMessageFormat(2,"Root folder %s contains file %s"));
-                put(Outcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Images folder %s  contains directory %s"));
+                put(Outcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Image group folder %s  contains " +
+                        "directory %s"));
+                put(Outcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(1,"Image group folder %s  fails " +
+                        "files only test."));
                 put(Outcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
                 put(Outcome.DIR_FAILS_SEQUENCE, new TestMessageFormat(1, "Folder %s fails sequence test."));
                 put(Outcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));

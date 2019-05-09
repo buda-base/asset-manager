@@ -7,7 +7,7 @@
     <groupId>io.bdrc.am</groupId>
     <artifactId>audit-tool</artifactId>
     <packaging>pom</packaging>
-    <version>0.8-SNAPSHOT-2</version>
+    <version>1.0-SNAPSHOT</version>
     <modules>
         <module>audit-test-shell</module>
         <module>audit-test-interface</module>
@@ -51,7 +51,9 @@
                                 </artifactItem>
 
                             </artifactItems>
-                            <outputDirectory>target/output</outputDirectory>
+<!--                            <outputDirectory>target/output</outputDirectory>-->
+                            <outputDirectory>${project.basedir}/install</outputDirectory>
+
                         </configuration>
                     </execution>
                 </executions>
