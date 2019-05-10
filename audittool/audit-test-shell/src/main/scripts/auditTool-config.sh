@@ -9,10 +9,12 @@ DEF_HOME=$(dirname $0)
 # Change as needed
 rel=SNAPSHOT-2
 ver=0.8
-CONFIG=
+
+# Load config, or defaults. this must be the same path as audittool.sh uses
+CONFIG=${HOME}/.config/bdrc/auditTool/config
 
 
-echo "This script prompts you for two files and saves the answers in $CONFIG."
+echo "This script prompts you for two files and saves the answers in \'$CONFIG\'."
 echo ""
 echo "First, it asks for the location of the test library. This allows you to update"
 echo "the tests without re-installing everything."
@@ -21,8 +23,6 @@ echo "Second, it asks for the jar file which runs the whole process."
 echo "You press [Enter] to accept the defaults."
 read -p "Press [Enter] when you are ready to continue." okely
 
-# Load config, or defaults. this must be the same path as audittool.sh uses
-CONFIG=${HOME}/.config/bdrc/auditTool/config
 
 [[ -d $(dirname ${CONFIG}) ]] || { mkdir -p $(dirname ${CONFIG}) ; }
 
