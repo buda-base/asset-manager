@@ -24,7 +24,7 @@ read -p "Press [Enter] when you are ready to continue." okely
 # Load config, or defaults. this must be the same path as audittool.sh uses
 CONFIG=${HOME}/.config/bdrc/auditTool/config
 
-[[ -d $(dirname $CONFIG) ]] || { mkdir -p $(dirname $CONFIG) ; }
+[[ -d $(dirname ${CONFIG}) ]] || { mkdir -p $(dirname ${CONFIG}) ; }
 
 if [[  -f ${CONFIG} ]] ; then
     . ${CONFIG}
@@ -37,21 +37,37 @@ fi
 
 read -p "Enter the path to the jar file which contains the tests [ default \"${CONFIG_TEST_LIB_JAR_FILE}\" ]?" TEST_TEST_JAR
 
-[[ -z $TEST_TEST_JAR ]] && [[ -z $CONFIG_TEST_LIB_JAR_FILE ]]  && { echo "No default found and no input given. Cannot continue." ; exit 1 ;}
+[[ -z ${TEST_TEST_JAR} ]] && [[ -z ${CONFIG_TEST_LIB_JAR_FILE} ]]  && { echo "No default found and no input given. Cannot continue." ; exit 1 ;}
 
 # Resolve any relative dirs in input
-CONFIG_TEST_LIB_JAR_FILE=$(readlink -m ${TEST_TEST_JAR=${CONFIG_TEST_LIB_JAR_FILE}})
+CONFIG_TEST_LIB_JAR_FILE=$(readlink -m ${TEST_TEST_JAR:-${CONFIG_TEST_LIB_JAR_FILE}}) ;
 
+[[ -f ${CONFIG_TEST_LIB_JAR_FILE} ]] || { echo "Warning: test jar file \"${CONFIG_TEST_LIB_JAR_FILE}\" does not exist (yet) " ; }
+
+ #
+ #
+ # Get the shell location
+ #
+
+ read -p "Enter the path to the jar file which launches the process [ default \"${CONFIG_SHELL_JAR_FILE}\" ]?" TEST_SHELL
+
+ [[ -z ${TEST_SHELL} ]] && [[ -z ${CONFIG_SHELL_JAR_FILE} ]]  && { echo "No default found and no input given. Cannot continue." ; exit 1; }
+
+ CONFIG_SHELL_JAR_FILE=$(readlink -m ${TEST_SHELL:-${CONFIG_SHELL_JAR_FILE}})
+
+[[ -f ${CONFIG_SHELL_JAR_FILE} ]] || { echo "Warning: shell jar file \"${CONFIG_SHELL_JAR_FILE}\"does not exist (yet) " ; }
+
+ #
+ # And call the activation directory the directory of the 
+ # Shell jar
+ #
+ CONFIG_ATHOME=$(dirname ${CONFIG_SHELL_JAR_FILE})
+ # Backup
+ [[ -f ${CONFIG}  ]] && { echo "--- " $(date) "---" >> ${CONFIG}.bak ; cat ${CONFIG} >> ${CONFIG}.bak ; }
+ #
 #
-read -p "Enter the path to the jar file which launches the process [ default ${CONFIG_SHELL_JAR_FILE}]?" TEST_SHELL
-
-[[ -z $TEST_SHELL ]] && [[ -z $CONFIG_SHELL_JAR_FILE ]]  && { echo "No default found and no input given. Cannot continue." ; exit 1; }
-
-CONFIG_SHELL_JAR_FILE=$(readlink -m ${TEST_SHELL=${CONFIG_SHELL_JAR_FILE}})
-
-CONFIG_ATHOME=$(dirname ${CONFIG_SHELL_JAR_FILE})
-# Write
-[[ -f ${CONFIG}  ]] && { echo "--- " $(date) "---" >> ${CONFIG}.bak ; cat ${CONFIG} >> ${CONFIG}.bak ; }
+# Write config
+#
 echo "CONFIG_ATHOME=${CONFIG_ATHOME}" > ${CONFIG}
 echo "CONFIG_TEST_LIB_JAR_FILE=${CONFIG_TEST_LIB_JAR_FILE}" >> ${CONFIG}
 echo "CONFIG_SHELL_JAR_FILE=${CONFIG_SHELL_JAR_FILE}" >> ${CONFIG}
