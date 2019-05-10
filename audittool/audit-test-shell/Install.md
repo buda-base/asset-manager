@@ -5,6 +5,7 @@ Installation media is at [Github BUDA-base Audit Tool Install](https://github.co
 - Current REL is SNAPSHOT-2
 
 ## Download
+To install this snapshot release, see [V0.8 Release](https://github.com/buda-base/asset-manager/releases/tag/v0.8-SNAPSHOT-2)
 Go to [Installation media]((https://github.com/buda-base/asset-manager/tree/master/audittool/install)
 ). Download:
 - audit-test-shell-VER-REL-jskFormat.zip
