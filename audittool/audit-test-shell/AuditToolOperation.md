@@ -28,6 +28,12 @@ from a library, marshall the test arguments, and launch the test.
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
 to send to a database.
+
+Each run of audit tool produces summary and detail log files, named `AuditTestShell-{SUMMARY|DETAIL}-yyyy-mm-dd-hh-mm-sss.log`
+Each test also may create a log file, but that is primarily for debugging.
+
+You can configure log file naming in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
+
 ## Test Developer's Guide
 This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
 this material.
