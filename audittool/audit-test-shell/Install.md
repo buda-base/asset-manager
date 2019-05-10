@@ -16,6 +16,7 @@ Audit tool is configured so that the test library is independent of the shell. T
 library by itself. Configuration sets up separate environment variables for the test library and the main running script.
 - `CONFIG_TEST_LIB_JAR_FILE` is the path to the test library.
 - `CONFIG_SHELL_JAR_FILE` is the path to the startup jar file.
+The shell script which launches audit tool, `audittool.sh` uses these environment variables.
 
 ### Install procedures
 1. Identify a target directory and unzip `audit-test-shell*.zip` into it. This directory will be known as AT_INSTALL_HOME
