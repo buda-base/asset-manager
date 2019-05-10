@@ -44,7 +44,7 @@ public class IsInstanceTest extends AuditTestTestBase {
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         Assert.assertNotNull(libTests);
-        Assert.assertEquals("Number of tests doesnt match", 2, libTests.size());
+        Assert.assertEquals("Number of tests doesnt match", 3, libTests.size());
     }
 
     @Test

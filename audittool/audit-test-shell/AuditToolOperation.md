@@ -69,6 +69,32 @@ to a test's name, friendly description, class which implements the test (which, 
     public AuditTestConfig(String fullName, List<String> argNames, String shortName, Class<?> clazz)
 ```
 To package a test you implement one of these and add it to your TestDictionary.
+
+`audit-test-lib.TestDictionary()` constructor shows `AuditTestConfig` usaqe:
+
+```
+ private final Hashtable<String, AuditTestConfig> _TestDictionary = new Hashtable<String, AuditTestConfig>() {
+        {
+            put("FileSequence", new AuditTestConfig("File Sequence Test",
+
+                    // This statement asserts that the caller has to provide values for these
+                    // arguments
+                    Arrays.asList(
+                            "ArchiveImageGroupParent", "DerivedImageGroupParent"),
+                    "FileSequence", FileSequence.class));
+
+            //noinspection ArraysAsListWithZeroOrOneArgument
+            put("NoFilesInFolder", new AuditTestConfig("No Files in Root Folder",
+                    Arrays.asList(""),
+                    "NoFilesInFolder",
+                    NoFilesInRoot.class));
+
+            put("NoFoldersInImageGroups", new AuditTestConfig("No folders allowed in Image Group folders",
+                    Arrays.asList("ArchiveImageGroupParent", "DerivedImageGroupParent"),"NoFoldersInImageGroups",
+                    NoFoldersInImageGroups.class));
+        }
+    };
+```
 ##### Parameters
 The constructor takes these parameters
 
