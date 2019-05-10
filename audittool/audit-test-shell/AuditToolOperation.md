@@ -18,6 +18,9 @@ Audit tool's initial release runs every test in the test library tests against a
 ### Property file
 Audit tool reads several variables from its property file `shell.properties.` These properties locate the tests and define parameters which the tests need, such as the
 folder names of parents of image groups.
+###
+The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests 
+can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
 ### Locating the tests
 The goal is eventually to have programmers provide separate test libraries. Audit Tool contains a mechanism to get a set of tests
 from a library, marshall the test arguments, and launch the test.
@@ -26,7 +29,8 @@ The tests themselves do not output results. The test framework allows the shell 
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
 to send to a database.
 ## Test Developer's Guide
-This section describes how to implement and package different test libraries. It is not needed for the audit tool user
+This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
+this material.
 ### Locating the tests
 #### Test Dictionary
 The shell assumes that the package `io.bdrc.am.audit.iaudit` is either in the jar file or on the class path.
