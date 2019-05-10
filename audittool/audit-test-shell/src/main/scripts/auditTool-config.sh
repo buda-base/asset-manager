@@ -12,7 +12,7 @@ ver=0.8
 
 # Load config, or defaults. this must be the same path as audittool.sh uses
 CONFIG=${HOME}/.config/bdrc/auditTool/config
-DEF_CONFIG=DEFAULT-BDRC-AT-CONFIG
+DEF_CONFIG=DEFAULT-BDRC-AT-CONFIG.sh
 
 
 echo "This script prompts you for two files and saves the answers in '$CONFIG'."
