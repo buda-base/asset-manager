@@ -1,0 +1,79 @@
+#Audit Tool Operation
+## Installation and Configuration
+Please refer to [Installation](Install.md) for details of installation.
+## Operation
+### Starting
+Start the audit tool with the `audittool.sh` script. The configuration step provided locations of the software which `audittool.sh` needs.
+The arguments to audit tool are simply:
+```bash
+audittool.sh -p workFolder[;workFolder;workFolder...]
+```
+### Output
+Audit Tool writes a summary of each test to the console, and to a summary log file, `AuditTestShell-SUMMARY-date&Time.log`
+The summary log file shows the pass/fail status of each test on each given directory. A detailed log file, `AuditTestShell-DETAIL-date&Time.log` shows each file which failed a specific test.
+Tests can log internal details to a file, `AuditTestShell-TestInt-date&time.log`
+
+## Principles of operation
+Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or random directory.
+### Property file
+Audit tool reads several variables from its property file `shell.properties.` These properties locate the tests and define parameters which the tests need, such as the
+folder names of parents of image groups.
+### Locating the tests
+The goal is eventually to have programmers provide separate test libraries. Audit Tool contains a mechanism to get a set of tests
+from a library, marshall the test arguments, and launch the test.
+### Test output
+The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
+Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
+to send to a database.
+## Test Developer's Guide
+This section describes how to implement and package different test libraries. It is not needed for the audit tool user
+### Locating the tests
+#### Test Dictionary
+The shell assumes that the package `io.bdrc.am.audit.iaudit` is either in the jar file or on the class path.
+This package contains classes that any shell needs to resolve the test classes.
+Test location is documented in the property file `shell.properties:`
+```bash
+# class name of test dictionary. The jar file referenced by the system property (generally
+# # specified by the -DtestJar=<path to Jar containing audit tests> command line argument.
+# This class must expose a public method named 'getTestDictionary' which returns
+# a Java Hashset<String,io.bdrc.am.audit.iaudit.AuditTestConfig> structure, containing a friendly name for the test, and a class which implements
+# the io.bdrc.audit.iaudit.IAudit interface.
+testDictionaryClassName=io.bdrc.am.audit.audittests.TestDictionary
+```
+
+T`testDictionaryClassName` can be in any package. This definition is the library we shipped as 0.8-SNAPSHOT-2
+
+#### Test Config objects
+
+The test dictionary has a dependency on io.bdrc.am.audit.iaudit.AuditTestConfig class. Test developers include this library
+in their Jar, and provide Test configuration objects. The test configuration objects provide information to the shell as 
+to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
+. 
+
+![AuditTestConfig](.AuditToolOperation_images/AuditTestConfig.png)
+
+#### `AuditTestConfig` constructor
+```
+ /**
+     * Instantiates a new Audit test config.
+     *
+     * @param fullName  the full name
+     * @param argNames  the arg names
+     * @param shortName the short name
+     * @param clazz     the clazz
+     */
+    public AuditTestConfig(String fullName, List<String> argNames, String shortName, Class<?> clazz)
+```
+To package a test you implement one of these and add it to your TestDictionary.
+##### Parameters
+The constructor takes these parameters
+
+name|type|description
+----|----|----
+fullName|`String`|Free form text
+argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs
+shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary key for which this object is the value 
+clazz|`Class<?>`|Any class object which implements the `io.bdrc.am.audit.iaudit.IAuditTest` interface.
+
+#### Running a test
+A full production instance is available in `audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java`

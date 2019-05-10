@@ -13,6 +13,8 @@ public class AuditTestConfig {
     private final String _key;
 
     /**
+     * Gets full name.
+     *
      * @return Test long description
      */
     public String getFullName() {
@@ -22,9 +24,7 @@ public class AuditTestConfig {
     /**
      * Properties which hold arguments
      *
-     * @return list of property names which hold arguments
-     * <p>
-     * Mainly used to specify parents of image groups.
+     * @return list of property names which hold arguments <p> Mainly used to specify parents of image groups.
      */
     public List<String> getArgNames() {
         return _argNames;
@@ -40,12 +40,22 @@ public class AuditTestConfig {
     }
 
     /**
+     * Gets test class.
+     *
      * @return Actual test implementation class (not object!)
      */
     public Class<?> getTestClass() {
         return _class;
     }
 
+    /**
+     * Instantiates a new Audit test config.
+     *
+     * @param fullName  the full name
+     * @param argNames  the arg names
+     * @param shortName the short name
+     * @param clazz     the clazz
+     */
     public AuditTestConfig(String fullName, List<String> argNames, String shortName, Class<?> clazz) {
         _fullname = fullName;
         _argNames = argNames;
