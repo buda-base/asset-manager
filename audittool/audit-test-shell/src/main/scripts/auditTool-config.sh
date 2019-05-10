@@ -12,9 +12,10 @@ ver=0.8
 
 # Load config, or defaults. this must be the same path as audittool.sh uses
 CONFIG=${HOME}/.config/bdrc/auditTool/config
+DEF_CONFIG=DEFAULT-BDRC-AT-CONFIG
 
 
-echo "This script prompts you for two files and saves the answers in \'$CONFIG\'."
+echo "This script prompts you for two files and saves the answers in '$CONFIG'."
 echo ""
 echo "First, it asks for the location of the test library. This allows you to update"
 echo "the tests without re-installing everything."
@@ -28,8 +29,8 @@ read -p "Press [Enter] when you are ready to continue." okely
 
 if [[  -f ${CONFIG} ]] ; then
     . ${CONFIG}
-else if [[ -f ${DEF_HOME}/DEFAULT-CONFIG ]] ; then
-    . ${DEF_HOME}/DEFAULT-CONFIG
+else if [[ -f ${DEF_HOME}/${DEF_CONFIG} ]] ; then
+    . ${DEF_HOME}/${DEF_CONFIG}
 else
     echo "Warning: no defaults file found. you must provide input for each prompt"
 fi
