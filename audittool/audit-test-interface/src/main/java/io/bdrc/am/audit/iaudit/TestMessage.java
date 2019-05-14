@@ -4,41 +4,20 @@ import java.util.Hashtable;
 
 import static java.util.Arrays.copyOf;
 
-class TestMessageFormat {
-    final int argCount;
-    String formatString ;
-
-    TestMessageFormat(int argc, String argFormat) {
-        argCount = argc;
-        formatString = argFormat;
-    }
-}
-
-
 
 public class TestMessage {
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private static final Hashtable<Outcome, TestMessageFormat> MessageDict;
+    private static Hashtable<Integer, TestMessageFormat> MessageDict;
 
     final private static TestMessageFormat DefaultTestMessageFormat;
 
     static {
-        MessageDict = new Hashtable<Outcome, TestMessageFormat>() {
+        MessageDict = new Hashtable<Integer, TestMessageFormat>() {
             {
                 put(Outcome.NOT_RUN,  new TestMessageFormat(1, "Test %s awaiting execution"));
                 put(Outcome.PASS, new TestMessageFormat(1,"Test %s passed."));
-                put(Outcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not exist."));
-                put(Outcome.FILES_IN_MAIN_FOLDER,  new TestMessageFormat(2,"Root folder %s contains file %s"));
-                put(Outcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Image group folder %s  contains " +
-                        "directory %s"));
-                put(Outcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(1,"Image group folder %s  fails " +
-                        "files only test."));
-                put(Outcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
-                put(Outcome.DIR_FAILS_SEQUENCE, new TestMessageFormat(1, "Folder %s fails sequence test."));
-                put(Outcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));
-                put(Outcome.DUP_SEQUENCE_FOLDER, new TestMessageFormat(1, "Folder %s contains Duplicate Sequences"));
-                put(Outcome.FILE_COUNT,  new TestMessageFormat(3,"Folder %s expected %s files in folder , found %s"));
+                put(Outcome.SYS_EXC, new TestMessageFormat(2,"Test %s threw exception %s."));
             }
         };
 
@@ -51,7 +30,7 @@ public class TestMessage {
      * @param outcome code
      * @param messageBits varargs of message string arguments
      */
-    TestMessage(Outcome outcome, String... messageBits)
+    TestMessage(Integer outcome, String... messageBits)
     {
         _outcome = outcome;
         TestMessageFormat tmf = GetMessage(outcome);
@@ -61,7 +40,7 @@ public class TestMessage {
     }
 
     // region properties
-    public Outcome getOutcome() {
+    public Integer getOutcome() {
         return _outcome;
     }
 
@@ -74,7 +53,7 @@ public class TestMessage {
         return getMessage();
     }
 
-    private TestMessageFormat GetMessage(Outcome outcome) {
+    private TestMessageFormat GetMessage(Integer outcome) {
         TestMessageFormat tmf = TestMessage.MessageDict.get(outcome);
         if (tmf == null ) {
             tmf = TestMessage.DefaultTestMessageFormat;
@@ -85,7 +64,7 @@ public class TestMessage {
 
     //endregion
     // region fields
-    private Outcome _outcome;
+    private Integer _outcome;
 
     private String _message;
     //endregion

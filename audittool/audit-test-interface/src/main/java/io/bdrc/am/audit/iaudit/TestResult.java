@@ -10,17 +10,17 @@ public class TestResult {
         _errors = new ArrayList<>();
     }
 
-    public void AddError(Outcome outcome, String ... operand)
+    public void AddError(Integer outcome, String ... operand)
     {
         _errors.add(new TestMessage(outcome, operand));
     }
 
     // No, this CANT be made package private.
-    public Outcome getOutcome() {
+    public Integer getOutcome() {
         return _outcome;
     }
 
-    public void setOutcome(final Outcome outcome) {
+    public void setOutcome(final Integer outcome) {
         _outcome = outcome;
     }
 
@@ -29,7 +29,7 @@ public class TestResult {
         return getOutcome() == Outcome.PASS;
     }
 
-    private Outcome _outcome;
+    private Integer _outcome;
 
     public ArrayList<TestMessage> getErrors() {
         return _errors;

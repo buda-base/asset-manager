@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import java.util.Hashtable;
+
 public abstract class AuditTestBase implements IAuditTest {
 
     /**
@@ -47,7 +49,7 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param why           enum of outcome
      * @param failedElement element which failed test
      */
-    void FailTest(Outcome why, String ...failedElement) {
+    void FailTest(Integer why, String ...failedElement) {
         _testResult.setOutcome(Outcome.FAIL);
         _testResult.AddError(why, failedElement);
     }
@@ -119,4 +121,25 @@ public abstract class AuditTestBase implements IAuditTest {
     // package private implies most of protected
     Logger sysLogger;
     // endregion
+
+    // region Messages
+    /**
+     * Test Messages specific to this library
+     */
+    public static final Hashtable<Integer, TestMessageFormat> LibTestMessages =
+    new Hashtable<Integer, TestMessageFormat>()
+            {{
+                put(LibOutcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not exist."));
+                put(LibOutcome.FILES_IN_MAIN_FOLDER,  new TestMessageFormat(2,"Root folder %s contains file %s"));
+                put(LibOutcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Image group folder %s  contains " +
+                        "directory %s"));
+                put(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(1,"Image group folder %s  fails " +
+                        "files only test."));
+                put(LibOutcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
+                put(LibOutcome.DIR_FAILS_SEQUENCE, new TestMessageFormat(1, "Folder %s fails sequence test."));
+                put(LibOutcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));
+                put(LibOutcome.DUP_SEQUENCE_FOLDER, new TestMessageFormat(1, "Folder %s contains Duplicate Sequences"));
+                put(LibOutcome.FILE_COUNT,  new TestMessageFormat(3,"Folder %s expected %s files in folder , found %s"));
+
+            }};
 }

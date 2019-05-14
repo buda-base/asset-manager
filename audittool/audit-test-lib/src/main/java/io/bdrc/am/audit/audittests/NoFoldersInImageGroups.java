@@ -95,10 +95,10 @@ public class NoFoldersInImageGroups extends ImageGroupParents {
 
                     // Fail the test
                     if (!hasDirs) {
-                        FailTest(Outcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, testFolder.toString());
+                        FailTest(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, testFolder.toString());
                         hasDirs = true;
                     }
-                    FailTest(Outcome.DIR_IN_IMAGES_FOLDER, testFolder.toString(), entry.getFileName().toString());
+                    FailTest(LibOutcome.DIR_IN_IMAGES_FOLDER, testFolder.toString(), entry.getFileName().toString());
 
                 }
             } catch (DirectoryIteratorException die) {
