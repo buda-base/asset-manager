@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 public abstract class AuditTestBase implements IAuditTest {
@@ -122,7 +123,23 @@ public abstract class AuditTestBase implements IAuditTest {
     Logger sysLogger;
     // endregion
 
-    // region Messages
+    // region TestParameter properties
+    protected Hashtable<String,String> testParameters = new Hashtable<>();
+
+    /**
+     * transform inbound parameters from KWArg format (key=value) to
+     * HashDictionary<>(key, value)</>
+     * @param kwparams keyword parameters
+     */
+    protected final void LoadParameters(String[]kwparams) {
+        Arrays.stream(kwparams).forEach( (String s ) -> {
+            String [] de = s.split("=");
+            if (s.length() >1 ) {
+                testParameters.put(de[0],de[1]);
+            }
+        });
+
+    }
     /**
      * Test Messages specific to this library
      */
