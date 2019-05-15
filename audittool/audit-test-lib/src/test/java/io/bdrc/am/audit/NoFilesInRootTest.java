@@ -1,5 +1,6 @@
 package io.bdrc.am.audit;
 
+import io.bdrc.am.audit.audittests.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFilesInRoot;
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestMessage;
@@ -32,7 +33,7 @@ public class NoFilesInRootTest extends AuditTestTestBase {
         ArrayList<TestMessage> errors = tr.getErrors();
 
         assertEquals(1, errors.size());
-        assertEquals(Outcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
+        assertEquals(LibOutcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
     }
 
     @Test
@@ -54,7 +55,7 @@ public class NoFilesInRootTest extends AuditTestTestBase {
         ArrayList<TestMessage> errors = tr.getErrors();
         assertEquals(12, errors.size());
         TestMessage tm = errors.get(0);
-        assertEquals(Outcome.FILES_IN_MAIN_FOLDER,tm.getOutcome());
+        assertEquals(LibOutcome.FILES_IN_MAIN_FOLDER,tm.getOutcome());
 
     }
 

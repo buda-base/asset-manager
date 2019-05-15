@@ -1,6 +1,7 @@
 package io.bdrc.am.audit;
 
 
+import io.bdrc.am.audit.audittests.LibOutcome;
 import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.AuditTestConfig;
 import io.bdrc.am.audit.iaudit.Outcome;
@@ -78,7 +79,7 @@ public class IsInstanceTest extends AuditTestTestBase {
             TestResult tr = thisTest.getTestResult();
             Assert.assertNotNull(tr);
             Assert.assertSame(Outcome.FAIL, tr.getOutcome());
-            Assert.assertEquals(Outcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
+            Assert.assertEquals(LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
         }
     }
 }

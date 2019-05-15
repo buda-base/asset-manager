@@ -1,8 +1,8 @@
 package io.bdrc.am.audit;
 
 
+import io.bdrc.am.audit.audittests.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFoldersInImageGroups;
-import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestMessage;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.*;
@@ -65,7 +65,7 @@ public class TestNoFoldersInImageGroups extends AuditTestTestBase{
         TestResult tr = fst.getTestResult();
         ArrayList<TestMessage> testMessages = tr.getErrors();
         assertEquals(16,testMessages.size());
-        assertEquals(Outcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER,testMessages.get(0).getOutcome());
+        assertEquals(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER,testMessages.get(0).getOutcome());
 
     }
 
@@ -96,7 +96,7 @@ public class TestNoFoldersInImageGroups extends AuditTestTestBase{
         ArrayList<TestMessage> errors = tr.getErrors();
 
         assertEquals(1, errors.size());
-        assertEquals(Outcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
+        assertEquals(LibOutcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
     }
 
 

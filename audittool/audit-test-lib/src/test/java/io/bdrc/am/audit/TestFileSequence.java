@@ -88,7 +88,7 @@ public class TestFileSequence extends AuditTestTestBase{
 
         Assert.assertEquals(nExpected, errors.size());
 
-        Assert.assertEquals (Outcome.DIR_FAILS_SEQUENCE, errors.get(0).getOutcome()) ;
+        Assert.assertEquals (LibOutcome.DIR_FAILS_SEQUENCE, errors.get(0).getOutcome()) ;
 
         String errorText = errors.get(0).getMessage() ;
         assertFalse("Should have a message",isEmpty(errorText));
@@ -103,7 +103,7 @@ public class TestFileSequence extends AuditTestTestBase{
         ArrayList<TestMessage> errors = tr.getErrors();
 
         assertEquals(1, errors.size());
-        assertEquals(Outcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
+        assertEquals(LibOutcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
     }
 
 
