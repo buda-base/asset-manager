@@ -3,32 +3,27 @@ package io.bdrc.am.audit.audittests;
 //import ij.ImagePlus;
 //import ij.io.FileInfo;
 //import ij.io.TiffDecoder;
+import com.google.common.collect.Streams;
 import io.bdrc.am.audit.iaudit.Outcome;
-//import org.bytedeco.opencv.opencv_core.IplImage;
-//import org.opencv.core.* ;
-//import org.opencv.core.Size;
-//import org.opencv.imgcodecs.Imgcodecs;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
-//import sun.awt.image.ImageDecoder;
-//import sun.awt.image.ImageFormatException;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Iterator;
-//import com.sun.media.jai.*;
 
-import static javax.imageio.ImageIO.getImageReadersByFormatName;
-import static javax.imageio.ImageIO.read;
+//import org.bytedeco.opencv.opencv_core.IplImage;
+//import org.opencv.core.* ;
+//import org.opencv.core.Size;
+//import org.opencv.imgcodecs.Imgcodecs;
+//import sun.awt.image.ImageDecoder;
+//import sun.awt.image.ImageFormatException;
+//import com.sun.media.jai.*;
 
 public class ImageAttributeTests extends PathTestBase {
     /**
@@ -105,7 +100,8 @@ public class ImageAttributeTests extends PathTestBase {
 //                ImageReader firstReader = readers.next();
                 ImageInputStream in = ImageIO.createImageInputStream(fileObject);
                 try {
-                    ImageReader reader = ImageIO.getImageReaders(in).next();
+                    ImageReader reader =    Streams.stream(ImageIO.getImageReaders(in)).findFirst().orElseThrow
+                            (UnsupportedFormatException::new);
                     reader.setInput(in,true);
 
                     // TODO:  1 image / file !!!!
@@ -118,59 +114,9 @@ public class ImageAttributeTests extends PathTestBase {
                             IIOMetadata imageMeta = reader.getStreamMetadata();
                             sysLogger.info(imageMeta.getNativeMetadataFormatName());
                 }
-                catch(Exception eek) {
+                catch(UnsupportedFormatException eek) {
                     FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
                 }
-
-//                try {
-//                    ImagePlus thisFile = new ImagePlus(imageFile.toAbsolutePath().toString());
-//                    FileInfo fi = thisFile.getFileInfo();
-//                    int height = thisFile.getHeight();
-//                    int width = thisFile.getWidth();
-//                    int bitDepth = thisFile.getBitDepth();
-//                    int compositeMode = thisFile.getCompositeMode();
-//                    int compression = fi.compression;
-//
-//                    TiffDecoder td = new TiffDecoder(imageGroup.toAbsolutePath().toString(), imageFile.getFileName().toString());
-//                    FileInfo[] fileInfos = td.getTiffInfo();
-//
-//                    int stuyrm = fileInfos[0].height;
-//                }
-//                catch (Exception eek) {
-//                    sysLogger.error("Ahh, shoot",eek);
-//                }
-//
-
-//                try {
-//                    // opencv
-//                    boolean iCan = Im.haveImageReader(fileObjectPathString);
-//                    Mat mat = Imgcodecs.imread(fileObjectPathString);  // is this causing hoerk?: , .IMREAD_UNCHANGED);
-//                    int cvheight = mat.height();
-//                    int cvwidth = mat.width();
-//                    int cvbitDepth = mat.depth();// thisFile.getBitDepth();
-//                    int cvcompositeMode = 0x42; // ? something // mat.getCompositeMode();
-//                    int cvtype = mat.type();
-//                }
-//                catch (Exception eek2) {
-//                    sysLogger.error("glurm", eek2);
-//                }
-                // jai media
-//                try {
-
-//                    BufferedImage bi =  ImageIO.read(fileObject);
-//                    int iioHeight = bi.getHeight();
-//                    int iioType = bi.getType();
-//                    int iioWidth = bi.getWidth();
-//                    IIOMetadata iiom =
-//                    String[] iiprops = bi.getPropertyNames();
-
-//                    System.out.println(iiprops.length);
-//
-//                }
-//                catch (Exception eek3) {
-//                    sysLogger.error("Mer-dah!",eek3);
-//                }
-
             }
 
         }
