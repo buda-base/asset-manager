@@ -31,13 +31,13 @@ public class TestProcessedImage extends AuditTestTestBase {
      * Tests we detect a file which passes its test
      */
     @Test
-    public void TestImagePasses() {
+    public void TestImagePasses() throws IOException {
         TestResult tr = runSizeTest("400000");
         Assert.assertTrue("Test failed, expected pass", tr.Passed());
     }
 
     @Test
-    public void TestImageFailsTooLarge() {
+    public void TestImageFailsTooLarge() throws IOException {
         TestResult tr = runSizeTest("400000");
         Assert.assertTrue("Test passed, expected fail", tr.getOutcome() == Outcome.FAIL);
     }
@@ -47,19 +47,27 @@ public class TestProcessedImage extends AuditTestTestBase {
      */
     public void TestImageOtherFails() {}
 
-    private TestResult runSizeTest(String sizeParam) {
-        Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
-            put("DerivedImageGroupParent", "testImage");
-            put("MaximumImageSize",sizeParam);
-        }};
-        ImageAttributeTests imageAttributeTests = runTest("../../test/WPass", _activeSequenceTestParams);
+    private TestResult runSizeTest(String sizeParam) throws IOException {
+        String[] imageTestParams = {
+                "DerivedImageGroupParent=testImages",
+                String.format("MaximumImageSize=%s",sizeParam)
+        };
+
+        /*
+         *  W1KG13805	I1KG15773	49420820	3240	5083	RGB	TIFF		raw	toolarge-tiffnotgroup4-nonbinarytif
+            W1KG13806	I1KG15775	   55550	1664	2560	1	TIFF		tiff_lzw	tiffnotgroup4
+            W1KG13823	I1KG16108	  324767	3764	 689	1	TIFF		raw	tiffnotgroup4
+            W1KG13823	I1KG16108	 1590833	2771	 574	L	TIFF		raw	toolarge-tiffnotgroup4-nonbinarytif
+         */
+//        ImageAttributeTests imageAttributeTests = runTest("src/test/images/WOtherTiffFails", imageTestParams);
+        ImageAttributeTests imageAttributeTests = runTest("src/test/images/WCalibrate", imageTestParams);
         return imageAttributeTests.getTestResult();
     }
 
 
-    private ImageAttributeTests runTest(String path,Hashtable<String,String> igParents ) {
+    private ImageAttributeTests runTest(String path, String[] testParams ) {
         ImageAttributeTests st = new ImageAttributeTests(logger);
-        st.setParams(path, igParents);
+        st.setParams(path, testParams);
         st.LaunchTest();
 
         return st;

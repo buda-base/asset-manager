@@ -13,5 +13,6 @@ public class LibOutcome {
     public static final Integer DUP_SEQUENCE                    = 7 ;
     public static final Integer DUP_SEQUENCE_FOLDER             = 8 ;
     public static final Integer FILE_COUNT                      = 9 ;
+    public static final Integer NO_IMAGE_READER                 = 10 ;
 }
 

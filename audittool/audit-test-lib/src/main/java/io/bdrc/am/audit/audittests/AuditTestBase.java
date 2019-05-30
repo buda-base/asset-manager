@@ -157,6 +157,7 @@ public abstract class AuditTestBase implements IAuditTest {
                 put(LibOutcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));
                 put(LibOutcome.DUP_SEQUENCE_FOLDER, new TestMessageFormat(1, "Folder %s contains Duplicate Sequences"));
                 put(LibOutcome.FILE_COUNT,  new TestMessageFormat(3,"Folder %s expected %s files in folder , found %s"));
+                put(LibOutcome.NO_IMAGE_READER, new TestMessageFormat(1,"Image file %s has no suitable reader."));
 
             }};
 }
