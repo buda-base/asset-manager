@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.audittests;
 
 import com.google.common.collect.Streams;
+import com.sun.javafx.iio.ImageStorage;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -12,8 +13,11 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.Buffer;
 import java.nio.file.*;
 import java.util.Iterator;
 import java.util.stream.Stream;
@@ -68,9 +72,24 @@ public class ImageAttributeTests extends PathTestBase {
          * Tests images for various quality metrics.
          * References for field values are from
          * https://docs.oracle.com/javase/10/docs/api/javax/imageio/metadata/doc-files/tiff_metadata.html
+         * Collect image properties for validation:
+         * from
+         * PIL Image class.
+         * See github.com/buda-base/volume-manifest-tool, It tests PIL Image fields:
+         * See https://pillow.readthedocs.io/en/3.1.x/handbook/concepts.html?highlight=modes
+         * .format (values "TIFF" "JPEG")
+         * .mode (value "1") means (1-bit pixels, black and white, stored with one pixel per byte)
+         * .info["compression"]
+         * <p>
+         * The Java analogues of this are:
+         * Pil Image.format = ImageIo.Reader type reader instanceof TIFFImageReader orJPEGImageReader
+         * (see ReaderAtts ctor)
+         * <p>
+         * .info["compression"] = IIOMetadata node "CompressionTypeName"
+         * .mode = ImageTypeSpecifier.getBuffereImageType (see BufferImage.java for constants)
          *
-         * @param imageGroup
-         * @throws IOException
+         * @param imageGroup folder containing images
+         * @throws IOException If io error
          */
         private void TestImages(final Path imageGroup) throws IOException {
 
@@ -102,7 +121,6 @@ public class ImageAttributeTests extends PathTestBase {
 
                     ImageReader reader;
 
-                    ImageAtts imageAtts = new ImageAtts();
                     try {
 
                         // Thanks marc Agate
@@ -113,33 +131,35 @@ public class ImageAttributeTests extends PathTestBase {
 
                         ImageInputStream in = ImageIO.createImageInputStream(fileObject);
 
-                        ReaderAtts ra = new ReaderAtts();
-                        imageAtts.ReaderAtts.add(ra);
+                        ReaderAtts ra = new ReaderAtts(reader);
+
+                        // we dont care about jpgs
+                        if (ra.ImageFileFormat.equals(ReaderAtts.FILE_JPG)) {
+                            continue;
+                        }
                         try {
                             reader.setInput(in);
 
                             for (int i = 0; i < reader.getNumImages(true); i++) {
                                 InternalImageAtts iias = new InternalImageAtts();
-                                ra.InternalImageAtts.add(iias);
-                                for (Iterator<ImageTypeSpecifier> imageTypes = reader.getImageTypes(i);
-                                     imageTypes.hasNext(); ) {
-                                    final ImageTypeSpecifier imageTypeSpecifier = imageTypes.next();
+                                ra.InternalImageAtts = iias;
+                                ImageTypeSpecifier its = Streams.stream(reader.getImageTypes(0))
+                                        .findFirst().orElseThrow(UnsupportedFormatException::new);
 
-                                    ImageTypeAtts itas = new ImageTypeAtts();
-                                    iias.ImageTypeAtts.add(itas);
+                                ImageTypeAtts itas = new ImageTypeAtts();
+                                iias.ImageTypeAtts = itas;
 
-                                    itas.BitDepth = imageTypeSpecifier.getColorModel().getPixelSize();
-                                    itas.ImageTypeNum = imageTypeSpecifier.getBufferedImageType();
-                                }
+                                itas.BitDepth = its.getColorModel().getPixelSize();
+
+                                // See java.awt.image.BufferedImage
+                                itas.ImageTypeNum = its.getBufferedImageType();
+
 
                                 try {
                                     iias.iioMetadata = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree
                                             (standardMetadataFormatName);
 
                                     // dont care if fails
-                                    NodeList compressions = iias.iioMetadata.getElementsByTagName("CompressionTypeName");
-                                    IIOMetadataNode compressionNode = (IIOMetadataNode) compressions.item(0);
-                                    String compression = compressionNode.getAttribute("value");
                                     iias.Compression = ((IIOMetadataNode) (iias.iioMetadata.getElementsByTagName
                                             ("CompressionTypeName")).item(0)).getAttribute("value");
                                 } catch (Exception eek) {
@@ -151,17 +171,19 @@ public class ImageAttributeTests extends PathTestBase {
                         } finally {
                             reader.dispose();
                         }
-                    }
-                    catch (UnsupportedFormatException usfx) {
-                        FailTest(LibOutcome.NO_IMAGE_READER,fileObjectPathString);
-                    }
-                    finally {
 
                         // Phew. We got image data!!!!
-                        validate(imageAtts);
+                        String validationErrors = validate(ra, fileObjectPathString);
+                        if (validationErrors.length() > 0) {
+                            FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
+                        }
+                    } catch (UnsupportedFormatException usfx) {
+                        FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
+                    } catch (Exception eek) {
+                        FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
+                                .getMessage
+                                        ());
                     }
-
-
 
                     // TODO:  1 image / file !!!!
                     /*
@@ -195,14 +217,45 @@ im.mode (values. Caredabout: 1)
         }
 
         /**
-         * validates image properties. Validation tests
-         * If TIFF, must be Group4 compression and "binary"
-         * @param imageAtts
+         * Validate normalized image statistics
+         * if format is "TIFF"
+         * - Compression must be "CCITT 6" ( group 4)
+         * - ImageTypeNum must be BufferedImage.TYPE_BYTE_BINARY
+         * <p>
+         * If TIFF, image must be Group4 compression and "binary"
+         *
+         * @param readerAtts collected image statistics from reader
          */
-        private void validate(final ImageAtts imageAtts) {
+        private String validate(final ReaderAtts readerAtts, String filePath) {
+            boolean failed = false;
+            StringBuilder failedReasons = new StringBuilder();
+
+            if (readerAtts.ImageFileFormat.equals(ReaderAtts.FILE_TIFF)) {
+
+                // Test mode: 1 bit/pixel, image type num one of the
+                // BufferedImage.ImageType enums
+                ImageTypeAtts itas = readerAtts.InternalImageAtts.ImageTypeAtts;
+                if (!(itas.BitDepth == 1
+                        && (itas.ImageTypeNum == BufferedImage.TYPE_BYTE_GRAY ||
+                        itas.ImageTypeNum == BufferedImage.TYPE_BYTE_BINARY ||
+                        itas.ImageTypeNum == BufferedImage.TYPE_USHORT_GRAY))
+                        ) {
+                    failed = true;
+                    failedReasons.append("binarytif");
+                }
+
+                if (!(readerAtts.InternalImageAtts.Compression.equals(InternalImageAtts.Group4Compression))){
+                    String pluralString = "";
+                    if (failed) {
+                        pluralString = "-";
+                    }
+                    failedReasons.append(String.format("%stiffnotgroup4", pluralString));
+                }
+            }
+
+            return failedReasons.toString();
         }
     }
-
 
 
     @Override

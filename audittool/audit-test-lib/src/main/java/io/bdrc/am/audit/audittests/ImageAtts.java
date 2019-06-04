@@ -1,25 +1,38 @@
 package io.bdrc.am.audit.audittests;
 
-import org.w3c.dom.Node;
+import com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageReader;
+import com.twelvemonkeys.imageio.plugins.tiff.TIFFImageReader;
 
+import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
-import java.util.ArrayList;
-
-/**
- * Collection of image attributes.
- * Since JavaIO iterates over many variables, such as readers, images, and metadata format names,
- * Collect all the possible values here
- */
-class ImageAtts {
-    ArrayList<ReaderAtts> ReaderAtts = new ArrayList<>();
-}
 
 class ReaderAtts {
-    ArrayList<InternalImageAtts> InternalImageAtts = new ArrayList<>();
+    public static final String FILE_TIFF = "TIFF";
+    public static final String FILE_JPG = "JPG";
+
+    /* TODO: Other types
+    public static final String FILE_PNG = "PNG";
+    public static final String FILE_BMP = "BMP";
+    public static final String FILE_PDF = "PDF";
+    */
+    InternalImageAtts InternalImageAtts;
+    String ImageFileFormat ;
+
+    public ReaderAtts(ImageReader inReader) throws UnsupportedFormatException {
+
+        if (inReader instanceof TIFFImageReader) {
+            ImageFileFormat = ReaderAtts.FILE_TIFF;
+        }
+        else if (inReader instanceof JPEGImageReader) {
+            ImageFileFormat = ReaderAtts.FILE_JPG;
+        }
+        else throw new UnsupportedFormatException("Unsupported file type");
+    }
 }
 
 class InternalImageAtts {
-    ArrayList<ImageTypeAtts> ImageTypeAtts = new ArrayList<>();
+    public static final String Group4Compression = "CCITT 6" ; // T.6
+    ImageTypeAtts ImageTypeAtts = null;
     IIOMetadataNode iioMetadata = null;
     String Compression = "";
 }
