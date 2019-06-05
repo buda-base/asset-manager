@@ -31,7 +31,7 @@ class ReaderAtts {
 }
 
 class InternalImageAtts {
-    public static final String Group4Compression = "CCITT 6" ; // T.6
+    public static final String Group4Compression = "CCITT T6X" ; // T.6
     ImageTypeAtts ImageTypeAtts = null;
     IIOMetadataNode iioMetadata = null;
     String Compression = "";

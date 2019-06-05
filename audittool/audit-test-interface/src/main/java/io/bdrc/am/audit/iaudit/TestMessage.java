@@ -54,7 +54,7 @@ public class TestMessage {
     }
 
     private TestMessageFormat GetMessage(Integer outcome) {
-        TestMessageFormat tmf = TestMessage.MessageDict.get(outcome);
+        TestMessageFormat tmf = AuditTestBase.LibTestMessages.get(outcome);
         if (tmf == null ) {
             tmf = TestMessage.DefaultTestMessageFormat;
             tmf.formatString = tmf.formatString.replace("_HERE_",outcome.toString());

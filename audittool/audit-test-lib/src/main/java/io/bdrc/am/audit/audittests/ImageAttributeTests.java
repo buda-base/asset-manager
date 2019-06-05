@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import static javax.imageio.metadata.IIOMetadataFormatImpl.standardMetadataFormatName;
 
-public class ImageAttributeTests extends PathTestBase {
+public class ImageAttributeTests extends ImageGroupParents {
     /**
      * new AuditTestBase
      *
@@ -43,16 +43,22 @@ public class ImageAttributeTests extends PathTestBase {
             // throw new IOException("Not implemented");
             Path rootFolder = Paths.get(getPath());
 
-            // This test only examines derived image image groups
-            Path examineDir = Paths.get(getPath(), testParameters.get("DerivedImageGroupParent"));
 
 // Creating the filter
             DirectoryStream.Filter<Path> filter =
-                    entry -> (entry.toFile().isDirectory() && !(entry.toFile().isHidden()));
+                    entry -> (entry.toFile().isDirectory()
+                            && !entry.toFile().isHidden()
+                            && _imageGroupParents.contains(entry.getFileName().toString()));
 
-            try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir, filter)) {
-                for (Path imagegroup : imageGroupDirs) {
-                    TestImages(imagegroup);
+            try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter)) {
+                for (Path anImageGroupParent : imageGroupParents) {
+                    DirectoryStream.Filter<Path> imageGroupFilter =
+                            entry -> (entry.toFile().isDirectory()
+                                    && !entry.toFile().isHidden());
+
+                    for (Path anImageGroup : Files.newDirectoryStream(anImageGroupParent, imageGroupFilter)) {
+                        TestImages(anImageGroup);
+                    }
                 }
 
             } catch (DirectoryIteratorException die) {
@@ -88,10 +94,10 @@ public class ImageAttributeTests extends PathTestBase {
          * .info["compression"] = IIOMetadata node "CompressionTypeName"
          * .mode = ImageTypeSpecifier.getBuffereImageType (see BufferImage.java for constants)
          *
-         * @param imageGroup folder containing images
+         * @param imageGroupParent folder containing imageGroups
          * @throws IOException If io error
          */
-        private void TestImages(final Path imageGroup) throws IOException {
+        private void TestImages(final Path imageGroupParent) throws IOException {
 
             /*
             Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
@@ -111,7 +117,7 @@ public class ImageAttributeTests extends PathTestBase {
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
 
-            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroup, filter)) {
+            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter)) {
                 for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
                     String fileObjectPathString = imageFile.toAbsolutePath().toString();
@@ -176,6 +182,9 @@ public class ImageAttributeTests extends PathTestBase {
                         String validationErrors = validate(ra, fileObjectPathString);
                         if (validationErrors.length() > 0) {
                             FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
+                        }
+                        else {
+                            PassTest();
                         }
                     } catch (UnsupportedFormatException usfx) {
                         FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
@@ -244,7 +253,7 @@ im.mode (values. Caredabout: 1)
                     failedReasons.append("binarytif");
                 }
 
-                if (!(readerAtts.InternalImageAtts.Compression.equals(InternalImageAtts.Group4Compression))){
+                if (!(readerAtts.InternalImageAtts.Compression.equals(InternalImageAtts.Group4Compression))) {
                     String pluralString = "";
                     if (failed) {
                         pluralString = "-";
@@ -263,24 +272,4 @@ im.mode (values. Caredabout: 1)
         TestWrapper(new ImageAttributeTestOperation());
     }
 
-    /**
-     * Set all test parameters (not logging or framework)
-     * TestProcessedImage expects
-     * 1. path - parent container
-     * 2. kwargs: These named arguments are required in (String [])(params[1])
-     * "DerivedImageGroupParent=folderName
-     * "ImageFileSizeLimit=0....n"
-     *
-     * @param params implementation dependent optional parameters
-     */
-    @Override
-    public void setParams(final Object... params) {
-        if ((params == null) || (params.length < 2)) {
-            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments path, and " +
-                            "propertyDictionary not given.",
-                    getTestName()));
-        }
-        super.setParams(params[0]);
-        LoadParameters((String[]) (params[1]));
-    }
 }
