@@ -1,4 +1,4 @@
-package io.bdrc.am.audit.iaudit;
+package io.bdrc.am.audit.iaudit.message;
 
 public class TestMessageFormat {
     final int argCount;

@@ -3,7 +3,7 @@ package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFoldersInImageGroups;
-import io.bdrc.am.audit.iaudit.TestMessage;
+import io.bdrc.am.audit.iaudit.message.TestMessage;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;

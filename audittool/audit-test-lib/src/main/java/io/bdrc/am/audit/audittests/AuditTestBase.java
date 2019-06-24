@@ -2,6 +2,8 @@ package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.*;
 
+import io.bdrc.am.audit.iaudit.message.LibTestMessages;
+import io.bdrc.am.audit.iaudit.message.TestMessageFormat;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -33,6 +35,9 @@ public abstract class AuditTestBase implements IAuditTest {
         _testName = testName;
         _testResult = new TestResult();
         _testResult.setOutcome(Outcome.NOT_RUN);
+
+        // Load the library's test messages
+        LibTestMessages.getInstance().setMessages(libTestMessages);
 
 //        /*
 //         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
@@ -141,9 +146,10 @@ public abstract class AuditTestBase implements IAuditTest {
 
     }
     /**
-     * Test Messages specific to this library
+     * Test message specific to this library. Assigned into the IAudit messages
+     * in AuditTestBase constructor. It's central so that each test can share other test outcomes
      */
-    public static final Hashtable<Integer, TestMessageFormat> LibTestMessages =
+    public static final Hashtable<Integer, TestMessageFormat> libTestMessages =
     new Hashtable<Integer, TestMessageFormat>()
             {{
                 put(LibOutcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not exist."));

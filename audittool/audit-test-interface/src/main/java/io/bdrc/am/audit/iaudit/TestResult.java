@@ -1,5 +1,7 @@
 package io.bdrc.am.audit.iaudit;
 
+import io.bdrc.am.audit.iaudit.message.TestMessage;
+
 import java.util.ArrayList;
 
 /**
@@ -26,7 +28,7 @@ public class TestResult {
 
     public Boolean Passed()
     {
-        return getOutcome() == Outcome.PASS;
+        return getOutcome().equals(Outcome.PASS);
     }
 
     private Integer _outcome;

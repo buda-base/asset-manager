@@ -6,6 +6,7 @@ import io.bdrc.am.audit.audittests.ImageAttributeTests;
 
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestResult;
+import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -39,13 +40,16 @@ public class TestProcessedImage extends AuditTestTestBase {
      * "src/test/images/WOtherTiffFails",
      */
     @Test
-    public void TestImagePasses() throws IOException {
+    public void TestImagePasses()  {
         TestResult tr = runAttributesTest("src/test/images/WPass");
+        for (TestMessage tm : tr.getErrors()) {
+            System.out.println(tm.getMessage());
+        }
         Assert.assertTrue("Test failed, expected pass", tr.Passed());
     }
 
     @Test
-    public void TestImageOtherFails() throws IOException {
+    public void TestImageOtherFails()  {
         TestResult tr = runAttributesTest("src/test/images/WOtherTiffFails");
         Assert.assertFalse( "Test passed, expected fail", tr.Passed());
     }

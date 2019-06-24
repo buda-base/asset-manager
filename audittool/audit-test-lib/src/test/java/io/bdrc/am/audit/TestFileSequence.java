@@ -3,6 +3,7 @@ package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.*;
 import io.bdrc.am.audit.iaudit.*;
+import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -56,9 +57,6 @@ public class TestFileSequence extends AuditTestTestBase{
 
     @Test
     @Ignore
-    /**
-     * This test is tied to a specific user scenario
-     */
     public void TestSomething()  {
          Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
             put("ArchiveImageGroupParent", "archive");

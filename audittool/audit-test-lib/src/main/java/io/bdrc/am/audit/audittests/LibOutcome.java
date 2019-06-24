@@ -1,20 +1,21 @@
 package io.bdrc.am.audit.audittests;
 
 /**
- * Outcomes specific to this test library
+ * Outcomes specific to this test library. Namespace > 100,
+ *  to dismbiguate between  io.bdrc.am.audit.iaudit.TestMessages values
  */
 public class LibOutcome {
-    public static final Integer ROOT_NOT_FOUND                  = 1 ;
-    public static final Integer FILES_IN_MAIN_FOLDER            = 2 ;
-    public static final Integer DIR_IN_IMAGES_FOLDER            = 3 ;
-    public static final Integer DIR_FAILS_DIR_IN_IMAGES_FOLDER  = 4 ;
-    public static final Integer FILE_SEQUENCE                   = 5 ;
-    public static final Integer DIR_FAILS_SEQUENCE              = 6 ;
-    public static final Integer DUP_SEQUENCE                    = 7 ;
-    public static final Integer DUP_SEQUENCE_FOLDER             = 8 ;
-    public static final Integer FILE_COUNT                      = 9 ;
-    public static final Integer NO_IMAGE_READER                 = 10 ;
-    public static final Integer INVALID_TIFF                    = 11 ;
-    public static final Integer FILE_SIZE                       = 12 ;
+    public static final Integer ROOT_NOT_FOUND                  = 101 ;
+    public static final Integer FILES_IN_MAIN_FOLDER            = 102 ;
+    public static final Integer DIR_IN_IMAGES_FOLDER            = 103 ;
+    public static final Integer DIR_FAILS_DIR_IN_IMAGES_FOLDER  = 104 ;
+    public static final Integer FILE_SEQUENCE                   = 105 ;
+    public static final Integer DIR_FAILS_SEQUENCE              = 106 ;
+    public static final Integer DUP_SEQUENCE                    = 107 ;
+    public static final Integer DUP_SEQUENCE_FOLDER             = 108 ;
+    public static final Integer FILE_COUNT                      = 109 ;
+    public static final Integer NO_IMAGE_READER                 = 110 ;
+    public static final Integer INVALID_TIFF                    = 111 ;
+    public static final Integer FILE_SIZE                       = 112 ;
 }
 
