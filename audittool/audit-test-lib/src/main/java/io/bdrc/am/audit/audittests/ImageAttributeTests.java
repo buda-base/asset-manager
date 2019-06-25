@@ -1,26 +1,21 @@
 package io.bdrc.am.audit.audittests;
 
 import com.google.common.collect.Streams;
-import com.sun.javafx.iio.ImageStorage;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.nio.Buffer;
 import java.nio.file.*;
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 import static javax.imageio.metadata.IIOMetadataFormatImpl.standardMetadataFormatName;
 
@@ -40,9 +35,6 @@ public class ImageAttributeTests extends ImageGroupParents {
 
         @Override
         public void run() throws IOException {
-            // throw new IOException("Not implemented");
-            Path rootFolder = Paths.get(getPath());
-
 
 // Creating the filter
             DirectoryStream.Filter<Path> filter =
@@ -111,8 +103,40 @@ public class ImageAttributeTests extends ImageGroupParents {
             while (readers.hasNext()) {
                 aReader = readers.next();
                 System.out.println("reader: " + aReader);
+
             }
             */
+            // before you scan for plugins
+            String classpathStr = System.getProperty("java.class.path");
+            sysLogger.debug(String.format("Classpath %s",classpathStr));
+            sysLogger.debug("Pre scan for plugins - by suffix ");
+            Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
+
+            while (ir.hasNext())
+            {
+                ImageReader r = ir.next();
+                sysLogger.debug("reader obj: %s, class: %s",r,r.getClass().getCanonicalName());
+            }
+
+            sysLogger.debug("----------------------------------------");
+            sysLogger.debug("Scan for plugins, then format name ");
+            ImageIO.scanForPlugins();
+            IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+            ir = ImageIO.getImageReadersByFormatName("TIFF");
+            while (ir.hasNext())
+            {
+                ImageReader r = ir.next();
+                sysLogger.debug("reader obj: %s, class: %s",r,r.getClass().getCanonicalName());
+            }
+
+            sysLogger.debug("----------------------------------------");
+            sysLogger.debug("Scan for plugins, then suffix");
+            ir = ImageIO.getImageReadersBySuffix("tif");
+            while (ir.hasNext())
+            {
+                ImageReader r = ir.next();
+                sysLogger.debug("reader obj: %s, class: %s",r,r.getClass().getCanonicalName());
+            }
 
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
@@ -121,7 +145,9 @@ public class ImageAttributeTests extends ImageGroupParents {
                 for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
                     String fileObjectPathString = imageFile.toAbsolutePath().toString();
-                    long imageLength = fileObject.length();
+
+                    // TODO: implement separately
+                    // long imageLength = fileObject.length();
 
                     String fileExt = FilenameUtils.getExtension(fileObjectPathString);
 
@@ -179,14 +205,12 @@ public class ImageAttributeTests extends ImageGroupParents {
                         }
 
                         // Phew. We got image data!!!!
-                        String validationErrors = validate(ra, fileObjectPathString);
+                        String validationErrors = validate(ra);
                         if (validationErrors.length() > 0) {
                             FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
                         }
-                        else {
-                            PassTest();
-                        }
                     } catch (UnsupportedFormatException usfx) {
+//                        usfx.printStackTrace(System.out);
                         FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
                     } catch (Exception eek) {
                         FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
@@ -194,13 +218,14 @@ public class ImageAttributeTests extends ImageGroupParents {
                                         ());
                     }
 
+
                     // TODO:  1 image / file !!!!
                     /*
                     *  fields: im: Image.open
 im.width
 im.height
 im.info["compression"] "group4"  " G4 is defined in the ITU-T T.6 fax standard for transmitting black and white images."
-"CCITT T6" (per Java Imaging IO  is the name of Group 4 encoding
+"CCITT T6" (T.6?) (per Java Imaging IO  is the name of Group 4 encoding
 im.mode (values. Caredabout: 1)
 
                     *
@@ -223,19 +248,26 @@ im.mode (values. Caredabout: 1)
                 }
             }
 
+            sysLogger.debug("Test outcome %s error count %d",getTestResult().getOutcome(),
+                    getTestResult()
+                            .getErrors().size());
+            if (!IsTestFailed()) {
+                PassTest();
+            }
+
         }
 
         /**
          * Validate normalized image statistics
          * if format is "TIFF"
-         * - Compression must be "CCITT 6" ( group 4)
+         * - Compression must be "CCITT T6" ( group 4) or "CCITT T.6" (libraries are inconsistent)
          * - ImageTypeNum must be BufferedImage.TYPE_BYTE_BINARY
          * <p>
          * If TIFF, image must be Group4 compression and "binary"
          *
          * @param readerAtts collected image statistics from reader
          */
-        private String validate(final ReaderAtts readerAtts, String filePath) {
+        private String validate(final ReaderAtts readerAtts) {
             boolean failed = false;
             StringBuilder failedReasons = new StringBuilder();
 
@@ -253,12 +285,15 @@ im.mode (values. Caredabout: 1)
                     failedReasons.append("binarytif");
                 }
 
-                if (!(readerAtts.InternalImageAtts.Compression.equals(InternalImageAtts.Group4Compression))) {
+                if (!(readerAtts.InternalImageAtts.IsGroup4Compression())) {
                     String pluralString = "";
                     if (failed) {
                         pluralString = "-";
                     }
-                    failedReasons.append(String.format("%stiffnotgroup4", pluralString));
+                    failedReasons.append(String.format("%stiffnotgroup4 :%s", pluralString, String.format("bd:%d: " +
+                            "itn :%d: " +
+                            "comp :%s: ", itas.BitDepth, itas.ImageTypeNum, readerAtts.InternalImageAtts
+                            .Compression)));
                 }
             }
 
@@ -269,6 +304,12 @@ im.mode (values. Caredabout: 1)
 
     @Override
     public void LaunchTest() {
+        // have base class tests here?
+        // Yes, under the doctrine of One responsibility
+        RunBaseTests();
+        if (IsTestFailed()) {
+            return;
+        }
         TestWrapper(new ImageAttributeTestOperation());
     }
 

@@ -28,8 +28,11 @@ public class TestProcessedImage extends AuditTestTestBase {
      *  We're declaring here that only folders with the name 'testImages' contain
      *  folders we want to test.
      */
-    private final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
-        put("DerivedImageGroupParent", "testImages");
+    private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
+        // This value is for published images
+        // put("DerivedImageGroupParent",  "images");
+        // this tests our collateral
+        put("DerivedImageGroupParent",  "testImages");
     }};
 
     @Rule
@@ -42,6 +45,18 @@ public class TestProcessedImage extends AuditTestTestBase {
     @Test
     public void TestImagePasses()  {
         TestResult tr = runAttributesTest("src/test/images/WPass");
+        // TestResult tr = runAttributesTest("/Volumes/Archive/W21725");
+        for (TestMessage tm : tr.getErrors()) {
+            System.out.println(tm.getMessage());
+        }
+        Assert.assertTrue("Test failed, expected pass", tr.Passed());
+    }
+    @Test
+    @Ignore
+    public void TestPublishedImages()  {
+        _testParams.remove("DerivedImageGroupParent");
+        _testParams.put("DerivedImageGroupParent",  "images");
+        TestResult tr = runAttributesTest("/Volumes/Archive/W00EGS1016240");
         for (TestMessage tm : tr.getErrors()) {
             System.out.println(tm.getMessage());
         }

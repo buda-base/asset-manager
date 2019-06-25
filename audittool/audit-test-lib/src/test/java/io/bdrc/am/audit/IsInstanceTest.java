@@ -45,7 +45,7 @@ public class IsInstanceTest extends AuditTestTestBase {
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         Assert.assertNotNull(libTests);
-        Assert.assertEquals("Number of tests doesnt match", 3, libTests.size());
+        Assert.assertEquals("Number of tests doesnt match", 4, libTests.size());
     }
 
     @Test
@@ -60,7 +60,9 @@ public class IsInstanceTest extends AuditTestTestBase {
         }
     }
 
-
+    /**
+     * Make sure every test Fails with root not found when given a bogus directory
+     */
     @Test
     public void TestRunnable() throws URISyntaxException, MalformedURLException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, InvocationTargetException

@@ -41,6 +41,10 @@ public class TestDictionary {
             put("NoFoldersInImageGroups", new AuditTestConfig("No folders allowed in Image Group folders",
                     Arrays.asList("ArchiveImageGroupParent", "DerivedImageGroupParent"),"NoFoldersInImageGroups",
                     NoFoldersInImageGroups.class));
+
+            put("WebImageAttributes", new AuditTestConfig("Web Image Attributes",
+                    Arrays.asList("DerivedImageGroupParent"),"WebImageAttributes",
+                    ImageAttributeTests.class));
         }
     };
 
