@@ -52,10 +52,10 @@ class DbWriter(DbApp, ABC):
         except IndexError:
             raise IndexError('Invalid argument: Must be formatted as section:file ')
 
-    def write_csv(self, file_stream: object, sproc: str):
+    def write_csv(self, source_spec: str, sproc: str):
         """
         @summary: emits a list into the configured database
-        @param file_stream: iterator over comma separates text lines
+        @param source_spec: object descriptor: local file name or s3 object
         """
 
         hadBarf = False
@@ -73,8 +73,8 @@ class DbWriter(DbApp, ABC):
             calls = 0
             try:
               #  with open(srcFile,'r') as incsv:
-                with file_stream as in_csv:
-                    inventory_csv =  csv.reader(in_csv)
+                with self.accessor(source_spec)as data_stream:
+                    inventory_csv =  csv.reader(data_stream)
                     next(inventory_csv)
                     for aState in inventory_csv:
                         try:
@@ -92,7 +92,7 @@ class DbWriter(DbApp, ABC):
                         except Exception:
                             hadBarf = True
                             exc_type, exc_obj, exc_tb = sys.exc_info()
-                            print(exc_type)
+                            print(f"{exc_type} input line :{aState} file:{source_spec}: line {calls}")
                             if dbConnection is not None:
                                 dbConnection.rollback()
                             raise
@@ -101,6 +101,9 @@ class DbWriter(DbApp, ABC):
                     dbConnection.commit()
                 if curs is not None:
                     curs.close()
+
+                # Clean up as needed
+                self.close_hook()
 
     def test(self):
         cfg = DBConfig.DbConfig(self.dbName, self.dbConfigFile)
@@ -118,6 +121,13 @@ class DbWriter(DbApp, ABC):
         """
         Abstract method which opens the resource as an iterable
         :param resourceId: identifier. (e.g, file or S3 bucket/prefix/key, no URI
+        :return:
+        """
+        pass
+
+    def close_hook(self):
+        """
+        If a subclass needs to release resources, implement this.
         :return:
         """
         pass

@@ -1,10 +1,12 @@
+import sys
+
 import boto3
 import uuid
 
 
 class S3WorkFileManager:
     """
-    Manages volume manifest tool work files
+    Manages inventory tool work files
     """
 
     _hostname: str
@@ -25,6 +27,20 @@ class S3WorkFileManager:
         except:
             instance_id = str(uuid.uuid4())
         return instance_id
+
+    def s3_move_list(self, src_list: [], dest_list: [], src_path: str, dest_path: str):
+        """
+        Move list of objects from src_path/src_list[i] to dest_path/dest_list[i]
+        :param src_list:  source objects
+        :param dest_list: possibly renamed destination objects
+        :param src_path: container of src_list[] objects. Constrained to be one of
+        the member variable paths.
+        :param dest_path: container of dest_list[] objects. Constrained like src_path
+        :return:
+        """
+        self.create_folders()
+        for src, dest in zip(src_list, dest_list):
+            self.s3_move(src, dest, src_path, dest_path)
 
     def s3_move(self, src_object: str, dest_object: str, src_folder, dest_folder):
         """
@@ -50,9 +66,24 @@ class S3WorkFileManager:
         )
         self.s3.Object(self._bucket_name, src_object).delete()
 
-    def s3_move_list(self, src_list: [], dest_list: [], src_path: str, dest_path: str):
-        for src, dest in zip(src_list, dest_list):
-            self.s3_move(src, dest, src_path, dest_path)
+    def create_folders(self, *args):
+        """
+        On demand underway and  done foldercreator
+        :return:
+        """
+        if self.buckets_created:
+            return
+        try:
+            s3bucket = self.s3.Bucket(self._bucket_name)
+
+            # These are penalty-free for creating duplicates
+            s3bucket.put_object(Key=self._underway_folder)
+            s3bucket.put_object(Key=self._done_folder)
+            self.buckets_created = True
+        except:
+            et,ev,etr = sys.exc_info()
+            print(et)
+
 
     def local_name_work_file(self, file_name: str):
         """
@@ -81,6 +112,7 @@ class S3WorkFileManager:
         """
         self.s3_move_list(object_list, dest_name_list,  self._underway_folder, self._done_folder,)
 
+
     def __init__(self, bucket_name: str, src_folder: str, underway_folder: str, done_folder: str) -> object:
         """
         Initializer:
@@ -96,4 +128,5 @@ class S3WorkFileManager:
         self._done_folder = done_folder
 
         self.s3 = boto3.resource('s3')
+        self.buckets_created = False
 
