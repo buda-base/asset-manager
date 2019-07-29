@@ -7,12 +7,12 @@ from BacklogDb.DbS3ReaderParser import DbS3ReaderParser
 from BacklogDb.S3WorkFileManager import S3WorkFileManager
 import boto3
 
-todo_prefix = "processing/todo/"
+
 processing_prefix = "processing/inprocess/"
 done_prefix = "processing/done/"
 
 s3_work_manager: S3WorkFileManager = None
-import time
+
 def BacklogFromS3():
     """
     processes the inventory files in a bucket
@@ -32,15 +32,18 @@ def BacklogFromS3():
     bucket, key = DbS3ReaderWriter.toBucketObject(par.parsedArgs.s3Object)
 
     # Create processing keys if none
-    todo_prefix = f"{key}/"
+    # fix the key
+    if not key.endswith("/"):
+        key += "/"
 
     # it only makes sense to have processing and done first level children of the bucket,and have
     # the children follow
     # That way, Folder/objectName --> processing/underway/Folder/objectName
-    s3_work_manager = S3WorkFileManager(bucket, f"{key}/", f"{processing_prefix}{todo_prefix}", f"{done_prefix}{todo_prefix}")
+    s3_work_manager = S3WorkFileManager(bucket, f"{key}", f"{processing_prefix}{key}", f"{done_prefix}{key}")
 
 
 
+    # Prefix=key includes everything like 'key' e.g. Prefix= NLM gives you NLM and NLM0
     page_iterator = client.get_paginator('list_objects_v2').paginate(Bucket=bucket,
         Prefix=key)
 
@@ -51,7 +54,7 @@ def BacklogFromS3():
 
         # we need to replace key/ everywhere. Note this filters out the top level key (key/)
         # itself
-        file_list.extend([x['Key'].replace(todo_prefix, '') for x in object_list if x['Key'] != todo_prefix])
+        file_list.extend([x['Key'].replace(key, '') for x in object_list if x['Key'] != key])
 
     # We've ingested the contents of the to do list, move the files into processing
     work_list = [s3_work_manager.local_name_work_file(x) for x in file_list]
@@ -60,7 +63,7 @@ def BacklogFromS3():
 
     dbwr = DbS3ReaderWriter(par.parsedArgs)
     for s3Path in work_list:
-        dbwr.write_csv(f"{bucket}/{processing_prefix}{todo_prefix}{s3Path}","AddWorkProcessState")
+        dbwr.write_csv(f"{bucket}/{processing_prefix}{key}{s3Path}","AddWorkProcessState")
 
     # dont need to rename work_list. Only when moving from src to done
     s3_work_manager.mark_done(work_list, work_list)

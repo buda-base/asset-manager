@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 import sys
 import time
 from abc import ABC, abstractmethod
@@ -78,7 +79,7 @@ class DbWriter(DbApp, ABC):
                     next(inventory_csv)
                     for aState in inventory_csv:
                         try:
-                            curs.callproc(sproc, tuple(aState))
+                            curs.callproc(sproc, tuple([self.fixDate(x) for x in aState]))
                             calls += 1
                             if calls % self.monitor_interval == 0:
                                 y = time.perf_counter()
@@ -104,6 +105,13 @@ class DbWriter(DbApp, ABC):
 
                 # Clean up as needed
                 self.close_hook()
+
+    def fixDate(self, inputItem: str)-> str:
+        """
+        Convert any dates in the list from yyyy-mm-dd to mm-dd-yyyy
+        :return: 
+        """
+        return re.sub(r'(\d{4})-(\d{1,2})-(\d{1,2})', '\\2-\\3-\\1', inputItem)
 
     def test(self):
         cfg = DBConfig.DbConfig(self.dbName, self.dbConfigFile)
