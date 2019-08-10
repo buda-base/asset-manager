@@ -142,6 +142,6 @@ class DbApp:
 
         with self.connection:
             workCursor: mysql.Connection.Cursor = self.connection.cursor()
-            print(f'Calling {sproc} for n = {maxWorks} ')
+            print(f'Calling {sproc}')
             workCursor.callproc(f'{sproc}', tuple(arg for arg in args))
             workCursor.fetchall()  # wgaf
