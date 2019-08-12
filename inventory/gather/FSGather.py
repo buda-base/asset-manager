@@ -7,12 +7,10 @@ import sys
 import platform
 from datetime import date
 from pathlib import Path
-from os.path import join, getsize, isdir
+from os.path import join
 from DBLib.DbAppParser import DbAppParser
 
 from DBLib.DbApp import DbApp
-from DBConfig import DBConfig
-import pymysql
 
 
 class DbFileParser(DbAppParser):
@@ -85,6 +83,7 @@ def count_path(path_str: str) -> () :
     :return: total files, total size in bytes of the files under path
     """
     total_size = 0
+    num_files  = 0
 
 
     try:
@@ -99,9 +98,10 @@ def count_path(path_str: str) -> () :
 
             # return here or you iterate through files
             # print(path_str,num_files,sep=",")
-            return num_files
-    except FileNotFoundError:
-        pass
+            break
+    finally:
+        # Any number of things could happen, just give what we've got so far
+        return num_files
 
 
 
