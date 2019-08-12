@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states</OriginalElement>
+  <nodes>
+    <node x="232.99999999999997" y="22.0">704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_works</node>
+    <node x="340.2278481012658" y="351.25316455696196">704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states</node>
+    <node x="686.0" y="0.0">704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_projects</node>
+    <node x="468.0" y="11.0">704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_states</node>
+    <node x="0.0" y="0.0">704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_hosts</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states" target="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_projects">
+      <point x="86.25" y="-125.0" />
+      <point x="540.0" y="148.0" />
+      <point x="800.0" y="148.0" />
+      <point x="0.0" y="59.0" />
+    </edge>
+    <edge source="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states" target="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_works">
+      <point x="-28.75" y="-125.0" />
+      <point x="425.0" y="138.0" />
+      <point x="340.5" y="138.0" />
+      <point x="0.0" y="37.0" />
+    </edge>
+    <edge source="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states" target="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_hosts">
+      <point x="-86.25" y="-125.0" />
+      <point x="367.5" y="148.0" />
+      <point x="106.5" y="148.0" />
+      <point x="0.0" y="59.0" />
+    </edge>
+    <edge source="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states" target="704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_states">
+      <point x="28.75" y="-125.0" />
+      <point x="482.5" y="138.0" />
+      <point x="567.0" y="138.0" />
+      <point x="0.0" y="48.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6766595289079229" x="457.0" y="209.0" />
+  <SelectedNodes>
+    <node>704b6930-d859-481e-959b-8c5f21e43aaa.TABLE:processing.process_work_states</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+
