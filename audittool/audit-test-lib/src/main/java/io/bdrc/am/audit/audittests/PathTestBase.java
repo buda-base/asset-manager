@@ -24,7 +24,7 @@ abstract public class PathTestBase extends AuditTestBase {
 
             // First test. Root must be a directory
             if (!sourceDir.isDirectory()) {
-                FailTest(Outcome.ROOT_NOT_FOUND, getPath());
+                FailTest(LibOutcome.ROOT_NOT_FOUND, getPath());
             }
         }
         public String getName() { return "No Directory Test";}

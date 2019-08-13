@@ -2,10 +2,15 @@ package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.*;
 
+import io.bdrc.am.audit.iaudit.message.LibTestMessages;
+import io.bdrc.am.audit.iaudit.message.TestMessageFormat;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+
+import java.util.Arrays;
+import java.util.Hashtable;
 
 public abstract class AuditTestBase implements IAuditTest {
 
@@ -31,6 +36,9 @@ public abstract class AuditTestBase implements IAuditTest {
         _testResult = new TestResult();
         _testResult.setOutcome(Outcome.NOT_RUN);
 
+        // Load the library's test messages
+        LibTestMessages.getInstance().setMessages(libTestMessages);
+
 //        /*
 //         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
 //         *
@@ -47,7 +55,7 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param why           enum of outcome
      * @param failedElement element which failed test
      */
-    void FailTest(Outcome why, String ...failedElement) {
+    void FailTest(Integer why, String ...failedElement) {
         _testResult.setOutcome(Outcome.FAIL);
         _testResult.AddError(why, failedElement);
     }
@@ -58,11 +66,11 @@ public abstract class AuditTestBase implements IAuditTest {
     }
 
     public boolean IsTestFailed() {
-        return _testResult.getOutcome() == Outcome.FAIL;
+        return _testResult.getOutcome().equals( Outcome.FAIL);
     }
 
     public boolean IsTestPassed() {
-        return _testResult.getOutcome() == Outcome.PASS;
+        return _testResult.getOutcome().equals(Outcome.PASS);
     }
 
     // Public interface
@@ -119,4 +127,47 @@ public abstract class AuditTestBase implements IAuditTest {
     // package private implies most of protected
     Logger sysLogger;
     // endregion
+
+    // region TestParameter properties
+    protected Hashtable<String,String> testParameters = new Hashtable<>();
+
+    /**
+     * transform inbound parameters from KWArg format (key=value) to
+     * HashDictionary<>(key, value)</>
+     * @param kwparams keyword parameters
+     */
+    protected final void LoadParameters(String[]kwparams) {
+        Arrays.stream(kwparams).forEach( (String s ) -> {
+            String [] de = s.split("=");
+            if (s.length() >1 ) {
+                testParameters.put(de[0],de[1]);
+            }
+        });
+
+    }
+    /**
+     * Test message specific to this library. Assigned into the IAudit messages
+     * in AuditTestBase constructor. It's central so that each test can share other test outcomes
+     */
+    public static final Hashtable<Integer, TestMessageFormat> libTestMessages =
+    new Hashtable<Integer, TestMessageFormat>()
+            {{
+                put(LibOutcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not exist."));
+                put(LibOutcome.FILES_IN_MAIN_FOLDER,  new TestMessageFormat(2,"Root folder %s contains file %s"));
+                put(LibOutcome.DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(2,"Image group folder %s  contains " +
+                        "directory %s"));
+                put(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER,  new TestMessageFormat(1,"Image group folder %s  fails " +
+                        "files only test."));
+                put(LibOutcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
+                put(LibOutcome.DIR_FAILS_SEQUENCE, new TestMessageFormat(1, "Folder %s fails sequence test."));
+                put(LibOutcome.DUP_SEQUENCE,  new TestMessageFormat(2,"Duplicate Sequence %s and %s found"));
+                put(LibOutcome.DUP_SEQUENCE_FOLDER, new TestMessageFormat(1, "Folder %s contains Duplicate Sequences"));
+                put(LibOutcome.FILE_COUNT,  new TestMessageFormat(3,"Folder %s expected %s files in folder , found %s"));
+                put(LibOutcome.NO_IMAGE_READER, new TestMessageFormat(1,"Image file %s has no suitable reader."));
+                put(LibOutcome.INVALID_TIFF, new TestMessageFormat(2,"Image file %s is invalid TIFF. Reasons: %s "));
+                put(LibOutcome.FILE_SIZE, new TestMessageFormat(3,"Image file %s size %s exceeds maximum of %s" +
+                        "invalid " +
+                        "TIFF. Reasons: %s"));
+
+            }};
 }

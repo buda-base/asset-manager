@@ -50,7 +50,7 @@ public class NoFilesInRoot extends PathTestBase  {
 
                 for (Path entry : pathDirectoryStream) {
                     if (!Files.isDirectory(entry)) {
-                        FailTest(Outcome.FILES_IN_MAIN_FOLDER, getPath(),entry.toString());
+                        FailTest(LibOutcome.FILES_IN_MAIN_FOLDER, getPath(),entry.toString());
                         // return;
                     }
                 }

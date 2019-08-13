@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.shell;
 
 import io.bdrc.am.audit.iaudit.*;
+import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +158,7 @@ public class shell {
                     new URL[]{libUrl});
         } catch (MalformedURLException e) {
             sysLogger.error(libUrlStr, e);
-            return result;
+            return null;
         }
 
 
@@ -193,10 +194,11 @@ public class shell {
 
 
     /**
+     * RunTest
      * Shell to run a test instance, given its class
      *
      * @param testLogger Logger for the test. Not the same as the shell logger
-     * @params array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
+     * @param params array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
      */
     private static TestResult RunTest(Logger testLogger, Class<IAuditTest> testClass, Object... params) {
 

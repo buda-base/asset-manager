@@ -92,7 +92,7 @@ public class FileSequence extends ImageGroupParents {
             Boolean isFile = !entry.toFile().isDirectory();
             if (isFile) {
                 sysLogger.error("a File {}", entry.getFileName().toString());
-                FailTest(Outcome.FILES_IN_MAIN_FOLDER, parent.toString(), entry.toString());
+                FailTest(LibOutcome.FILES_IN_MAIN_FOLDER, parent.toString(), entry.toString());
             }
             return isFile;
         }
@@ -135,18 +135,18 @@ public class FileSequence extends ImageGroupParents {
                         sysLogger.error(errorText);
                         if (!firstFolderFailure) {
                             firstFolderFailure = true;
-                            FailTest(Outcome.DIR_FAILS_SEQUENCE, anImageGroup.toString());
+                            FailTest(LibOutcome.DIR_FAILS_SEQUENCE, anImageGroup.toString());
                         }
-                        FailTest(Outcome.FILE_SEQUENCE, errorText);
+                        FailTest(LibOutcome.FILE_SEQUENCE, errorText);
                     }
 
                     // fail if duplicate number
                     if (filenames.containsKey(thisFileIndex)) {
                         if (!firstFolderFailure) {
                             firstFolderFailure = true;
-                            FailTest(Outcome.DIR_FAILS_SEQUENCE, anImageGroup.toString());
+                            FailTest(LibOutcome.DIR_FAILS_SEQUENCE, anImageGroup.toString());
                         }
-                        FailTest(Outcome.DUP_SEQUENCE, filenames.get(thisFileIndex), thisFileName);
+                        FailTest(LibOutcome.DUP_SEQUENCE, filenames.get(thisFileIndex), thisFileName);
                     }
                     filenames.put(thisFileIndex, thisFileName);
 
@@ -157,7 +157,7 @@ public class FileSequence extends ImageGroupParents {
                 lastKey = filenames.lastKey();
                 size = filenames.size();
                 if (lastKey > size) {
-                    FailTest(Outcome.FILE_COUNT, anImageGroup.toString(), lastKey.toString(), size.toString() );
+                    FailTest(LibOutcome.FILE_COUNT, anImageGroup.toString(), lastKey.toString(), size.toString() );
                     GenerateFileMissingMessages(filenames);
                 }
 
@@ -190,7 +190,7 @@ public class FileSequence extends ImageGroupParents {
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
                 Integer k = entry.getKey();
                 while (++curEntry < k) {
-                    FailTest(Outcome.FILE_SEQUENCE, String.format("File Sequence %4d missing", curEntry));
+                    FailTest(LibOutcome.FILE_SEQUENCE, String.format("File Sequence %4d missing", curEntry));
                 }
             }
         }

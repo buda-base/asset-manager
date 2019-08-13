@@ -16,7 +16,7 @@ abstract public class ImageGroupParents extends PathTestBase {
 
 
     // Special case folders, define parents of image groups. Only image group folders have to
-    // match sequence tests
+    // match some tests
     protected ArrayList<String> _imageGroupParents = new ArrayList<>();
 
     // Extract only the values for these properties. For example, see audit-test-shell.scripts/shell.properties

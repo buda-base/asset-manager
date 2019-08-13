@@ -55,10 +55,12 @@ public class AssembledAuditTests {
              put("DerivedImageGroupParent","images");
             }
         };
+
+        // dont use user-specific test directories
         return Arrays.asList(new Object[][]{
                 {"/Volumes/Archive/W1KG11900",  true,  properties},
-                {"/Users/jimk/tmp/AuditToolTestData/W1KG11900", true, properties},
- //               {"/Volumes/Archive/W1KG13585", true, properties},
+//                {"/Users/jimk/tmp/AuditToolTestData/W1KG11900", true, properties},
+                {"/Volumes/Archive/W1KG13585", true, properties},
 //                {"/Users/jimk/tmp/AuditToolTestData/W1KG13585", true, properties}
         });
     }

@@ -75,15 +75,64 @@ to a test's name, friendly description, class which implements the test (which, 
     public AuditTestConfig(String fullName, List<String> argNames, String shortName, Class<?> clazz)
 ```
 To package a test you implement one of these and add it to your TestDictionary.
+
+`audit-test-lib.TestDictionary()` constructor shows `AuditTestConfig` usaqe:
+
+```
+ private final Hashtable<String, AuditTestConfig> _TestDictionary = new Hashtable<String, AuditTestConfig>() {
+        {
+            put("FileSequence", new AuditTestConfig("File Sequence Test",
+
+                    // This statement asserts that the caller has to provide values for these
+                    // arguments
+                    Arrays.asList(
+                            "ArchiveImageGroupParent", "DerivedImageGroupParent"),
+                    "FileSequence", FileSequence.class));
+
+            //noinspection ArraysAsListWithZeroOrOneArgument
+            put("NoFilesInFolder", new AuditTestConfig("No Files in Root Folder",
+                    Arrays.asList(""),
+                    "NoFilesInFolder",
+                    NoFilesInRoot.class));
+
+            put("NoFoldersInImageGroups", new AuditTestConfig("No folders allowed in Image Group folders",
+                    Arrays.asList("ArchiveImageGroupParent", "DerivedImageGroupParent"),"NoFoldersInImageGroups",
+                    NoFoldersInImageGroups.class));
+        }
+    };
+```
 ##### Parameters
 The constructor takes these parameters
 
 name|type|description
 ----|----|----
 fullName|`String`|Free form text
-argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs
-shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary key for which this object is the value 
+argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs`
+shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value 
 clazz|`Class<?>`|Any class object which implements the `io.bdrc.am.audit.iaudit.IAuditTest` interface.
 
 #### Running a test
 A full production instance is available in `audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java`
+
+Once you've acquired its `AuditTestConfig` object, the components of running a test are:
+- Instantiating its with its constructor
+- setting its path and keyword arguments (`IAudit.setParams()`)
+- calling it's `LaunchTest` implementation.
+
+This code fragment of `audit-test-shell` shows this operation
+```
+          Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class);
+            IAuditTest inst = ctor.newInstance(testLogger);
+
+            inst.setParams((Object[]) params);
+            inst.LaunchTest();
+
+            tr = inst.getTestResult();
+```
+(you can implement your test classes without a Constructor requiring a logger. In this case, the test writer and the shell writer conspired together to require a logger in the constructor.)
+
+#### Examining test results.
+`audit-test-interface/io/bdrc/am/audit/iaudit/TestResult` and `TestMessage` define the objects which implement test results.
+
+The `TestResult.Passed()` method contains the overall outcome of the test.
+Test messages are retrieved by the `TestResults.getErrors()` method. It's a good idea to have the first error in the list name the container which failed the test, followed by all the specific failure instances for each file. The caller determines the logging disposition.

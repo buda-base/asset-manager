@@ -17,7 +17,6 @@ else
 fi
 fi
 
-
 #
 export LOG_PROPS=${CONFIG_ATHOME}/log4j2.properties
 #
@@ -25,4 +24,8 @@ export LOG_PROPS=${CONFIG_ATHOME}/log4j2.properties
 shellJar=${CONFIG_SHELL_JAR_FILE}
 
 # shellJar was built to point to its own mainclass
-java  -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar} $@
+# OK, https://stackoverflow.com/questions/15930782/call-java-jar-myfile-jar-with-additional-classpath-option
+# Says you cant use -cp and -jar, and you cant find the 
+# java -cp ${CONFIG_TEST_LIB_JAR_FILE} -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar} $@
+
+java -cp "${shellJar}:${CONFIG_TEST_LIB_JAR_FILE}:lib/*" -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS}  io.bdrc.am.audit.shell.shell $@
