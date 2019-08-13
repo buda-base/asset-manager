@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Module to write csv to database from S3
 """
