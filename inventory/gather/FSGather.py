@@ -29,9 +29,10 @@ class DbFileParser(DbAppParser):
         self._parser.add_argument('-s', '--pubState', help='specify publish state', required=True)
         self._parser.add_argument("pathToScan", help='Path to scan. Basename becomes the project name')
 
+
 class StateWriter(DbApp):
 
-    def writeProject(self,project_root_folder: Path, process_state : str):
+    def writeProject(self, project_root_folder: Path, process_state: str):
         """
         Calculates sizes of project, and writes into db
         :param project_root_folder: Starting path. Basename becomes the project
@@ -54,40 +55,34 @@ class StateWriter(DbApp):
 
         obs_date = date.today().strftime(date_format)
         project_path = Path(project_root_folder).resolve()
-        hostname = platform.node()
-        srcdir = (Path(project_path)).name
-
+        host_name = platform.node()
+        project_name = (Path(project_path)).name
 
         self.start_connect()
-        with os.scandir(project_path) as pdit:
-            for de in pdit:
-                if (de.is_dir()):
-                    work_name = de.name
-                    dStat = de.stat(follow_symlinks=False)
-                    ctime = date.fromtimestamp(dStat.st_ctime).strftime(date_format)
-                    imagecount = count_path(de.path)
-                    self.CallAnySproc("AddWorkProcessState",
-                                      obs_date,
-                                      hostname,
-                                      srcdir,
-                                      work_name,
-                                      ctime,
-                                      process_state,
-                                      imagecount)
+        with os.scandir(project_path) as project_iter:
+            for project in project_iter:
+                if (project.is_dir()):
+                    project_name = project.name
+                    project_stat = project.stat(follow_symlinks=False)
+                    project_create_time = date.fromtimestamp(project_stat.st_ctime).strftime(date_format)
+                    for work_dir in os.scandir(project):
+                        if work_dir.is_dir():
+                            work_name = os.path.basename(work_dir.path)
+                            image_count = count_path(work_dir.path)
+                            self.CallAnySproc("AddWorkProcessState", obs_date, host_name, project_name, work_name,
+                                          project_create_time, process_state, image_count)
 
 
-
-def count_path(path_str: str) -> () :
+def count_path(path_str: str) -> ():
     """
     :param path_str: string representing top of search
     :return: total files, total size in bytes of the files under path
     """
     total_size = 0
-    num_files  = 0
-
+    num_files = 0
 
     try:
-        for root,dirs,files in os.walk(path_str,topdown=True):
+        for root, dirs, files in os.walk(path_str, topdown=True):
             num_files = len(files)
             # total_size = sum(getsize(join(root,name)) for name in files)
 
@@ -95,25 +90,18 @@ def count_path(path_str: str) -> () :
                 d_file_count = count_path(join(root, work_dir))
                 num_files += d_file_count
 
-
             # return here or you iterate through files
             # print(path_str,num_files,sep=",")
-            break
+            return num_files
     finally:
         # Any number of things could happen, just give what we've got so far
         return num_files
 
 
-
-
 if __name__ == "__main__":
-
     par = DbFileParser("Scans the folder, counting the files in each subfolder, and sending the state to the database",
                        "Usage: FSGather -d section:configFile -s [\"cataloged\"\"scanned\",\"ReadyToProcess\",\"published\"]")
 
-
     dbwr = StateWriter(par.parsedArgs.drsDbConfig)
 
-    dbwr.writeProject(par.parsedArgs.pathToScan,par.parsedArgs.pubState)
-
-
+    dbwr.writeProject(par.parsedArgs.pathToScan, par.parsedArgs.pubState)
