@@ -35,7 +35,7 @@ You have to be the user who has installed brew for permissions to work.
 ### Database
 #### Client
 The service user needs some database configuration files to run. You know who to call for service.
-#### Server
+[]() #### Server
 When run in the field, the cloud based database access may need to include the field IP address.
 ## Usage
 `FSGather.py` is written to be installed as a crontab job entry, although it can be run standalone.
