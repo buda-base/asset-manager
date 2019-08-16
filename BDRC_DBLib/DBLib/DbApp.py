@@ -128,12 +128,12 @@ class DbApp:
                 hasNext = workCursor.nextset()
         return rl
 
-    def CallAnySproc(self, sproc: str, *args):
+    def CallAnySproc(self, sproc: str, *args) -> [] :
         """
         Calls a routine without analyzing the result
         :param sproc: routine name
         :param args: arguments
-        :return: true if there are any results, throws exception otherwise.
+        :return: results as list of dictionary items, throws exception otherwise.
         Caller handles
         """
         self.start_connect()
@@ -141,7 +141,9 @@ class DbApp:
         rl: list[dict] = []
 
         with self.connection:
-            workCursor: mysql.Connection.Cursor = self.connection.cursor()
+            workCursor: mysql.Connection.Cursor = self.connection.cursor(mysql.cursors.DictCursor)
             print(f'Calling {sproc}')
             workCursor.callproc(f'{sproc}', tuple(arg for arg in args))
-            workCursor.fetchall()  # wgaf
+            rl = workCursor.fetchall()
+
+        return rl
