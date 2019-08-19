@@ -82,6 +82,15 @@ class StateValidator(DbApp):
 
 
 class StateWriter(DbApp):
+    """
+    Sends up a processing or publishing state to the processing.RDS database
+    """
+
+    # Constants. See processing.RDS db.publish_states
+    _no_return: str = ""
+    _full_pub_text: str = 'fullBDRC'
+    _web_pub_text: str = 'webBDRC'
+    _db_date_format = '%m-%d-%Y'
 
     def write_project(self, project_root_folder: Path, process_state: str):
         """
@@ -102,25 +111,71 @@ class StateWriter(DbApp):
         # process_state
         # image_count
 
-        date_format = '%m-%d-%Y'
-
-        obs_date = date.today().strftime(date_format)
-        project_path = Path(project_root_folder).resolve()
+        obs_date = date.today().strftime(self._db_date_format)
+        project_path: Path = Path(project_root_folder).resolve()
         host_name = platform.node()
 
         self.start_connect()
+
+        if process_state.upper() == "PUBLISHED":
+            self.do_published(process_state, project_path, obs_date, host_name)
+        else:
+            self.do_processed(process_state, project_path, obs_date, host_name)
+
+    def do_processed(self, process_state: str, project_path: Path, obs_date: str, host_name: str):
+        """
+        Log in process activity.
+        :param process_state: state of tree entry
+        :type process_state: str
+        :param project_path: parent folder of of projects containing works
+        :type project_path: str
+        :param obs_date:
+        :type obs_date: str
+        :param host_name: platform
+        :type host_name: str
+        :return:
+        """
         with os.scandir(project_path) as project_iter:
             for project in project_iter:
                 if project.is_dir():
                     project_name = project.name
                     project_stat = project.stat(follow_symlinks=False)
-                    project_create_time = date.fromtimestamp(project_stat.st_ctime).strftime(date_format)
+                    project_create_time = date.fromtimestamp(project_stat.st_ctime).strftime(self._db_date_format)
                     for work_dir in os.scandir(project):
-                        if work_dir.is_dir():
-                            work_name = os.path.basename(work_dir.path)
-                            image_count = self.count_path(work_dir.path)
-                            self.CallAnySproc("AddWorkProcessState", obs_date, host_name, project_name, work_name,
-                                              project_create_time, process_state, image_count)
+                        if not work_dir.is_dir():
+                            continue
+                        work_name = os.path.basename(work_dir.path)
+                        image_count = self.count_path(work_dir.path)
+                        self.CallAnySproc("AddWorkProcessState", obs_date, host_name, project_name, work_name,
+                                          project_create_time, process_state, "", image_count)
+
+    def do_published(self, process_state: str, work_parent: Path, obs_date: str, host_name: str):
+        """
+        Log published activity.
+        :param process_state: state of tree entry
+        :type process_state: str
+
+        :param work_parent: parent folder of of projects containing works
+        :type work_parent: Path
+        :param obs_date:
+        :type obs_date: str
+        :param host_name: platform
+        :type host_name: str
+        :return:
+        """
+        project_name = str(work_parent)  # invariant. Could skip
+
+        with os.scandir(work_parent) as work_parents:
+            for pub_work in work_parents:
+                if not pub_work.is_dir():
+                    continue
+                work_stat = pub_work.stat(follow_symlinks=False)
+                work_create_time = date.fromtimestamp(work_stat.st_ctime).strftime(self._db_date_format)
+                work_name = os.path.basename(pub_work.path)
+                image_count = self.count_path(pub_work.path)
+                publish_state = self.calc_published_state(process_state, Path(pub_work.path), image_count)
+                self.CallAnySproc("AddWorkProcessState", obs_date, host_name, project_name, work_name, work_create_time,
+                                  process_state, publish_state, image_count)
 
     def count_path(self, path_str: str) -> ():
         """
@@ -144,6 +199,39 @@ class StateWriter(DbApp):
         finally:
             # Any number of things could happen, just give what we've got so far
             return num_files
+
+    def calc_published_state(self, state: str, path: Path, reference_image_count: int) -> str:
+        """
+        Determines the publish state for a work.
+        :param state: process state.
+        :param path: Path to query
+        :param reference_image_count: count of ALL images in a work, including sources, archives, images
+        :return str 'full,' 'web', or '': if 'state !=  'published', return empty string. Otherwise,
+        compare 'archive' file count to overall. If it's less than 1/3, assume it's a _web_pub_text, otherwise
+        it's the full pub.
+        """
+
+        if not (path.exists() and state == 'published'):
+            return ""
+
+
+        # noinspection PyTypeChecker
+        ig_file_count = 0
+        for root, dirs, files in os.walk(path):
+
+            # Trivial case
+            if not Path(root,'archive').exists():
+                return self._web_pub_text
+
+            for image_groups in os.scandir(join(root, 'archive')):
+                if not image_groups.is_dir():
+                    continue
+                for ig_root, ig_dirs, ig_files in os.walk(image_groups):
+                        ig_file_count += len(ig_files)
+
+            # approximate
+            return self._web_pub_text if float(ig_file_count) < (
+                    0.3 * float(reference_image_count)) else self._full_pub_text
 
 
 if __name__ == "__main__":
