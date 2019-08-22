@@ -147,3 +147,19 @@ class DbApp:
             rl = workCursor.fetchall()
 
         return rl
+
+
+    def CallAnyExec(self, query: str, *args) -> {}:
+        """
+        Calls a routine without analyzing the result
+        :param sproc: routine name
+        :param args: arguments
+        :return: Results in Dictionary form
+
+        """
+        self.start_connect()
+
+        with self.connection:
+            workCursor: mysql.Connection.Cursor = self.connection.cursor(mysql.cursors.DictCursor)
+            workCursor.execute(query, tuple(args))
+            return workCursor.fetchall()
