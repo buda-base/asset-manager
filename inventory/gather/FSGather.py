@@ -27,7 +27,6 @@ class DbFileParser(DbAppParser):
         """
         super().__init__(description, usage)
         self._parser.add_argument('-s', '--processing_state_arg', help='specify publish state', required=True)
-        self._parser.add_argument('-p', '--publish_state_arg', help='specify publish state', required=False)
         self._parser.add_argument("pathToScan", help='Path to scan. Basename becomes the project name')
 
 
@@ -37,7 +36,7 @@ def a_list(test_val: object, test_col: object, valid_values: object) -> object:
     :param test_val: value to seek
     :param test_col: index in dictionary
     :param valid_values: range of values
-    :return:
+    :return: True if the test_val is in the dictionary
     """
     tv_upper = test_val.upper()
     rc: bool = True
@@ -45,7 +44,7 @@ def a_list(test_val: object, test_col: object, valid_values: object) -> object:
     value_list = [x[test_col] for x in valid_values]
     value_list_upper = [x.upper() for x in value_list]
     if tv_upper not in value_list_upper:
-        print(f'{test_val} is invalid. Valid values are {str(valid_values)}')
+        print(f'{test_val} is invalid. Valid values are {str(value_list)}')
         rc = False
     return rc
 
@@ -54,11 +53,10 @@ class StateValidator(DbApp):
     """
     Validate arguments against a database
     """
-    _publish_state: str = None
     _process_state: str = None
 
     # noinspection PyTypeChecker
-    def __init__(self, db_config: object, process_state: str, publish_state: str) -> object:
+    def __init__(self, db_config: object, process_state: str) -> object:
         """
 
         :type db_config: object
@@ -66,20 +64,11 @@ class StateValidator(DbApp):
         # noinspection PyTypeChecker
         super().__init__(db_config)
         self._process_state = process_state
-        self._publish_state = publish_state
 
     def validate(self):
         test_col = 'state_name'
-        proc_ok: bool = a_list(self._process_state, test_col,
+        return a_list(self._process_state, test_col,
                                self.CallAnyExec(f'select {test_col} from process_states'))
-        pub_ok: bool = True
-        if self._publish_state:
-            test_col = 'state_name'
-            pub_ok = a_list(self._publish_state, test_col, self.CallAnyExec(f'select {test_col}  from publish_states'))
-
-        # test prints output, just tell caller its ok to to continue
-        return proc_ok and pub_ok
-
 
 class StateWriter(DbApp):
     """
@@ -157,7 +146,7 @@ class StateWriter(DbApp):
 
         :param work_parent: parent folder of of projects containing works
         :type work_parent: Path
-        :param obs_date:
+        :param obs_date: 
         :type obs_date: str
         :param host_name: platform
         :type host_name: str
@@ -240,8 +229,7 @@ if __name__ == "__main__":
                        "\"published\"]")
 
     # Since you need the db config to work before you can get the valid states from the db
-    if not StateValidator(par.parsedArgs.drsDbConfig, par.parsedArgs.processing_state_arg,
-                          par.parsedArgs.publish_state_arg).validate():
+    if not StateValidator(par.parsedArgs.drsDbConfig, par.parsedArgs.processing_state_arg).validate():
         sys.exit(-1)
 
     dbwr = StateWriter(par.parsedArgs.drsDbConfig)
