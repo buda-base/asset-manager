@@ -17,7 +17,7 @@ BacklogDb is a python module which contains utility programs which read a variet
 #### Client display
 The results are displayed through a Google Data Studio dashboard named [Images Inventory](https://datastudio.google.com/reporting/1iXWwpE9ySe6l6nX1n5R8Ayo5ZnAwe8wq/page/o2hx)
 ### Database
-The Python modules update an AWS RDS database `processing` `FSGather.py` writes updates to a simple table `process_work_states`
+The Python modules update an AWS RDS database `processing` `FSGather.py` writes updates to a simple table `process_work_states.`
 ## Installation
 ### Pre-requisites
 #### Python 3.7
@@ -50,6 +50,9 @@ You have to be the user who has installed brew for permissions to work.
 #### Client
 The service user needs some database configuration files to run. You know who to call for service.
 #### Server
+1. Allowing connection:
 When run in the field, the cloud based database access may need to include the field IP address.
+2. Enabling batch jobs:
+The MySQL instance has to allow scheduled events to run. This is not a dynamic system variable change, this has to be done in the MySQL option pages on AWS, and the server will need to be restarted.
 ## Usage
 `FSGather.py` is written to be installed as a crontab job entry, although it can be run standalone.
