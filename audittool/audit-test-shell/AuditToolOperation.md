@@ -3,7 +3,7 @@
 Please refer to [Installation](Install.md) for details of installation.
 ## Operation
 ### Starting
-Start the audit tool with the `audittool.sh` script. The configuration step provided locations of the software which `audittool.sh` needs.
+Start the audit tool with the `audittool.sh` script. The configuration step provides locations of the software which `audittool.sh` needs.
 The arguments to audit tool are simply:
 ```bash
 audittool.sh -p workFolder[;workFolder;workFolder...]
