@@ -14,8 +14,8 @@ audittool.sh -p workFolder[;workFolder;workFolder...]
 Audit Tool log outputs are in a subdirectory `audit-tool-logs` of the user's home directory. You can change this in the Audit tool's `log4j2.properties` folder.
 
 #### Contents
-|||
-----|----|----
+|Level|File name|Details|
+|----|----|----|
 |Summary|`AuditTestShell-SUMMARY-date&Time.log`|Audit Tool writes a summary of each test to the console, and to a summary log file. The summary log file shows the pass/fail status of each test on each given directory.|
 |Detail|`AuditTestShell-DETAIL-date&Time.log`|A detailed log file,  shows each file which failed a specific test.|
 |Internal|`AuditTestShell-TestInt-date&time.log`| the shell passes in this log4j logger for test internal logging.|
