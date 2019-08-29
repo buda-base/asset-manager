@@ -3,15 +3,21 @@
 Please refer to [Installation](Install.md) for details of installation.
 ## Operation
 ### Starting
-Start the audit tool with the `audittool.sh` script. The configuration step provides locations of the software which `audittool.sh` needs.
+Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
 The arguments to audit tool are simply:
 ```bash
 audittool.sh -p workFolder[;workFolder;workFolder...]
 ```
 ### Output
-Audit Tool writes a summary of each test to the console, and to a summary log file, `AuditTestShell-SUMMARY-date&Time.log`
-The summary log file shows the pass/fail status of each test on each given directory. A detailed log file, `AuditTestShell-DETAIL-date&Time.log` shows each file which failed a specific test.
-Tests can log internal details to a file, `AuditTestShell-TestInt-date&time.log`
+
+#### Location
+Audit Tool log outputs are in a subdirectory `audit-tool-logs` of the user's home directory. You can change this in the Audit tool's `log4j2.properties` folder.
+
+#### Contents
+----|----|----
+Summary|`AuditTestShell-SUMMARY-date&Time.log`|Audit Tool writes a summary of each test to the console, and to a summary log file. The summary log file shows the pass/fail status of each test on each given directory.
+Detail|`AuditTestShell-DETAIL-date&Time.log`|A detailed log file,  shows each file which failed a specific test.
+Internal|`AuditTestShell-TestInt-date&time.log`| the shell passes in this log4j logger for test internal logging. 
 
 ## Principles of operation
 Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or random directory.
