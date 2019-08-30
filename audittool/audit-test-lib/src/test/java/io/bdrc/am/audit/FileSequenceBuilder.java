@@ -4,7 +4,9 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,6 +99,30 @@ class FileSequenceBuilder {
 
         BuildMissingFiles();
 
+        return _rootFolder.getRoot();
+    }
+
+
+    File BuildFileSequencePassingFiles() throws IOException {
+        File testRoot = BuildPassingFiles();
+
+        DirectoryStream.Filter<Path > directoryOnlyFilter =
+                entry -> (entry.toFile().isDirectory());
+
+        // add a random directory to some of the image groups under the image group parents.
+        for (String igp : _imageGroupParentFolders) {
+            Path igpPath = Paths.get(testRoot.getAbsolutePath(),igp);
+
+            // Get the imagegroup folders
+            try (DirectoryStream<Path> imageGroups = Files.newDirectoryStream(igpPath, directoryOnlyFilter))
+            {
+                for (Path ig : imageGroups)
+                {
+                    Files.createDirectory(Paths.get(ig.toAbsolutePath().toString(),"Mostly Harmless"));
+                }
+            }
+
+        }
         return _rootFolder.getRoot();
     }
 

@@ -52,7 +52,8 @@ public class FileSequence extends ImageGroupParents {
 
 
 // Creating the filter
-            DirectoryStream.Filter<Path> filter = entry -> !(entry.toFile().isHidden());
+            DirectoryStream.Filter<Path> filter =
+                    entry -> !(entry.toFile().isHidden()) ;
 
             try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, filter)) {
 
@@ -60,7 +61,7 @@ public class FileSequence extends ImageGroupParents {
                 for (Path entry : pathDirectoryStream) {
                     sysLogger.debug(String.format("entry %s", entry.toString()));
 
-                    // reiterate NoDirInImages test
+                    // reiterate no files in image group parent test
                     if (!failFile(dir, entry)) {
 
                         // We only want to inspect specific directories
@@ -108,7 +109,9 @@ public class FileSequence extends ImageGroupParents {
         private void sequenceImageGroupParent(final int sequenceLength, final DirectoryStream.Filter<Path> filter, final Path imageGroupParent) throws IOException
         {
 
-
+            // asset-manager #23 dont count directories in image groups
+            DirectoryStream.Filter<Path> filesInImageGroupFilter =
+                    entry -> !(entry.toFile().isHidden() || entry.toFile().isDirectory());
 
             for (Path anImageGroup : Files.newDirectoryStream(imageGroupParent, filter)) {
                 boolean firstFolderFailure = false;
@@ -118,7 +121,8 @@ public class FileSequence extends ImageGroupParents {
                 sysLogger.debug("ImageGroup {}", anImageGroup.toString());
 
                 TreeMap<Integer, String> filenames = new TreeMap<>();
-                for (Path imageGroupFile : Files.newDirectoryStream(anImageGroup, filter)) {
+
+                for (Path imageGroupFile : Files.newDirectoryStream(anImageGroup, filesInImageGroupFilter)) {
 
                     String thisFileName = FilenameUtils.getBaseName(imageGroupFile.getFileName().toString());
 
