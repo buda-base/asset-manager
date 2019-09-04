@@ -16,6 +16,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -102,15 +104,21 @@ public class shell {
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
             for (String aTestDir : dirsToTest) {
-                sysLogger.info("Invoking {}. Params :{}:", testDesc, aTestDir);
+                sysLogger.debug("Invoking {}. Params :{}:", testDesc, aTestDir);
+                LocalTime testLaunchTime = LocalTime.now();
 
                 @SuppressWarnings("unchecked")
                 TestResult tr = RunTest(testLogger, (Class<IAuditTest>) testClass, aTestDir, propertyArgs);
 
+                Duration testRunTime = Duration.between(LocalTime.now(), testLaunchTime);
+
+                String etString = String.format("%2d:%2d:%2d.%4d", testRunTime.getUnits());
+
                 for (TestMessage tm : tr.getErrors()) {
                     detailLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
                 }
-                String resultLogString = String.format("Test %s result %s", testName, tr.Passed() ? "Passed" : "Failed");
+                String resultLogString = String.format("%s:%s:%s:%s", testName, tr.Passed() ? "Passed" :
+                        "Failed");
                 if (tr.Passed()) {
                     sysLogger.info(resultLogString);
                 } else {
