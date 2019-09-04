@@ -105,19 +105,19 @@ public class shell {
                 Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
                 for (String aTestDir : dirsToTest) {
-                    sysLogger.info("Invoking {}. Params :{}:", testDesc, aTestDir);
+                    sysLogger.debug("Invoking {}. Params :{}:", testDesc, aTestDir);
 
                     @SuppressWarnings("unchecked")
                     TestResult tr = RunTest(testLogger, (Class<IAuditTest>) testClass, aTestDir, propertyArgs);
 
                     for (TestMessage tm : tr.getErrors()) {
-                        detailLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
+                        detailLogger.error("{}:{}:{}", aTestDir, tm.getOutcome().toString(), tm.getMessage());
                     }
-                    String resultLogString = String.format("Test %s result %s", testName, tr.Passed() ? "Passed" : "Failed");
+                    String resultLogFormat = "folder:{}\tTest:{}\tresult:{}";
                     if (tr.Passed()) {
-                        sysLogger.info(resultLogString);
+                        sysLogger.info(resultLogFormat, aTestDir, testDesc, "Passed");
                     } else {
-                        sysLogger.error(resultLogString);
+                        sysLogger.error(resultLogFormat, aTestDir, testDesc, "Failed");
                     }
                 }
 
@@ -148,6 +148,7 @@ public class shell {
     private static Hashtable<String, AuditTestConfig> LoadDictionaryFromProperty(final String testJarPropertyName,
                                                                                  FilePropertyManager resources) throws Exception
     {
+
         String jarPath = System.getProperty(testJarPropertyName);
         if (jarPath == null) {
             String message = String.format("%s property not found", testJarPropertyName);
@@ -246,7 +247,7 @@ public class shell {
         if ((resHome == null) || resHome.isEmpty()) {
             resHome = System.getProperty("user.dir");
         }
-        System.out.println("Reshome is " + resHome);
+        sysLogger.debug("Reshome is " + resHome);
         return Paths.get(resHome, resourceFileName);
     }
 }
