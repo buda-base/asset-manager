@@ -22,7 +22,7 @@ class ArgParser {
 
     private final String infileOptionShort = "i";
     private final String infileOptionStdin = "-";
-    private final String argsep = ";";
+    private final String argsep = ",";
 
     private final Logger logger = LoggerFactory.getLogger(ArgParser.class);
 
@@ -102,7 +102,7 @@ class ArgParser {
     /**
      * Extracts the dir arguments
      *
-     * @return contents of the "-i --input" argument or the ;delimited list of arguments
+     * @return contents of the "-i --input" argument or the ,delimited list of arguments
      */
     ArrayList<String> getDirs() throws IOException {
 
@@ -135,7 +135,7 @@ class ArgParser {
             String inArgs = nonOptionArgs.get(0);
             if (!getReadStdIn())
             {
-                returned = new ArrayList<>(Arrays.asList(inArgs.split(";")));
+                returned = new ArrayList<>(Arrays.asList(inArgs.split(argsep)));
             }
 
         }
@@ -145,10 +145,10 @@ class ArgParser {
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("AuditTest [options] { - | Directory;Directory;Directory}\nwhere:\n\t- read " +
+        formatter.printHelp("AuditTest [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
                         "folders from " +
                         "standard input\n\t" +
-                        "Directory;.... is a list of directories separated by ;\n[options] are:",
+                        "Directory,.... is a list of directories separated by ,\n[options] are:",
                 options);
     }
 
