@@ -5,8 +5,10 @@ import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,7 +58,6 @@ public class shell {
 
     public static void main(String[] args) {
 
-        int exitRc = SYS_OK;        // ever hopeful
         Boolean anyFailed = false;
 
         try {
@@ -73,7 +74,7 @@ public class shell {
             assert td != null;
             ArgParser argParser = new ArgParser(args);
 
-            if (argParser.has_input()) {
+            if (argParser.has_Dirlist()) {
                 ArrayList<String> dirsToTest = argParser.getDirs();
                 ResolvePaths(dirsToTest);
                 for (String aTestDir : dirsToTest) {
@@ -85,15 +86,19 @@ public class shell {
             // dont force mutually exclusive. Why not do both?
             if (argParser.getReadStdIn()) {
                 String curLine;
-                while (null != (curLine = System.console().readLine())) {
-                    Boolean onePassed  = RunTestsOnDir(shellProperties, td, curLine);
-                    anyFailed |= !onePassed;
+                try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
+                    while (null != (curLine = f.readLine())) {
+                        sysLogger.debug("readLoop got line {} ", curLine);
+                        Boolean onePassed = RunTestsOnDir(shellProperties, td, curLine);
+                        anyFailed |= !onePassed;
+                    }
                 }
             }
 
         } catch (Exception e) {
             System.out.println("Exiting on exception " + e.getMessage());
             sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
+            sysLogger.debug(e.toString(), e);
             detailLogger.error("System exception", e);
             System.exit( SYS_ERR) ;
         }
@@ -142,7 +147,7 @@ public class shell {
                     aTestDir);
             anyFailed |= !onePassed;
         }
-        return anyFailed;
+        return !anyFailed;
     }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger, final String

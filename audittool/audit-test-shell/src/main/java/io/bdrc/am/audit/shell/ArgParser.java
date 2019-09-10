@@ -24,7 +24,7 @@ class ArgParser {
     private final String infileOptionStdin = "-";
     private final String argsep = ",";
 
-    private final Logger logger = LoggerFactory.getLogger(ArgParser.class);
+    private final Logger logger = LoggerFactory.getLogger("shellLogger");
 
     private Boolean isParsed;
     private List<String> nonOptionArgs;
@@ -74,7 +74,7 @@ class ArgParser {
         }
 
         // sanity check. One of these must be true
-        if (!has_input() && !getReadStdIn())
+        if (!has_Dirlist() && !getReadStdIn())
         {
             printHelp(options);
             isParsed = false;
@@ -84,10 +84,15 @@ class ArgParser {
     /**
      * Test for input as argument or as a file
      *
-     * @return true when the infile option or a list of directories is given on the command line.
+     * @return true when the infile option is set or a list of directories is given on the command line.
      */
-    Boolean has_input() {
-        return cl.hasOption(infileOptionShort) || !getReadStdIn() ;
+    Boolean has_Dirlist() {
+        Boolean rc = cl.hasOption(infileOptionShort) || get_IfArgsCommandLine();
+        logger.debug("hasOption {} !getReadStdin {} has_Dirlist net: {} " ,cl.hasOption(infileOptionShort), !getReadStdIn
+                        (),
+                rc );
+
+        return rc ;
     }
 
     /**
@@ -95,7 +100,18 @@ class ArgParser {
      * @return If the user has specified reading from standard input
      */
     Boolean getReadStdIn() {
+        logger.debug("nonoption args empty {}",nonOptionArgs.isEmpty());
         return (!nonOptionArgs.isEmpty()) && nonOptionArgs.get(0).equals
+                (infileOptionStdin);
+    }
+
+    /**
+     *
+     * @return If the user has specified reading from standard input
+     */
+    Boolean get_IfArgsCommandLine() {
+        logger.debug("get_IfArgsCommandLine nonoption args empty {}",nonOptionArgs.isEmpty());
+        return !nonOptionArgs.isEmpty() && !nonOptionArgs.get(0).equals
                 (infileOptionStdin);
     }
 
