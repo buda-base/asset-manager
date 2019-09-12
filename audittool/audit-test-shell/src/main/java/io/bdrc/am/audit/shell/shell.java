@@ -5,9 +5,10 @@ import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,47 +52,88 @@ public class shell {
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
     private final static Logger sysLogger = LoggerFactory.getLogger("shellLogger"); //("root");
-//    private final static Logger summaryLogger = LoggerFactory.getLogger("summaryLogger"); //("root");
+    //    private final static Logger summaryLogger = LoggerFactory.getLogger("summaryLogger"); //("root");
     private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+
+    private final static int SYS_OK = 0 ;
+    private final static int SYS_ERR = 1 ;
 
     public static void main(String[] args) {
 
-        Path resourceFile = resolveResourceFile("shell.properties");
-        FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
+        Boolean anyFailed = false;
 
-        Hashtable<String, AuditTestConfig> td = null;
         try {
 
+
+
+            Path resourceFile = resolveResourceFile("shell.properties");
+            FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
+
+            Hashtable<String, AuditTestConfig> td ;
+
             td = LoadDictionaryFromProperty("testJar", shellProperties);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            assert td != null;
+            ArgParser argParser = new ArgParser(args);
+
+            if (argParser.has_Dirlist()) {
+                ArrayList<String> dirsToTest = argParser.getDirs();
+                ResolvePaths(dirsToTest);
+                for (String aTestDir : dirsToTest) {
+                    Boolean onePassed =  RunTestsOnDir(shellProperties, td, aTestDir);
+                    anyFailed |= !onePassed;
+                }
+            }
+
+            // dont force mutually exclusive. Why not do both?
+            if (argParser.getReadStdIn()) {
+                String curLine;
+                try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
+                    while (null != (curLine = f.readLine())) {
+                        sysLogger.debug("readLoop got line {} ", curLine);
+                        Boolean onePassed = RunTestsOnDir(shellProperties, td, curLine);
+                        anyFailed |= !onePassed;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Exiting on exception " + e.getMessage());
+            sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
+            sysLogger.debug(e.toString(), e);
+            detailLogger.error("System exception", e);
+            System.exit( SYS_ERR) ;
         }
 
-        ArrayList<String> dirsToTest = (new ArgParser(args)).getDirs();
+        System.exit(anyFailed ? SYS_ERR : SYS_OK );
+    }
 
-        ResolvePaths(dirsToTest);
+    private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties, final Hashtable<String, AuditTestConfig>
+            td, final String aTestDir)
+    {
 
-        // Cant use Object[] directly
-        String[] runArgs = new String[dirsToTest.size()];
-        dirsToTest.toArray(runArgs);
-
-
-        assert td != null;
+        Boolean anyFailed = false;
         for (String testName : td.keySet()) {
 
             AuditTestConfig testConfig = td.get(testName);
 
             // Do we have a value at all?
             if (testConfig == null) {
+
+                // sysLogger foes to a csv and a log file, so add the extra parameters.
+                // log4j wont care.
                 sysLogger.error("No test config found for {}. Contact library provider.",
-                        testName);
+                        testName, "No test config found", "Failed");
+                anyFailed = true;
                 continue;
             }
 
             // Is this test an  IAuditTest?
             Class<?> testClass = testConfig.getTestClass();
             if (!IAuditTest.class.isAssignableFrom(testClass)) {
-                sysLogger.error("Test found for {} does not implement IAudit", testName);
+                sysLogger.error("Test found for {} does not implement IAudit", testName, "doesnt implement IAudit",
+                        "Failed");
+                anyFailed = false;
                 continue;
             }
 
@@ -103,30 +145,32 @@ public class shell {
             // extract the property values the test needs
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
-            for (String aTestDir : dirsToTest) {
-                sysLogger.debug("Invoking {}. Params :{}:", testDesc, aTestDir);
-                LocalTime testLaunchTime = LocalTime.now();
-
-                @SuppressWarnings("unchecked")
-                TestResult tr = RunTest(testLogger, (Class<IAuditTest>) testClass, aTestDir, propertyArgs);
-
-                Duration testRunTime = Duration.between(LocalTime.now(), testLaunchTime);
-
-                String etString = String.format("%2d:%2d:%2d.%4d", testRunTime.getUnits());
-
-                for (TestMessage tm : tr.getErrors()) {
-                    detailLogger.error("{}:{}", tm.getOutcome().toString(), tm.getMessage());
-                }
-                String resultLogString = String.format("%s:%s:%s:%s", testName, tr.Passed() ? "Passed" :
-                        "Failed");
-                if (tr.Passed()) {
-                    sysLogger.info(resultLogString);
-                } else {
-                    sysLogger.error(resultLogString);
-                }
-            }
-
+            Boolean onePassed = TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
+                    aTestDir);
+            anyFailed |= !onePassed;
         }
+        return !anyFailed;
+    }
+
+    private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger, final String
+            testDesc, final Hashtable<String, String> propertyArgs, final String testDir)
+    {
+        sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
+
+
+        @SuppressWarnings("unchecked")
+        TestResult tr = RunTest(testLogger, testClass, testDir, propertyArgs);
+
+        for (TestMessage tm : tr.getErrors()) {
+            detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
+        }
+        String resultLogFormat = "folder:{}\tTest:{}\tresult:{}";
+        if (tr.Passed()) {
+            sysLogger.info(resultLogFormat, testDir, testDesc, "Passed");
+        } else {
+            sysLogger.error(resultLogFormat, testDir, testDesc, "Failed");
+        }
+        return tr.Passed();
     }
 
     /**
@@ -147,11 +191,14 @@ public class shell {
 
     @SuppressWarnings("unchecked")
     private static Hashtable<String, AuditTestConfig> LoadDictionaryFromProperty(final String testJarPropertyName,
-                                                                                 FilePropertyManager resources) throws IOException
+                                                                                 FilePropertyManager resources) throws Exception
     {
+
         String jarPath = System.getProperty(testJarPropertyName);
-
-
+        if (jarPath == null) {
+            String message = String.format("%s property not found", testJarPropertyName);
+            throw new Exception(message);
+        }
         if (!(new File(jarPath)).isFile()) {
             throw new FileNotFoundException(jarPath);
         }
@@ -166,7 +213,7 @@ public class shell {
                     new URL[]{libUrl});
         } catch (MalformedURLException e) {
             sysLogger.error(libUrlStr, e);
-            return null;
+            throw new Exception(String.format("%s libURL not found", libUrlStr));
         }
 
 
@@ -183,7 +230,8 @@ public class shell {
                 result = (Hashtable<String, AuditTestConfig>) method.invoke(instance);
             }
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
-            sysLogger.error(e.toString());
+            String eStr = e.toString();
+            sysLogger.error(eStr, eStr, " Cant acquire resource file", "Failed");
         }
 
         return result;
@@ -206,7 +254,7 @@ public class shell {
      * Shell to run a test instance, given its class
      *
      * @param testLogger Logger for the test. Not the same as the shell logger
-     * @param params array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
+     * @param params     array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
      */
     private static TestResult RunTest(Logger testLogger, Class<IAuditTest> testClass, Object... params) {
 
@@ -245,7 +293,7 @@ public class shell {
         if ((resHome == null) || resHome.isEmpty()) {
             resHome = System.getProperty("user.dir");
         }
-        System.out.println("Reshome is " + resHome);
+        sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
         return Paths.get(resHome, resourceFileName);
     }
 }

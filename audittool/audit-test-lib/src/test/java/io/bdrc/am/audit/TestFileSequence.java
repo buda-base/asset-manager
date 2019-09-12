@@ -48,6 +48,18 @@ public class TestFileSequence extends AuditTestTestBase{
 
 
     @Test
+    /*
+     * An image group folder which has subfolders. It should fail a different test,
+     * but not fail the sequence test. Test that FileSequence disregards subfolders.
+     */
+    public void TestIGWithSubFolders() throws IOException {
+        File fileRoot =  _IGPfileSequenceBuilder.BuildFileSequencePassingFiles();
+        FileSequence fst = runTest(fileRoot.getAbsolutePath(),_activeSequenceTestParams);
+
+        assertTrue("Test did not pass when it should",fst.IsTestPassed());
+    }
+
+    @Test
     public void TestMissingFiles() throws IOException {
         File fileRoot = _IGPfileSequenceBuilder.BuildMissingFiles(12,2);
         FileSequence fst = runTest(fileRoot.getAbsolutePath(),_activeSequenceTestParams);
