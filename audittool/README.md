@@ -44,3 +44,35 @@ _tbd_@Tseng:iaAudit$ audittool.sh /Users/_tbd_/mnt/Archive/W0FFY001,/Users/_tbd_
 # Audit tool tests
 Tests are found in a named library which the `audittool.sh` script passes to the `auditool` main jar file.
 The initial set of tests is specified in [Image capture Test Requirements](https://docs.google.com/document/d/1TrjUdoLJd5N90d1vWloRqNrlC144-DPfLrClOLsbhVg/edit?usp=sharing)
+
+# Test output
+Test output is found in `~/audit-test-logs` or `$HOME/audit-test-logs` which is a subfolder of the running user's home directory. This value is configurable.
+
+Test output is saved in two formats:
+1. csv file, with a simplified structure. These are designed to be easily pasted into spreadsheet programs.
+2. log files, for advanced processing.
+
+Each type produces summary and detail  files.
+
+## Summary output
+
+Summary files simply report on each line:
+- the work which was tested
+- the test Operation
+- the test result.
+
+## Detailed output
+
+Detail output contains more lines, which name each file which caused a test to fail. Summary output is included.
+
+# Configuration
+## Property file
+
+`shell.properties`
+
+Audit tool reads several variables from its property file `shell.properties` which is found in the same subdirectory as the shell jar file. These properties locate the tests and define parameters which the tests need, such as the
+folder names of parents of image groups.
+
+`log4j2.properties`
+
+Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.
