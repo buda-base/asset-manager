@@ -38,6 +38,7 @@ Maven Assembly configRef. See ../pom.xml
             <outputDirectory></outputDirectory>
             <includes>
                 <include>*.sh</include>
+                <include>*.ps1</include>
                 <include>*.properties</include>
             </includes>
         </fileSet>
