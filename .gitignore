@@ -1,7 +1,7 @@
 __pycache__/
 .DS_Store
 site/
-.idea/
-*.iml
 *~
 export
+export/
+target/
