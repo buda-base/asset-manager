@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/audittool" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/audittool/audit-test-interface" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/audittool/audit-test-shell" charset="UTF-8" />
+  </component>
+</project>

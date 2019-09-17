@@ -1,0 +1,253 @@
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n\n    <modelVersion>4.0.0</modelVersion>\n\n    <artifactId>audit-test-lib</artifactId>\n    <groupId>audit-test-lib</groupId>\n    <version>0.8-SNAPSHOT-2</version>\n    <build>\n        <plugins>\n            <plugin>\n                <groupId>org.apache.maven.plugins</groupId>\n                <artifactId>maven-compiler-plugin</artifactId>\n                <version>3.8.0</version>\n                <configuration>\n                    <source>8</source>\n                    <target>8</target>\n                </configuration>\n            </plugin>\n\n            <plugin>\n                <artifactId>maven-assembly-plugin</artifactId>\n                <executions>\n                    <execution>\n                        <phase>package</phase>\n                        <goals>\n                            <goal>single</goal>\n                        </goals>\n                    </execution>\n                </executions>\n                <configuration>\n                    <archive>\n                        <manifest>\n                            <addClasspath>true</addClasspath>\n                        </manifest>\n                    </archive>\n                    <descriptorRefs>\n                        <descriptorRef>jar-with-dependencies</descriptorRef>\n                    </descriptorRefs>\n                </configuration>\n            </plugin>        </plugins>\n    </build>\n    <dependencies>\n        <dependency>\n            <groupId>io.bdrc.am</groupId>\n            <artifactId>audit-test-interface</artifactId>\n            <version>1.0-SNAPSHOT</version>\n            <!--<scope>compile</scope>-->\n        </dependency>\n        <dependency>\n            <groupId>org.slf4j</groupId>\n            <artifactId>slf4j-api</artifactId>\n            <version>1.7.12</version>\n        </dependency>\n        <dependency>\n            <groupId>org.apache.logging.log4j</groupId>\n            <artifactId>log4j-slf4j-impl</artifactId>\n            <version>2.11.2</version>\n        </dependency>\n        <!--<dependency>-->\n            <!--<groupId>org.apache.logging.log4j</groupId>-->\n            <!--<artifactId>log4j-api</artifactId>-->\n            <!--<version>2.11.1</version>-->\n        <!--</dependency>-->\n        <dependency>\n            <groupId>commons-io</groupId>\n            <artifactId>commons-io</artifactId>\n            <version>2.0.1</version>\n        </dependency>\n        <dependency>\n            <groupId>junit</groupId>\n            <artifactId>junit</artifactId>\n            <version>4.12</version>\n            <scope>test</scope>\n        </dependency>\n        <dependency>\n            <groupId>org.apache.commons</groupId>\n            <artifactId>commons-lang3</artifactId>\n            <version>3.8.1</version>\n        </dependency>\n    </dependencies>\n\n\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pom.xml	(date 1557419309000)
++++ pom.xml	(date 1557946856000)
+@@ -80,6 +80,12 @@
+             <artifactId>commons-lang3</artifactId>
+             <version>3.8.1</version>
+         </dependency>
++        <dependency>
++            <groupId>gov.nih.imagej</groupId>
++            <artifactId>imagej</artifactId>
++            <version>1.47</version>
++            <type>pom</type>
++        </dependency>
+     </dependencies>
+ 
+ 
+Index: src/test/java/io/bdrc/am/audit/TestProcessedImage.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/io/bdrc/am/audit/TestProcessedImage.java	(date 1557946995000)
++++ src/test/java/io/bdrc/am/audit/TestProcessedImage.java	(date 1557946995000)
+@@ -0,0 +1,68 @@
++package io.bdrc.am.audit;
++
++
++
++import io.bdrc.am.audit.audittests.ImageAttributeTests;
++
++import io.bdrc.am.audit.iaudit.Outcome;
++import io.bdrc.am.audit.iaudit.TestResult;
++import org.junit.*;
++import org.junit.rules.TemporaryFolder;
++
++import java.io.File;
++import java.io.IOException;
++import java.nio.file.DirectoryStream;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.nio.file.Paths;
++import java.util.ArrayList;
++import java.util.Hashtable;
++
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertTrue;
++
++public class TestProcessedImage extends AuditTestTestBase {
++
++
++    @Rule
++    public final TemporaryFolder rootFolder = new TemporaryFolder();
++
++    /**
++     * Tests we detect a file which passes its test
++     */
++    @Test
++    public void TestImagePasses() {
++        TestResult tr = runSizeTest("400000");
++        Assert.assertTrue("Test failed, expected pass", tr.Passed());
++    }
++
++    @Test
++    public void TestImageFailsTooLarge() {
++        TestResult tr = runSizeTest("4000");
++        Assert.assertTrue("Test passed, expected fail", tr.getOutcome() == Outcome.FAIL);
++    }
++
++    /**
++     * Test image which is an otherTiffFails
++     */
++    public void TestImageOtherFails() {}
++
++    private TestResult runSizeTest(String sizeParam) {
++        Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
++            put("DerivedImageGroupParent", "testImage");
++            put("MaximumImageSize",sizeParam);
++        }};
++        ImageAttributeTests imageAttributeTests = runTest("../../test/WPass", _activeSequenceTestParams);
++        return imageAttributeTests.getTestResult();
++    }
++
++
++    private ImageAttributeTests runTest(String path,Hashtable<String,String> igParents ) {
++        ImageAttributeTests st = new ImageAttributeTests(logger);
++        st.setParams(path, igParents);
++        st.LaunchTest();
++
++        return st;
++    }
++
++}
+Index: src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java	(date 1557953977000)
++++ src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java	(date 1557953977000)
+@@ -0,0 +1,85 @@
++package io.bdrc.am.audit.audittests;
++
++import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
++import io.bdrc.am.audit.iaudit.Outcome;
++import org.slf4j.Logger;
++
++import java.io.IOException;
++import java.nio.file.*;
++
++public class ImageAttributeTests extends PathTestBase {
++    /**
++     * new AuditTestBase
++     *
++     * @param testName the test name
++     */
++    public ImageAttributeTests(Logger logger)
++    {
++        super("ImageAttributeTests");
++        sysLogger = logger;
++    }
++
++    public class ImageAttributes implements AuditTestBase.ITestOperation {
++
++        @Override
++        public void run() throws IOException {
++            // throw new IOException("Not implemented");
++            Path rootFolder = Paths.get(getPath());
++
++            // This test only examines derived image image groups
++            Path examineDir = Paths.get(getPath(), testParameters.get("DerivedImageGroupParent"));
++
++// Creating the filter
++            DirectoryStream.Filter<Path> filter =
++                    entry -> (entry.toFile().isDirectory() && !(entry.toFile().isHidden());
++
++            try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir, filter)) {
++                for (Path imagegroup : imageGroupDirs) {
++                    TestImages(imagegroup);
++                }
++
++            } catch (DirectoryIteratorException die) {
++                sysLogger.error("Directory iteration error", die);
++                FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
++
++            }
++        }
++
++        @Override
++        public String getName() {
++            return getTestName();
++        }
++
++    private void TestImages(final Path imagegroup) {
++            
++
++    }
++
++}
++
++    @Override
++    public void LaunchTest() {
++        TestWrapper(new ImageAttributes());
++    }
++
++    /**
++     * Set all test parameters (not logging or framework)
++     * TestProcessedImage expects
++     * 1. path - parent container
++     * 2. kwargs: These named arguments are required in (String [])(params[1])
++     * "DerivedImageGroupParent=folderName
++     * "ImageFileSizeLimit=0....n"
++     *
++     * @param params implementation dependent optional parameters
++     */
++    @Override
++    public void setParams(final Object... params) {
++        if ((params == null) || (params.length < 2)) {
++            throw new IllegalArgumentException(String.format("Audit test :%s: Required Arguments path, and " +
++                            "propertyDictionary not given.",
++                    getTestName()));
++        }
++        super.setParams(params[0]);
++        LoadParameters((String[]) (params[1]));
++    }
++}
+Index: src/main/java/io/bdrc/am/audit/audittests/AuditTestBase.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package io.bdrc.am.audit.audittests;\n\nimport io.bdrc.am.audit.iaudit.*;\n\nimport org.slf4j.LoggerFactory;\nimport org.slf4j.Logger;\n\nimport java.io.IOException;\n\npublic abstract class AuditTestBase implements IAuditTest {\n\n    /**\n     * ITestOperation: functional interface\n     */\n    public interface ITestOperation {\n        void run() throws IOException;\n        String getName();\n    }\n    /**\n     * new AuditTestBase\n     *\n     * @param testName the test name\n     */\n    AuditTestBase(String testName) {\n\n        // in case caller forgets.\n        // Base classes generally set logger from constructor\n        sysLogger = LoggerFactory.getLogger(this.getClass());\n\n        _testName = testName;\n        _testResult = new TestResult();\n        _testResult.setOutcome(Outcome.NOT_RUN);\n\n//        /*\n//         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources\n//         *\n//         */\n//        // this.getClass() works because were in the same package (?)\n//        final ClassPropertyManager _propertyManager =\n//                new io.bdrc.am.audit.iaudit.ClassPropertyManager(\"/auditTool\" +\n//                \".properties\",getClass());\n    }\n\n    /**\n     * Record a test instance failure.\n     *\n     * @param why           enum of outcome\n     * @param failedElement element which failed test\n     */\n    void FailTest(Outcome why, String ...failedElement) {\n        _testResult.setOutcome(Outcome.FAIL);\n        _testResult.AddError(why, failedElement);\n    }\n\n\n    void PassTest() {\n        _testResult.setOutcome(Outcome.PASS);\n    }\n\n    public boolean IsTestFailed() {\n        return _testResult.getOutcome() == Outcome.FAIL;\n    }\n\n    public boolean IsTestPassed() {\n        return _testResult.getOutcome() == Outcome.PASS;\n    }\n\n    // Public interface\n\n    public TestResult getTestResult() {\n        return _testResult;\n    }\n\n    public String getTestName() {\n        return _testName;\n    }\n\n    /**\n     * Wrap execution of a test interface\n     * @param testOperation: the method which implements the test\n     */\n    void TestWrapper(ITestOperation testOperation) {\n        try {\n            // TODO: Create get logger name\n            sysLogger.info(String.format(\"invoking test operation %s\", testOperation.getName()));\n            testOperation.run();\n        } catch (Exception e) {\n\n            // Records a special case: where the test did not run to completion,\n            // so it neither passed nor failed.\n            // This usually indicates a bug in the test or the environment\n            getTestResult().setOutcome(Outcome.SYS_EXC);\n            getTestResult().AddError(Outcome.SYS_EXC, e.toString());\n        }\n    }\n\n    public void setLogger(Logger logger) {\n        sysLogger = logger;\n    }\n\n\n    // IAuditTest interface\n\n    /**\n     * Subclasses must implement\n     */\n    public abstract void LaunchTest();\n\n    /**\n     * Set all test parameters (not logging or framework)\n     * @param params implementation dependent optional parameters\n     */\n    public abstract void setParams(Object ... params );\n\n    // region fields\n    private final TestResult _testResult;\n    private final String _testName;\n\n    // package private implies most of protected\n    Logger sysLogger;\n    // endregion\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/io/bdrc/am/audit/audittests/AuditTestBase.java	(date 1557419309000)
++++ src/main/java/io/bdrc/am/audit/audittests/AuditTestBase.java	(date 1557951682000)
+@@ -6,6 +6,10 @@
+ import org.slf4j.Logger;
+ 
+ import java.io.IOException;
++import java.util.Arrays;
++import java.util.Hashtable;
++
++import static org.apache.commons.lang3.StringUtils.split;
+ 
+ public abstract class AuditTestBase implements IAuditTest {
+ 
+@@ -30,15 +34,6 @@
+         _testName = testName;
+         _testResult = new TestResult();
+         _testResult.setOutcome(Outcome.NOT_RUN);
+-
+-//        /*
+-//         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
+-//         *
+-//         */
+-//        // this.getClass() works because were in the same package (?)
+-//        final ClassPropertyManager _propertyManager =
+-//                new io.bdrc.am.audit.iaudit.ClassPropertyManager("/auditTool" +
+-//                ".properties",getClass());
+     }
+ 
+     /**
+@@ -119,4 +114,25 @@
+     // package private implies most of protected
+     Logger sysLogger;
+     // endregion
++
++    // region TestParameter properties
++    protected Hashtable<String,String> testParameters = new Hashtable<>();
++
++    /**
++     * transform inbound parameters from KWArg format (key=value) to
++     * HashDictionary<>(key, value)</>
++     * @param kwparams keyword parameters
++     */
++    protected final void LoadParameters(String[]kwparams) {
++        Arrays.stream(kwparams).forEach( (String s ) -> {
++            String [] de = s.split("=");
++
++            // skip anything not formatted right
++            // skip anything after the second =
++            if (s.length() >1 ) {
++                testParameters.put(de[0],de[1]);
++            }
++        });
++
++    }
+ }
