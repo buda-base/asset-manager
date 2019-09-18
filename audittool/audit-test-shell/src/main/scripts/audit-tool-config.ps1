@@ -31,7 +31,8 @@ $okely = Read-Host "Press [Enter] when you are ready to continue."
 $cfgdir = ( Split-Path -Path  $CONFIG -Parent )
 If ( -not (Test-Path -Path  $cfgdir ))
 {
-    [System.IO.Directory]::CreateDirectory($cfgdir)
+    MD $cfgdir > $null
+    echo ...Creating $cfgdir
 }
 
 
@@ -109,13 +110,17 @@ $CONFIG_ATHOME =  (Split-Path -Path  $CONFIG_SHELL_JAR_FILE -Parent)
 # Backup
 if ( [System.IO.File]::Exists($CONFIG))
 {
-    echo "--- " (Get-Date -Format "yyyy-MM-dd") "---" >> $CONFIG.bak
-    cat $CONFIG >> $CONFIG.bak ;
+    $cb = (${CONFIG} + ".bak")
+    echo ("--- " + (Get-Date -Format "yyyy-MM-dd") + "---") >> $cb
+    cat $CONFIG >> $cb
 }
 #
 #
 # Write config
 #
-echo '$CONFIG_ATHOME = '$CONFIG_ATHOME > $CONFIG
-echo '$CONFIG_TEST_LIB_JAR_FILE = '$CONFIG_TEST_LIB_JAR_FILE >> $CONFIG
-echo '$CONFIG_SHELL_JAR_FILE = '$CONFIG_SHELL_JAR_FILE >> $CONFIG
+# This literal quoting is tricky
+#
+echo ('$CONFIG_ATHOME = "' + ${CONFIG_ATHOME} +  '" ') > $CONFIG
+echo ('$CONFIG_TEST_LIB_JAR_FILE = "' + ${CONFIG_TEST_LIB_JAR_FILE} +  '"') >> $CONFIG
+echo ( '$CONFIG_SHELL_JAR_FILE = "' + ${CONFIG_SHELL_JAR_FILE}  + '"') >> $CONFIG
+

@@ -13,5 +13,5 @@ $ver = "SNAPSHOT-1"
 $CONFIG_ATHOME = $DEF_HOME
 #
 # Test library home
-$CONFIG_TEST_LIB_JAR_FILE = Join-Path -Path $DEF_HOME -ChildPath audit-test-lib-$rel-$ver-jar-with-dependencies.jar
-$CONFIG_SHELL_JAR_FILE = Join-Path -Path $DEF_HOME -ChildPath audit-test-shell-$rel-$ver.jar
+$CONFIG_TEST_LIB_JAR_FILE = $(Join-Path -Path $DEF_HOME -ChildPath audit-test-lib-$rel-$ver-jar-with-dependencies.jar)
+$CONFIG_SHELL_JAR_FILE = $(Join-Path -Path $DEF_HOME -ChildPath audit-test-shell-$rel-$ver.jar)
