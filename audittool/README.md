@@ -46,24 +46,40 @@ Tests are found in a named library which the `audittool.sh` script passes to the
 The initial set of tests is specified in [Image capture Test Requirements](https://docs.google.com/document/d/1TrjUdoLJd5N90d1vWloRqNrlC144-DPfLrClOLsbhVg/edit?usp=sharing)
 
 # Test output
-Test output is found in `~/audit-test-logs` or `$HOME/audit-test-logs` which is a subfolder of the running user's home directory. This value is configurable.
 
-Test output is saved in two formats:
-1. csv file, with a simplified structure. These are designed to be easily pasted into spreadsheet programs.
-2. log files, for advanced processing.
+## Location
+Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base folder in the Audit tool's `log4j2.properties` folder.
 
-Each type produces summary and detail  files.
+You can configure log file naming in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
+Under `audit-tool-logs` are folders containing **csv** and **log**
 
-## Summary output
+## Log Contents
 
-Summary files simply report on each line:
-- the work which was tested
-- the test Operation
-- the test result.
+### Log
+|Level|File name|Details|
+|----|----|----|
+|Summary|`AuditTestShell-SUMMARY-date&Time.log`|Audit Tool writes a summary of each test to the console, and to a summary log file. The summary log file shows the pass/fail status of each test on each given directory.|
+|Detail|`AuditTestShell-DETAIL-date&Time.log`|A detailed log file,  shows each file which failed a specific test.|
+|Internal|`AuditTestShell-TestInt-date&time.log`| the shell passes in this log4j logger for test internal logging.|
 
-## Detailed output
 
-Detail output contains more lines, which name each file which caused a test to fail. Summary output is included.
+The detail files contain the summary result. If there were failures, each item which failed is separately listed (see below)
+### Comma Separated values
+CSV files are output for easier analysis and collection. They follow the log files' naming conventions.
+
+Summary and detail log files have different data formats.
+The summary file contains:
+
+|path|test_name|outcome|
+|---|---|---|
+|\\\TBRCRS3\Archive\W1KG10190|No Files in Root Folder|Passed|
+
+The detail file contains:
+
+|path|error_number|error_test|
+|---|---|---|
+|\\\TBRCRS3\Archive\W1KG10190|104|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  fails files only test.|
+|\\\TBRCRS3\Archive\W1KG10190|103|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  contains directory S0001491.JOB-A|
 
 # Configuration
 ## Property file
