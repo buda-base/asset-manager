@@ -6,9 +6,20 @@ On Windows machines, the script type `.sh` is replaced with PowerShell scripts, 
 ### Starting
 Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
 The arguments to audit tool are simply:
-```bash
-audittool.sh -p workFolder[;workFolder;workFolder...]
+```psv
+PS C:\Users\djt\dev\at9> .\audittool.ps1
+usage: AuditTest [options] { - | Directory,Directory,Directory}
+where:
+
+                 - read folders from standard input
+
+                 Directory,.... is a list of directories separated by ,
+[options] are:
+ -d,--debug             Show debugging information
+ -i,--inputFile <arg>   Input file, one path per line
 ```
+
+The `-d` switch has no functionality as of release 0.9
 ### Output
 
 #### Location
@@ -55,9 +66,12 @@ folder names of parents of image groups.
 
 The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
-### Locating the tests
-The goal is eventually to have programmers provide separate test libraries. Audit Tool contains a mechanism to get a set of tests
-from a library, marshall the test arguments, and launch the test.
+### Operation
+The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java):
+- locates the test library from the `-DtestJar=<path-to-jar-file>` command line option
+- probes the library for the supported tests
+- runs all library tests for each input argument in turn 
+- logs the output as CSV or log files.
 ### Test output
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
