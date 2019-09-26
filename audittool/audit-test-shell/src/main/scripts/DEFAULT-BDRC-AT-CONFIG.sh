@@ -3,8 +3,8 @@
 # Defaults for configuration
 # default to everything here. These variables are also in config, if it exists
 #
-rel=0.8
-ver=SNAPSHOT-2
+rel=0.9
+ver=SNAPSHOT-1
 
 # Audit test shell home
 export CONFIG_ATHOME=${DEF_HOME}
