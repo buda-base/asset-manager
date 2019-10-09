@@ -4,10 +4,11 @@
     <option name="SCOPE_TYPE" value="10" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32737391-0712-4ea1-82b5-259ec9e60b20" name="Default" comment="">
+    <list default="true" id="32737391-0712-4ea1-82b5-259ec9e60b20" name="Default" comment="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure.">
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/AuditToolOperation.md" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/AuditToolOperation.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/auditTool-config.sh" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inventory/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/README.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/audittool/target/" />
     <ignored path="$PROJECT_DIR$/audittool/audit-test-lib/target/" />
@@ -59,8 +60,35 @@
       <file leaf-file-name="audit-tool-config.ps1" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.ps1">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="718">
+            <state relative-caret-position="837">
               <caret line="121" column="1" selection-start-line="121" selection-start-column="1" selection-end-line="121" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="audit-tool-config.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="494">
+              <caret line="26" selection-start-line="26" selection-end-line="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="audittool.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="570">
+              <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="19">
+              <caret line="52" column="10" selection-start-line="52" selection-start-column="10" selection-end-line="52" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -68,17 +96,8 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1320">
+            <state relative-caret-position="1140">
               <caret line="60" column="16" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="audittool.ps1" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.ps1">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="295">
-              <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -86,35 +105,8 @@
       <file leaf-file-name="shell-assembly.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/assembly/shell-assembly.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="30" column="14" lean-forward="true" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AuditTestShell-SUMMARY-2019-09-18-15-28-47.csv" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/audit-test-logs/csv/AuditTestShell-SUMMARY-2019-09-18-15-28-47.csv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AuditTestShell-DETAIL-2019-09-18-15-28-47.csv" pinned="false" current-in-tab="true">
-        <entry file="file://$USER_HOME$/audit-test-logs/csv/AuditTestShell-DETAIL-2019-09-18-15-28-47.csv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DEFAULT-BDRC-AT-CONFIG.ps1" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/DEFAULT-BDRC-AT-CONFIG.ps1">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="16" column="37" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
+            <state relative-caret-position="589">
+              <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -283,6 +275,11 @@
         </path>
         <path>
           <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="audit-test-shell" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
           <item name="audit-tool" type="9519ce18:MavenProjectsStructure$ProjectNode" />
         </path>
         <path>
@@ -298,8 +295,8 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="302" />
-    <option name="y" value="-1295" />
+    <option name="x" value="2038" />
+    <option name="y" value="794" />
     <option name="width" value="1886" />
     <option name="height" value="1170" />
   </component>
@@ -310,38 +307,36 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="audit-tool and modules" type="9c53a853:ProjectViewModuleGroupNode" />
-            </path>
-            <path>
-              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="audit-tool and modules" type="9c53a853:ProjectViewModuleGroupNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="audit-tool and modules" type="9c53a853:ProjectViewModuleGroupNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="audit-tool and modules" type="9c53a853:ProjectViewModuleGroupNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="audit-tool and modules" type="9c53a853:ProjectViewModuleGroupNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scripts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -358,7 +353,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -384,7 +378,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.4229885" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="terminal" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
     <property name="two.files.diff.last.used.file" value="$USER_HOME$/bin/audittool.sh" />
   </component>
   <component name="RecentsManager">
@@ -415,7 +409,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="PowerShell.C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\src\main\scripts\Windows\audit-tool-config.ps1">
+  <component name="RunManager" selected="Unknown.C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\src\main\scripts\Windows\audit-tool-config.ps11117731533">
     <configuration name="argsOnCommand" type="Application" factoryName="Application">
       <envs>
         <env name="ATHOME" value="$PROJECT_DIR$/audittool/audit-test-shell/target/classes" />
@@ -625,7 +619,6 @@
       <item itemvalue="Application.argsOnCommand" />
       <item itemvalue="Application.noArgs" />
       <item itemvalue="JUnit.io.bdrc.am.audit.iaudit in audit-test-interface" />
-      <item itemvalue="PowerShell.C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\src\main\scripts\Windows\audit-tool-config.ps1" />
       <item itemvalue="Application.shell" />
       <item itemvalue="JUnit.PropertyManagerTest.TestFileProperty" />
       <item itemvalue="JUnit.TestFactoryTest" />
@@ -696,6 +689,7 @@
       <workItem from="1568815829733" duration="2015000" />
       <workItem from="1568818001281" duration="3338000" />
       <workItem from="1568835097199" duration="3907000" />
+      <workItem from="1570646779779" duration="496000" />
     </task>
     <task id="LOCAL-00001" summary="copy three libraries to output, for standalone running.">
       <created>1551217887728</created>
@@ -1041,25 +1035,25 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="321878000" />
+    <option name="totallyTimeSpent" value="322374000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="302" y="-1295" width="1886" height="1170" extended-state="0" />
+    <frame x="2038" y="794" width="1886" height="1170" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info anchor="right" id="Key Promoter X" order="6" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49731958" weight="0.12445223" />
       <window_info anchor="right" id="Palette&#9;" order="8" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.42773438" side_tool="true" weight="0.41505042" />
-      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.329863" />
+      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.329718" />
       <window_info anchor="bottom" id="Database Changes" order="9" weight="0.3296355" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.4993515" weight="0.340729" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.5722656" visible="true" weight="0.32941177" />
-      <window_info anchor="bottom" x="820" y="-836" width="1233" height="610" id="Terminal" order="10" weight="0.23431373" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.5722656" weight="0.32898417" />
+      <window_info anchor="bottom" x="820" y="-836" width="1233" height="610" id="Terminal" order="10" visible="true" weight="0.23392358" />
       <window_info id="Designer" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.16438356" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.16594361" />
       <window_info anchor="right" id="Database" order="9" weight="0.24312268" />
+      <window_info anchor="right" auto_hide="true" id="Maven-2 Build" internal_type="SLIDING" order="3" show_stripe_button="false" type="SLIDING" />
+      <window_info id="Learn" order="4" sideWeight="0.5005441" side_tool="true" weight="0.21855922" />
       <window_info anchor="right" id="SciView" order="11" weight="0.32954547" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" show_stripe_button="false" weight="0.24969475" />
@@ -1067,6 +1061,7 @@
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.6200828" weight="0.38172042" />
       <window_info anchor="right" id="Capture Analysis" order="7" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49731958" weight="0.12445223" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="bottom" id="Python Console" order="12" />
@@ -1074,14 +1069,13 @@
       <window_info anchor="bottom" id="Find" order="1" weight="0.2060606" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info id="Capture Tool" order="5" />
-      <window_info anchor="right" auto_hide="true" id="Maven-2 Build" internal_type="SLIDING" order="3" show_stripe_button="false" type="SLIDING" />
-      <window_info anchor="right" id="Coverage" order="10" sideWeight="0.5012225" side_tool="true" weight="0.21537651" />
-      <window_info id="Learn" order="4" sideWeight="0.5005441" side_tool="true" weight="0.21855922" />
+      <window_info anchor="right" id="Key Promoter X" order="6" />
+      <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="right" id="Maven" order="5" sideWeight="0.4987775" weight="0.14347826" />
       <window_info anchor="right" id="Theme Preview" order="4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Inspection Results" order="13" weight="0.40810812" />
+      <window_info anchor="right" id="Coverage" order="10" sideWeight="0.5012225" side_tool="true" weight="0.21537651" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" id="Maven" order="5" sideWeight="0.4987775" weight="0.14347826" />
@@ -1511,20 +1505,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="14" selection-start-line="14" selection-end-line="14" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/OneDrive/WindowsPowerShell/Microsoft.PowerShell_profile.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/OneDrive/WindowsPowerShell/Microsoft.PowerShell_profile.ps1" />
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/DEFAULT-BDRC-AT-CONFIG.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -1532,61 +1513,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-110">
-          <caret line="52" column="10" selection-start-line="52" selection-start-column="10" selection-end-line="52" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/DEFAULT-BDRC-AT-CONFIG.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="16" column="37" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/DEFAULT-BDRC-AT-CONFIG.ps1" />
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1320">
+        <state relative-caret-position="1140">
           <caret line="60" column="16" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="21" column="1" selection-start-line="3" selection-end-line="30" selection-end-column="192" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/target/audit-test-shell-0.9-SNAPSHOT-1-Install/audit-test-shell-0.9-SNAPSHOT-1/audit-tool-config.ps1">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/.config/bdrc/auditTool/config.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="66">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/target/audit-test-shell-0.9-SNAPSHOT-1-Install/audit-test-shell-0.9-SNAPSHOT-1/audittool.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.ps1">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="26" column="4" selection-start-line="26" selection-start-column="4" selection-end-line="26" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/target/audit-test-shell-0.9-SNAPSHOT-1-Install/audit-test-shell-0.9-SNAPSHOT-1/audit-tool-config.ps1" />
+    <entry file="file://$USER_HOME$/.config/bdrc/auditTool/config.ps1" />
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/target/audit-test-shell-0.9-SNAPSHOT-1-Install/audit-test-shell-0.9-SNAPSHOT-1/audittool.ps1" />
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.ps1" />
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.ps1">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
+        <state relative-caret-position="837">
           <caret line="121" column="1" selection-start-line="121" selection-start-column="1" selection-end-line="121" selection-end-column="1" />
         </state>
       </provider>
@@ -1625,9 +1566,10 @@
           </nodes>
           <notes />
           <edges />
-          <settings layout="Hierarchic Group" zoom="1.1142061281337048" x="437.19624999999996" y="132.41499999999996" />
+          <settings layout="Hierarchic Group" zoom="1.1142061281337048" x="437.0" y="132.0" />
           <SelectedNodes />
           <Categories />
+          <SCOPE>All</SCOPE>
           <VISIBILITY>All</VISIBILITY>
         </state>
       </provider>
@@ -1655,28 +1597,38 @@
           <settings layout="Hierarchic Group" zoom="1.0" x="334.0" y="140.0" />
           <SelectedNodes />
           <Categories />
+          <SCOPE>All</SCOPE>
           <VISIBILITY>All</VISIBILITY>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/assembly/shell-assembly.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="30" column="14" lean-forward="true" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+        <state relative-caret-position="589">
+          <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/audit-test-logs/csv/AuditTestShell-SUMMARY-2019-09-18-15-28-47.csv">
+    <entry file="file://$USER_HOME$/audit-test-logs/csv/AuditTestShell-SUMMARY-2019-09-18-15-28-47.csv" />
+    <entry file="file://$USER_HOME$/audit-test-logs/csv/AuditTestShell-DETAIL-2019-09-18-15-28-47.csv" />
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        <state relative-caret-position="494">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/audit-test-logs/csv/AuditTestShell-DETAIL-2019-09-18-15-28-47.csv">
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+        <state relative-caret-position="570">
+          <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19">
+          <caret line="52" column="10" selection-start-line="52" selection-start-column="10" selection-end-line="52" selection-end-column="10" />
         </state>
       </provider>
     </entry>
