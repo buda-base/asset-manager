@@ -4,11 +4,13 @@
     <option name="SCOPE_TYPE" value="10" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32737391-0712-4ea1-82b5-259ec9e60b20" name="Default" comment="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure.">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="32737391-0712-4ea1-82b5-259ec9e60b20" name="Default" comment="asset-manager issue #29 allow json files in image groups">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/audittool/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/inventory/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/FileSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/FileSequence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/FileSequenceBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/FileSequenceBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/NoFilesInRootTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/NoFilesInRootTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/audittool/target/" />
     <ignored path="$PROJECT_DIR$/audittool/audit-test-lib/target/" />
@@ -57,15 +59,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="audit-tool-config.ps1" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.ps1">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="837">
-              <caret line="121" column="1" selection-start-line="121" selection-start-column="1" selection-end-line="121" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="audit-tool-config.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.sh">
           <provider selected="true" editor-type-id="text-editor">
@@ -75,16 +68,16 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="audittool.sh" pinned="false" current-in-tab="false">
+      <file leaf-file-name="audittool.sh" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+            <state relative-caret-position="139">
+              <caret line="24" column="11" selection-start-line="24" selection-start-column="11" selection-end-line="24" selection-end-column="11" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="19">
@@ -93,20 +86,72 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/pom.xml">
+      <file leaf-file-name="FileSequence.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/FileSequence.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1140">
-              <caret line="60" column="16" selection-start-line="60" selection-start-column="16" selection-end-line="60" selection-end-column="16" />
+            <state relative-caret-position="195">
+              <caret line="135" selection-start-line="135" selection-end-line="135" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="shell-assembly.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/assembly/shell-assembly.xml">
+      <file leaf-file-name="PathTestBase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/PathTestBase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="589">
-              <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
+            <state relative-caret-position="205">
+              <caret line="40" selection-start-line="40" selection-end-line="40" />
+              <folding>
+                <element signature="e#894#895#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AuditTestBase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/AuditTestBase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="93" selection-start-line="93" selection-end-line="93" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FileSequenceBuilder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/FileSequenceBuilder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="448">
+              <caret line="164" column="7" selection-start-line="164" selection-start-column="7" selection-end-line="164" selection-end-column="7" />
+              <folding>
+                <element signature="e#5500#5501#0" expanded="true" />
+                <element signature="e#5524#5525#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ImageAttributeTests.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="224">
+              <caret line="143" column="66" selection-start-line="143" selection-start-column="66" selection-end-line="143" selection-end-column="66" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NoFilesInRootTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/NoFilesInRootTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="149">
+              <caret line="54" column="23" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestFileSequence.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/TestFileSequence.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="369">
+              <caret line="130" selection-start-line="130" selection-end-line="130" />
             </state>
           </provider>
         </entry>
@@ -127,7 +172,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>propert</find>
       <find>Suppres</find>
       <find>debug</find>
       <find>dependency</find>
@@ -157,6 +201,7 @@
       <find>net</find>
       <find>CONFIG_TEST_LIB</find>
       <find>TEST_TEST_JAR</find>
+      <find>DirectoryStream.F</find>
     </findStrings>
     <replaceStrings>
       <replace>summaryLogger</replace>
@@ -182,10 +227,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/audittool/.gitignore" />
-        <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/scripts/log4j.properties" />
-        <option value="$PROJECT_DIR$/audittool/audit-test-shell/dbg.sh" />
-        <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j.properties" />
         <option value="$USER_HOME$/tmp/rel1/audit-test-shell-1.0-SNAPSHOT/audittool.sh" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/ClassResolver.java" />
         <option value="$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/ClassPropertyManager.java" />
@@ -233,6 +274,10 @@
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/target/audit-test-shell-0.9-SNAPSHOT-1-Install/audit-test-shell-0.9-SNAPSHOT-1/audittool.ps1" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/assembly/shell-assembly.xml" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.ps1" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/NoFilesInRootTest.java" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/FileSequence.java" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/FileSequenceBuilder.java" />
       </list>
     </option>
   </component>
@@ -271,6 +316,15 @@
         </path>
         <path>
           <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="audit-test-lib" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="audit-test-lib" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+          <item name="Lifecycle" type="58874e2:MavenProjectsStructure$LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
           <item name="audit-test-shell" type="9519ce18:MavenProjectsStructure$ProjectNode" />
         </path>
         <path>
@@ -295,10 +349,10 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="2038" />
-    <option name="y" value="794" />
-    <option name="width" value="1886" />
-    <option name="height" value="1170" />
+    <option name="x" value="1690" />
+    <option name="y" value="774" />
+    <option name="width" value="1392" />
+    <option name="height" value="1104" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -308,9 +362,64 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope">
+        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
+          <expand>
+            <path>
+              <item name="asset-manager" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
+              <item name="audit-test-shell" type="2674bda8:ScopeViewTreeModel$GroupNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="audit" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="audit" type="462c0819:PsiDirectoryNode" />
+              <item name="FileSequenceBuilder" type="1a9f42e2:ClassTreeNode" />
+            </path>
+            <path>
+              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
+              <item name="audit-test-lib" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+            </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
@@ -337,17 +446,6 @@
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
               <item name="target" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope">
-        <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
-          <expand>
-            <path>
-              <item name="asset-manager" type="3d21c010:ScopeViewTreeModel$ProjectNode" />
-              <item name="audit-test-shell" type="2674bda8:ScopeViewTreeModel$GroupNode" />
             </path>
           </expand>
           <select />
@@ -409,7 +507,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Unknown.C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\src\main\scripts\Windows\audit-tool-config.ps11117731533">
+  <component name="RunManager" selected="JUnit.TestFileSequence.TestIGWithSubFolders">
     <configuration name="argsOnCommand" type="Application" factoryName="Application">
       <envs>
         <env name="ATHOME" value="$PROJECT_DIR$/audittool/audit-test-shell/target/classes" />
@@ -495,29 +593,6 @@
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_resourceToDebug" />
       </method>
     </configuration>
-    <configuration name="PropertyManagerTest.TestFileProperty" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="audit-test-interface" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="io.bdrc.am.audit.iaudit.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="io.bdrc.am.audit.iaudit" />
-      <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.iaudit.PropertyManagerTest" />
-      <option name="METHOD_NAME" value="TestFileProperty" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <patterns />
-    </configuration>
     <configuration name="TestFactoryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true" show_console_on_std_err="true" show_console_on_std_out="true">
       <output_file path="$PROJECT_DIR$/../testLogs" is_save="true" />
       <module name="audit-test-interface" />
@@ -539,6 +614,29 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="TestFileSequence.TestIGWithSubFolders" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="audit-test-lib" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="io.bdrc.am.audit.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="io.bdrc.am.audit" />
+      <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.TestFileSequence" />
+      <option name="METHOD_NAME" value="TestIGWithSubFolders" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
       </option>
       <patterns />
     </configuration>
@@ -614,19 +712,21 @@
       </MavenSettings>
     </configuration>
     <list>
+      <item itemvalue="PowerShell.C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\src\main\scripts\Windows\audit-tool-config.ps1" />
       <item itemvalue="Application.shellWithLibD" />
       <item itemvalue="Application.stdin" />
       <item itemvalue="Application.argsOnCommand" />
       <item itemvalue="Application.noArgs" />
       <item itemvalue="JUnit.io.bdrc.am.audit.iaudit in audit-test-interface" />
       <item itemvalue="Application.shell" />
-      <item itemvalue="JUnit.PropertyManagerTest.TestFileProperty" />
       <item itemvalue="JUnit.TestFactoryTest" />
       <item itemvalue="Maven.audit-tool [package]" />
       <item itemvalue="Maven.audit-test-shell [install]" />
+      <item itemvalue="JUnit.TestFileSequence.TestIGWithSubFolders" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.TestFileSequence.TestIGWithSubFolders" />
         <item itemvalue="Maven.audit-test-shell [install]" />
         <item itemvalue="Application.shell" />
       </list>
@@ -690,6 +790,7 @@
       <workItem from="1568818001281" duration="3338000" />
       <workItem from="1568835097199" duration="3907000" />
       <workItem from="1570646779779" duration="496000" />
+      <workItem from="1570647511013" duration="3112000" />
     </task>
     <task id="LOCAL-00001" summary="copy three libraries to output, for standalone running.">
       <created>1551217887728</created>
@@ -1003,12 +1104,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TestFactoryTest_loadEmptyTests - 2019.02.27 at 16h 54m 22s.xml">
-      <configuration name="TestFactoryTest.loadEmptyTests" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="TestFactoryTest_loadEmptyTests - 2019.02.27 at 16h 55m 36s.xml">
-      <configuration name="TestFactoryTest.loadEmptyTests" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="PropertyManagerTest_getPropertyInt - 2019.03.04 at 12h 49m 51s.xml">
       <configuration name="PropertyManagerTest.getPropertyInt" configurationId="JUnit" />
     </history-entry>
@@ -1033,40 +1128,45 @@
     <history-entry file="PropertyManagerTest_TestFileProperty - 2019.04.16 at 14h 28m 25s.xml">
       <configuration name="PropertyManagerTest.TestFileProperty" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="TestFileSequence_TestIGWithSubFolders - 2019.10.09 at 15h 51m 38s.xml">
+      <configuration name="TestFileSequence.TestIGWithSubFolders" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestFileSequence_TestIGWithSubFolders - 2019.10.09 at 15h 58m 47s.xml">
+      <configuration name="TestFileSequence.TestIGWithSubFolders" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="322374000" />
+    <option name="totallyTimeSpent" value="325486000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2038" y="794" width="1886" height="1170" extended-state="0" />
-    <editor active="true" />
+    <frame x="1690" y="774" width="1392" height="1104" extended-state="0" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info active="true" anchor="bottom" id="Messages" order="12" sideWeight="0.49731958" visible="true" weight="0.5590864" />
       <window_info anchor="right" id="Palette&#9;" order="8" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.42773438" side_tool="true" weight="0.41505042" />
-      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.329718" />
+      <window_info anchor="right" id="Maven Projects" order="9" visible="true" weight="0.22074074" />
       <window_info anchor="bottom" id="Database Changes" order="9" weight="0.3296355" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.4993515" weight="0.340729" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.5722656" weight="0.32898417" />
-      <window_info anchor="bottom" x="820" y="-836" width="1233" height="610" id="Terminal" order="10" visible="true" weight="0.23392358" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.5722656" weight="0.4783198" />
+      <window_info anchor="bottom" x="820" y="-836" width="1233" height="610" id="Terminal" order="10" weight="0.5694315" />
       <window_info id="Designer" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.16594361" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49945593" visible="true" weight="0.33481482" />
       <window_info anchor="right" id="Database" order="9" weight="0.24312268" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.2060606" />
       <window_info anchor="right" auto_hide="true" id="Maven-2 Build" internal_type="SLIDING" order="3" show_stripe_button="false" type="SLIDING" />
       <window_info id="Learn" order="4" sideWeight="0.5005441" side_tool="true" weight="0.21855922" />
       <window_info anchor="right" id="SciView" order="11" weight="0.32954547" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" show_stripe_button="false" weight="0.24969475" />
       <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.6200828" weight="0.38172042" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.6200828" weight="0.38117427" />
       <window_info anchor="right" id="Capture Analysis" order="7" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49731958" weight="0.12445223" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.2060606" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info id="Capture Tool" order="5" />
       <window_info anchor="right" id="Key Promoter X" order="6" />
@@ -1162,7 +1262,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/audittool/audit-test-shell" />
     </ignored-roots>
-    <MESSAGE value="Move config files to scripts, have pom.xml pick it up." />
     <MESSAGE value="Send console and summary to console and summary file. Send details to details file" />
     <MESSAGE value="Fix startup message in config tool" />
     <MESSAGE value="Fix bugs in default config" />
@@ -1187,7 +1286,8 @@
     <MESSAGE value="Port IDE to windows" />
     <MESSAGE value="Port config to powershell" />
     <MESSAGE value="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure." />
+    <MESSAGE value="asset-manager issue #29 allow json files in image groups" />
+    <option name="LAST_COMMIT_MESSAGE" value="asset-manager issue #29 allow json files in image groups" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1216,8 +1316,14 @@
           <properties />
           <option name="timeStamp" value="18" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/FileSequence.java</url>
+          <line>56</line>
+          <properties />
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="19" />
+      <option name="time" value="21" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -1302,75 +1408,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="uml://JAVA/io.bdrc.am.audit.iaudit.AuditTestConfig">
-      <provider selected="true" editor-type-id="UmlEditorProvider">
-        <state>
-          <ID />
-          <OriginalElement>io.bdrc.am.audit.iaudit.AuditTestConfig</OriginalElement>
-          <nodes>
-            <node x="0.0" y="0.0">io.bdrc.am.audit.iaudit.AuditTestConfig</node>
-          </nodes>
-          <notes />
-          <edges />
-          <settings layout="Hierarchic Group" zoom="1.0" x="-574.0" y="-28.0" />
-          <SelectedNodes />
-          <Categories />
-          <SCOPE>All</SCOPE>
-          <VISIBILITY>private</VISIBILITY>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/IAuditTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/AuditTestConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/TestFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="9" column="26" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/Outcome.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="23" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/src.zip!/java/lang/reflect/Constructor.java" />
-    <entry file="uml://MAVEN/io.bdrc.am:audit-test-interface:0.8-SNAPSHOT-2">
-      <provider selected="true" editor-type-id="UmlEditorProvider">
-        <state>
-          <ID />
-          <OriginalElement>io.bdrc.am:audit-test-interface:0.8-SNAPSHOT-2</OriginalElement>
-          <nodes>
-            <node x="" y="">io.bdrc.am:audit-test-interface:0.8-SNAPSHOT-2</node>
-            <node x="" y="">org.apache.commons:commons-lang3:jar:3.9</node>
-            <node x="" y="">junit:junit:jar:4.12</node>
-            <node x="" y="">junit:junit:jar:4.12/org.hamcrest:hamcrest-core:jar:1.3</node>
-            <node x="" y="">org.slf4j:slf4j-api:jar:1.7.25</node>
-          </nodes>
-          <notes />
-          <edges />
-          <settings layout="Hierarchic Group" zoom="1.0" x="139.0" y="193.0" />
-          <SelectedNodes />
-          <Categories />
-          <SCOPE>All</SCOPE>
-          <VISIBILITY>All</VISIBILITY>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/extern/TwelveMonkeys/imageio/imageio-core/src/test/java/com/twelvemonkeys/imageio/util/ImageTypeSpecifiersTest.java" />
     <entry file="file://$USER_HOME$/extern/TwelveMonkeys/imageio/imageio-core/src/test/java/com/twelvemonkeys/imageio/util/UInt32ImageTypeSpecifierTest.java" />
     <entry file="file://$USER_HOME$/extern/TwelveMonkeys/common/common-lang/src/test/java/com/twelvemonkeys/lang/StringUtilTest.java" />
@@ -1527,7 +1564,7 @@
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.ps1" />
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.ps1">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="837">
+        <state relative-caret-position="2299">
           <caret line="121" column="1" selection-start-line="121" selection-start-column="1" selection-end-line="121" selection-end-column="1" />
         </state>
       </provider>
@@ -1618,17 +1655,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="19">
           <caret line="52" column="10" selection-start-line="52" selection-start-column="10" selection-end-line="52" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/ImageAttributeTests.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="143" column="66" selection-start-line="143" selection-start-column="66" selection-end-line="143" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/NoFilesInRootTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="54" column="23" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/PathTestBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="40" selection-start-line="40" selection-end-line="40" />
+          <folding>
+            <element signature="e#894#895#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/TestFileSequence.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="130" selection-start-line="130" selection-end-line="130" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/AuditTestBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="93" selection-start-line="93" selection-end-line="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/main/java/io/bdrc/am/audit/audittests/FileSequence.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="135" selection-start-line="135" selection-end-line="135" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-lib/src/test/java/io/bdrc/am/audit/FileSequenceBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="164" column="7" selection-start-line="164" selection-start-column="7" selection-end-line="164" selection-end-column="7" />
+          <folding>
+            <element signature="e#5500#5501#0" expanded="true" />
+            <element signature="e#5524#5525#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audittool.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="139">
+          <caret line="24" column="11" selection-start-line="24" selection-start-column="11" selection-end-line="24" selection-end-column="11" />
         </state>
       </provider>
     </entry>

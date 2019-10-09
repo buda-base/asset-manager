@@ -52,7 +52,7 @@ public class NoFilesInRootTest extends AuditTestTestBase {
         // should be as many errors as files in the synthetic directory
         TestResult tr = st.getTestResult();
         ArrayList<TestMessage> errors = tr.getErrors();
-        assertEquals(12, errors.size());
+        assertEquals(13, errors.size());
         TestMessage tm = errors.get(0);
         assertEquals(LibOutcome.FILES_IN_MAIN_FOLDER,tm.getOutcome());
 

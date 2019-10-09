@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # If no config, everything is in this directory
-DEF_HOME=$(dirname $(readlink -m  $0))
+which readlink
+DEF_HOME=$(dirname $(readlink  $0))
 
 DEF_CONFIG=DEFAULT-BDRC-AT-CONFIG.sh
 
@@ -27,5 +28,8 @@ shellJar=${CONFIG_SHELL_JAR_FILE}
 # OK, https://stackoverflow.com/questions/15930782/call-java-jar-myfile-jar-with-additional-classpath-option
 # Says you cant use -cp and -jar, and you cant find the 
 # java -cp ${CONFIG_TEST_LIB_JAR_FILE} -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar} $@
-
+echo "starting "$@
 java -cp "${shellJar}:${CONFIG_TEST_LIB_JAR_FILE}:lib/*" -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS}  io.bdrc.am.audit.shell.shell $@
+rc=$?
+echo returning $rc
+exit $rc
