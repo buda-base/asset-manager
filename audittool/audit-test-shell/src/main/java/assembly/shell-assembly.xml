@@ -5,10 +5,13 @@ Maven Assembly configRef. See ../pom.xml
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>jskFormat</id>
+    <id>Install</id>
     <!-- Specifies that our binary distribution is a zip package -->
     <formats>
         <format>zip</format>
+
+        <!-- You get a warning about this not being part of a build component, but it's useful
+         to alpha test a build-->
         <format>dir</format>
     </formats>
 
@@ -25,8 +28,6 @@ Maven Assembly configRef. See ../pom.xml
         </dependencySet>
     </dependencySets>
 
-    <!-- Thanks to https://www.petrikainulainen.net/programming/tips-and-tricks/
-    creating-a-runnable-binary-distribution-with-maven-assembly-plugin/ -->
     <fileSets>
         <!--
             Adds startup scripts to the root directory of zip package. The startup
@@ -38,6 +39,7 @@ Maven Assembly configRef. See ../pom.xml
             <outputDirectory></outputDirectory>
             <includes>
                 <include>*.sh</include>
+                <include>*.ps1</include>
                 <include>*.properties</include>
             </includes>
         </fileSet>

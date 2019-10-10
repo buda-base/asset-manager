@@ -1,7 +1,8 @@
+.idea/workspace.xml
 __pycache__/
 .DS_Store
 site/
-target/
+*~
 export
 export/
-*~
+target/

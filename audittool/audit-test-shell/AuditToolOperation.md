@@ -2,44 +2,80 @@
 ## Installation and Configuration
 Please refer to [Installation](Install.md) for details of installation.
 ## Operation
+On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
 Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
 The arguments to audit tool are simply:
-```bash
-audittool.sh -p workFolder[;workFolder;workFolder...]
+```psv
+PS C:\Users\djt\dev\at9> .\audittool.ps1
+usage: AuditTest [options] { - | Directory,Directory,Directory}
+where:
+
+                 - read folders from standard input
+
+                 Directory,.... is a list of directories separated by ,
+[options] are:
+ -d,--debug             Show debugging information
+ -i,--inputFile <arg>   Input file, one path per line
 ```
+
+The `-d` switch has no functionality as of release 0.9
 ### Output
 
 #### Location
-Audit Tool log outputs are in a subdirectory `audit-tool-logs` of the user's home directory. You can change this in the Audit tool's `log4j2.properties` folder.
+Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base folder in the Audit tool's `log4j2.properties` folder.
 
-#### Contents
+You can configure log file naming in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
+Under `audit-tool-logs` are folders containing **csv** and **log**
+
+#### Log Contents
+
+##### Log
 |Level|File name|Details|
 |----|----|----|
 |Summary|`AuditTestShell-SUMMARY-date&Time.log`|Audit Tool writes a summary of each test to the console, and to a summary log file. The summary log file shows the pass/fail status of each test on each given directory.|
 |Detail|`AuditTestShell-DETAIL-date&Time.log`|A detailed log file,  shows each file which failed a specific test.|
 |Internal|`AuditTestShell-TestInt-date&time.log`| the shell passes in this log4j logger for test internal logging.|
 
+
+The detail files contain the summary result. If there were failures, each item which failed is separately listed (see below)
+##### Comma Separated values
+CSV files are output for easier analysis and collection. They follow the log files' naming conventions.
+
+Summary and detail log files have different data formats.
+The summary file contains:
+
+|path|test_name|outcome|
+|---|---|---|
+|\\\TBRCRS3\Archive\W1KG10190|No Files in Root Folder|Passed|
+
+The detail file contains:
+
+|path|error_number|error_test|
+|---|---|---|
+|\\\TBRCRS3\Archive\W1KG10190|104|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  fails files only test.|
+|\\\TBRCRS3\Archive\W1KG10190|103|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  contains directory S0001491.JOB-A|
+
+
+
 ## Principles of operation
-Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or random directory.
+Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.
 ### Property file
 Audit tool reads several variables from its property file `shell.properties.` These properties locate the tests and define parameters which the tests need, such as the
 folder names of parents of image groups.
-###
-The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests 
+
+The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
-### Locating the tests
-The goal is eventually to have programmers provide separate test libraries. Audit Tool contains a mechanism to get a set of tests
-from a library, marshall the test arguments, and launch the test.
+### Operation
+The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java):
+- locates the test library from the `-DtestJar=<path-to-jar-file>` command line option
+- probes the library for the supported tests
+- runs all library tests for each input argument in turn 
+- logs the output as CSV or log files.
 ### Test output
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
 to send to a database.
-
-Each run of audit tool produces summary and detail log files, named `AuditTestShell-{SUMMARY|DETAIL}-yyyy-mm-dd-hh-mm-sss.log`
-Each test also may create a log file, but that is primarily for debugging.
-
-You can configure log file naming in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
 
 ## Test Developer's Guide
 This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
@@ -63,9 +99,9 @@ T`testDictionaryClassName` can be in any package. This definition is the library
 #### Test Config objects
 
 The test dictionary has a dependency on io.bdrc.am.audit.iaudit.AuditTestConfig class. Test developers include this library
-in their Jar, and provide Test configuration objects. The test configuration objects provide information to the shell as 
+in their Jar, and provide Test configuration objects. The test configuration objects provide information to the shell as
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
-. 
+.
 
 ![AuditTestConfig](.AuditToolOperation_images/AuditTestConfig.png)
 
@@ -115,7 +151,7 @@ name|type|description
 ----|----|----
 fullName|`String`|Free form text
 argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs`
-shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value 
+shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value
 clazz|`Class<?>`|Any class object which implements the `io.bdrc.am.audit.iaudit.IAuditTest` interface.
 
 #### Running a test
