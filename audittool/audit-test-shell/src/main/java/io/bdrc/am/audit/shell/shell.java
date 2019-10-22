@@ -17,8 +17,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -105,6 +103,7 @@ public class shell {
             System.exit( SYS_ERR) ;
         }
 
+        sysLogger.trace("Exiting all pass? %s", String.valueOf(!anyFailed));
         System.exit(anyFailed ? SYS_ERR : SYS_OK );
     }
 
@@ -193,10 +192,13 @@ public class shell {
     private static Hashtable<String, AuditTestConfig> LoadDictionaryFromProperty(final String testJarPropertyName,
                                                                                  FilePropertyManager resources) throws Exception
     {
+        String loc = "LoadDictionary";
 
+        sysLogger.trace( "entering {}",loc);
         String jarPath = System.getProperty(testJarPropertyName);
         if (jarPath == null) {
             String message = String.format("%s property not found", testJarPropertyName);
+            sysLogger.error(message);
             throw new Exception(message);
         }
         if (!(new File(jarPath)).isFile()) {
@@ -209,16 +211,27 @@ public class shell {
         ClassLoader loader;
         try {
             URL libUrl = new URL(libUrlStr);
+            sysLogger.debug("Seeking libUrl {}", libUrl);
             loader = URLClassLoader.newInstance(
                     new URL[]{libUrl});
+            if (loader == null)
+            {
+                sysLogger.error("loader null");
+            }
+            else
+            {
+                sysLogger.debug("loader got: {}", loader.getClass().getCanonicalName());
+            }
+
         } catch (MalformedURLException e) {
             sysLogger.error(libUrlStr, e);
-            throw new Exception(String.format("%s libURL not found", libUrlStr));
+            throw new Exception(String.format("libURL :%s: not found ", libUrlStr));
         }
 
 
         String tdClassName =
                 resources.getPropertyString(shell.testDictPropertyName);
+        sysLogger.debug("{} value of property {}:{}:",shell.testDictPropertyName,tdClassName);
 
         try {
             if (loader != null) {
@@ -233,7 +246,14 @@ public class shell {
             String eStr = e.toString();
             sysLogger.error(eStr, eStr, " Cant acquire resource file", "Failed");
         }
+        catch (Exception e2)
+        {
+            String eStr = e2.toString();
+            sysLogger.error("Other Exception {} ", eStr);
+            throw e2;
+        }
 
+        sysLogger.trace("leaving {} result non-null? {}", loc, String.valueOf(result != null));
         return result;
     }
 
@@ -288,10 +308,13 @@ public class shell {
     private static Path resolveResourceFile(String resourceFileName) {
         String resHome = System.getProperty("atHome");
         if ((resHome == null) || resHome.isEmpty()) {
+            sysLogger.debug("resolveResourceFile: atHome empty.");
             resHome = System.getenv("ATHOME");
+            sysLogger.debug("resolveResourceFile: getenv ATHOME {}", resHome);
         }
         if ((resHome == null) || resHome.isEmpty()) {
             resHome = System.getProperty("user.dir");
+            sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
         return Paths.get(resHome, resourceFileName);
