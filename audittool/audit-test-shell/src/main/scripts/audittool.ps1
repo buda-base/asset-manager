@@ -37,4 +37,4 @@ $LOG_PROPS = Join-Path -Path $CONFIG_ATHOME -ChildPath log4j2.properties
 $shellJar = $CONFIG_SHELL_JAR_FILE
 
 
-java "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
+java  "-Djava.security.manager -Djava.security.policy=.\test.policy"   "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args

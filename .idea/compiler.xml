@@ -13,16 +13,9 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="audit-test-interface" target="8" />
-<<<<<<< HEAD
-      <module name="audit-test-interface (1)" target="8" />
       <module name="audit-test-lib" target="8" />
       <module name="audit-test-shell" target="8" />
       <module name="audit-tool" target="1.5" />
-      <module name="audittestinterface" target="8" />
-=======
-      <module name="audit-test-lib" target="8" />
-      <module name="audit-test-shell" target="8" />
->>>>>>> internalAuditToolRelease
     </bytecodeTargetLevel>
   </component>
 </project>

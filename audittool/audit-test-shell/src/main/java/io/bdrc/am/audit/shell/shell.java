@@ -225,13 +225,17 @@ public class shell {
 
         } catch (MalformedURLException e) {
             sysLogger.error(libUrlStr, e);
-            throw new Exception(String.format("libURL :%s: not found ", libUrlStr));
+            throw new Exception(String.format("libURL :{}: not Ffound ", libUrlStr));
+        }
+        catch (Exception e) {
+            sysLogger.error(libUrlStr,e);
+            throw new Exception(String.format("libURL :{}: threw exception {}",libUrlStr,e.getMessage()));
         }
 
 
         String tdClassName =
                 resources.getPropertyString(shell.testDictPropertyName);
-        sysLogger.debug("{} value of property {}:{}:",shell.testDictPropertyName,tdClassName);
+        sysLogger.debug("{} value of property :{}:",shell.testDictPropertyName,tdClassName);
 
         try {
             if (loader != null) {
@@ -249,7 +253,7 @@ public class shell {
         catch (Exception e2)
         {
             String eStr = e2.toString();
-            sysLogger.error("Other Exception {} ", eStr);
+            sysLogger.error("Other Exception ", e2);
             throw e2;
         }
 
