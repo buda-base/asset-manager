@@ -4,16 +4,12 @@
     <option name="SCOPE_TYPE" value="10" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32737391-0712-4ea1-82b5-259ec9e60b20" name="Default" comment="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure.">
-      <change afterPath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_api_2_11_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_api_2_12_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_core_2_11_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_core_2_12_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_slf4j_impl_2_11_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_slf4j_impl_2_12_1.xml" afterDir="false" />
+    <list default="true" id="32737391-0712-4ea1-82b5-259ec9e60b20" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_2_0_0_alpha1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell.iml" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java" beforeDir="false" afterPath="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/audittool/target/" />
     <ignored path="$PROJECT_DIR$/audittool/audit-test-lib/target/" />
@@ -62,32 +58,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="shell.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="51" column="100" selection-start-line="51" selection-start-column="100" selection-end-line="51" selection-end-column="100" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PropertyManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/PropertyManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="251">
-              <caret line="98" selection-start-line="98" selection-end-line="98" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="FilePropertyManager.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/FilePropertyManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="185">
-              <caret line="10" column="33" lean-forward="true" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
+            <state relative-caret-position="190">
+              <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -95,8 +70,33 @@
       <file leaf-file-name="log4j2.properties" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="219">
-              <caret line="39" column="27" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="27" />
+            <state relative-caret-position="174">
+              <caret line="27" column="39" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AuditTestAppender.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="578">
+              <caret line="37" column="59" selection-start-line="37" selection-start-column="59" selection-end-line="37" selection-end-column="59" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Logger.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.12.1/log4j-core-2.12.1.jar!/org/apache/logging/log4j/core/Logger.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="262">
+              <caret line="169" column="5" lean-forward="true" selection-start-line="169" selection-start-column="5" selection-end-line="169" selection-end-column="5" />
+              <folding>
+                <element signature="e#7508#7509#0" expanded="true" />
+                <element signature="e#7577#7578#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -174,7 +174,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/audittool/.gitignore" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/scripts/log4j.properties" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/dbg.sh" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j.properties" />
@@ -223,8 +222,9 @@
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/assembly/shell-assembly.xml" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/audit-tool-config.ps1" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/pom.xml" />
-        <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties" />
         <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties" />
+        <option value="$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java" />
       </list>
     </option>
   </component>
@@ -364,15 +364,6 @@
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
-              <item name="audit-test-interface" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="iaudit" type="462c0819:PsiDirectoryNode" />
-              <item name="PropertyManager" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="audit-test-shell" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -408,7 +399,7 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="shell" type="462c0819:PsiDirectoryNode" />
-              <item name="shell" type="1a9f42e2:ClassTreeNode" />
+              <item name="AuditTestAppender" type="1a9f42e2:ClassTreeNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
@@ -435,28 +426,28 @@
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" type="70bed36:NamedLibraryElementNode" />
+              <item name="Maven: org.apache.logging.log4j:log4j-core:2.12.1" type="70bed36:NamedLibraryElementNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" type="70bed36:NamedLibraryElementNode" />
-              <item name="log4j-api-2.12.1.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="Maven: org.apache.logging.log4j:log4j-core:2.12.1" type="70bed36:NamedLibraryElementNode" />
+              <item name="log4j-core-2.12.1.jar" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" type="70bed36:NamedLibraryElementNode" />
-              <item name="log4j-api-2.12.1.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="log4j" type="462c0819:PsiDirectoryNode" />
+              <item name="Maven: org.apache.logging.log4j:log4j-core:2.12.1" type="70bed36:NamedLibraryElementNode" />
+              <item name="log4j-core-2.12.1.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="asset-manager" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" type="70bed36:NamedLibraryElementNode" />
-              <item name="log4j-api-2.12.1.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="log4j" type="462c0819:PsiDirectoryNode" />
-              <item name="LogManager" type="1a9f42e2:ClassTreeNode" />
+              <item name="Maven: org.apache.logging.log4j:log4j-core:2.12.1" type="70bed36:NamedLibraryElementNode" />
+              <item name="log4j-core-2.12.1.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
+              <item name="Logger" type="1a9f42e2:ClassTreeNode" />
             </path>
           </expand>
           <select />
@@ -1110,7 +1101,14 @@
       <option name="project" value="LOCAL" />
       <updated>1568836264614</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="#34 Simpler logging WIP">
+      <created>1574285778733</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1574285778733</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1146,23 +1144,23 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="327383000" />
+    <option name="totallyTimeSpent" value="329741000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="120" y="416" width="2133" height="936" extended-state="0" />
+    <frame x="477" y="266" width="1776" height="1086" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49731958" weight="0.12445223" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="right" id="Maven Projects" order="3" visible="true" weight="0.11251758" />
+      <window_info anchor="right" id="Maven Projects" order="3" visible="true" weight="0.13513513" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32830626" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32843652" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20628223" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24774775" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="Maven-2 Build" order="3" />
       <window_info id="Learn" order="2" />
@@ -1170,7 +1168,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39907193" />
+      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.33992094" />
       <window_info anchor="right" id="Maven" order="5" sideWeight="0.4987775" weight="0.14347826" />
       <window_info id="Designer" order="3" />
       <window_info id="Learn" order="4" sideWeight="0.5005441" side_tool="true" weight="0.21855922" />
@@ -1291,7 +1289,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/audittool/audit-test-shell" />
     </ignored-roots>
-    <MESSAGE value="Move config files to scripts, have pom.xml pick it up." />
     <MESSAGE value="Send console and summary to console and summary file. Send details to details file" />
     <MESSAGE value="Fix startup message in config tool" />
     <MESSAGE value="Fix bugs in default config" />
@@ -1316,7 +1313,8 @@
     <MESSAGE value="Port IDE to windows" />
     <MESSAGE value="Port config to powershell" />
     <MESSAGE value="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add IntelliJ project files to allow saving project restructuring.&#10;&#10;This may not be a final project structure." />
+    <MESSAGE value="#34 Simpler logging WIP" />
+    <option name="LAST_COMMIT_MESSAGE" value="#34 Simpler logging WIP" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1425,7 +1423,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/src.zip!/java/lang/reflect/Constructor.java" />
     <entry file="uml://MAVEN/io.bdrc.am:audit-test-interface:0.8-SNAPSHOT-2">
       <provider selected="true" editor-type-id="UmlEditorProvider">
         <state>
@@ -1690,13 +1687,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38">
-          <caret line="2" column="30" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="752">
@@ -1734,10 +1724,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/FilePropertyManager.java">
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="10" column="33" lean-forward="true" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
+        <state relative-caret-position="432">
+          <caret line="116" column="12" lean-forward="true" selection-start-line="116" selection-start-column="12" selection-end-line="116" selection-end-column="12" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1748,17 +1741,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties">
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-interface/src/main/java/io/bdrc/am/audit/iaudit/FilePropertyManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="39" column="27" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="27" />
+        <state relative-caret-position="190">
+          <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java">
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/scripts/log4j2.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="51" column="100" selection-start-line="51" selection-start-column="100" selection-end-line="51" selection-end-column="100" />
+        <state relative-caret-position="174">
+          <caret line="27" column="39" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-core/2.12.1/log4j-core-2.12.1.jar!/org/apache/logging/log4j/core/Logger.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="262">
+          <caret line="169" column="5" lean-forward="true" selection-start-line="169" selection-start-column="5" selection-end-line="169" selection-end-column="5" />
+          <folding>
+            <element signature="e#7508#7509#0" expanded="true" />
+            <element signature="e#7577#7578#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/audittool/audit-test-shell/src/main/java/io/bdrc/am/audit/shell/AuditTestAppender.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="37" column="59" selection-start-line="37" selection-start-column="59" selection-end-line="37" selection-end-column="59" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
