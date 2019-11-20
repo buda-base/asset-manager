@@ -17,8 +17,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -51,9 +49,9 @@ public class shell {
     private static final String testDictPropertyName = "testDictionaryClassName";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
-    private final static Logger sysLogger = LoggerFactory.getLogger("shellLogger"); //("root");
+    private final static Logger sysLogger = LoggerFactory.getLogger("con"); // shellLogger.name=con //("root");
     //    private final static Logger summaryLogger = LoggerFactory.getLogger("summaryLogger"); //("root");
-    private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+    // private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
 
     private final static int SYS_OK = 0 ;
     private final static int SYS_ERR = 1 ;
@@ -100,8 +98,6 @@ public class shell {
         } catch (Exception e) {
             System.out.println("Exiting on exception " + e.getMessage());
             sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
-            sysLogger.debug(e.toString(), e);
-            detailLogger.error("System exception", e);
             System.exit( SYS_ERR) ;
         }
 
@@ -162,7 +158,7 @@ public class shell {
         TestResult tr = RunTest(testLogger, testClass, testDir, propertyArgs);
 
         for (TestMessage tm : tr.getErrors()) {
-            detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
+            // detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
         }
         String resultLogFormat = "folder:{}\tTest:{}\tresult:{}";
         if (tr.Passed()) {
