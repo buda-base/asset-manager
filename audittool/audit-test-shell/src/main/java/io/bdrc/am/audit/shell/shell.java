@@ -49,20 +49,19 @@ public class shell {
     private static final String testDictPropertyName = "testDictionaryClassName";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
-    private final static Logger sysLogger = LoggerFactory.getLogger("con"); // shellLogger.name=con //("root");
-    //    private final static Logger summaryLogger = LoggerFactory.getLogger("summaryLogger"); //("root");
-    // private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+    private final static Logger sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
+    private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
 
     private final static int SYS_OK = 0 ;
     private final static int SYS_ERR = 1 ;
+
+    private final static AuditTestLogController testLogController = new AuditTestLogController();
 
     public static void main(String[] args) {
 
         Boolean anyFailed = false;
 
         try {
-
-
 
             Path resourceFile = resolveResourceFile("shell.properties");
             FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
@@ -73,6 +72,9 @@ public class shell {
 
             assert td != null;
             ArgParser argParser = new ArgParser(args);
+
+            testLogController.setLayout("%-5p %m\n");
+            testLogController.setLogger(detailLogger);
 
             if (argParser.has_Dirlist()) {
                 ArrayList<String> dirsToTest = argParser.getDirs();
@@ -153,18 +155,21 @@ public class shell {
     {
         sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
 
-
         @SuppressWarnings("unchecked")
         TestResult tr = RunTest(testLogger, testClass, testDir, propertyArgs);
 
-        for (TestMessage tm : tr.getErrors()) {
-            // detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
-        }
+        testLogController.ChangeAppender("/Users/jimk/dev/tmp/at/Hibbidy.log");
+
         String resultLogFormat = "folder:{}\tTest:{}\tresult:{}";
         if (tr.Passed()) {
             sysLogger.info(resultLogFormat, testDir, testDesc, "Passed");
+            detailLogger.info(resultLogFormat, testDir, testDesc, "Passed");
         } else {
             sysLogger.error(resultLogFormat, testDir, testDesc, "Failed");
+            detailLogger.error(resultLogFormat, testDir, testDesc, "Failed");
+        }
+        for (TestMessage tm : tr.getErrors()) {
+            detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
         }
         return tr.Passed();
     }
