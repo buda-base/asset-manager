@@ -73,8 +73,7 @@ public class shell {
             assert td != null;
             ArgParser argParser = new ArgParser(args);
 
-            testLogController.setLayout("%-5p %m\n");
-            testLogController.setLogger(detailLogger);
+            testLogController.setAppenderDirectory(argParser.getLogDirectory());
 
             if (argParser.has_Dirlist()) {
                 ArrayList<String> dirsToTest = argParser.getDirs();

@@ -62,7 +62,7 @@ class ArgParser {
         options.addOption(Option.builder(logHome)
                 .longOpt(logHomeLong)
                 .hasArg(true)
-                .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/TestResults" +
+                .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
                               ". Created if not exists ")
                 .required(false)
                 .build());
@@ -86,12 +86,22 @@ class ArgParser {
             isParsed = false;
         }
 
-        // Log home directory must be writable
-        String TestLogHome =  System.getProperty("user.home") + "/audit-test-logs/TestResults";
-        String logDir = cl.getOptionValue("l",TestLogHome);
-        if (!madeWritableDir(logDir))
+
+        if (cl.hasOption("l"))
         {
-            printHelp(options);
+            Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
+            String ldpStr = logDirPath.toString();
+
+            // Log home directory must be writable. Create it now, evaluate result
+            if (!madeWritableDir(logDirPath))
+            {
+                printHelp(options);
+                logger.error("User supplied folder {} cannot be created. Using default",ldpStr);
+            }
+            else
+            {
+                _logDirectory = ldpStr ;
+            }
         }
 
 
@@ -185,20 +195,19 @@ class ArgParser {
 
     /**
      * Creates a directory, or checks an existing one for writability
-     * @param dirPath full path to directory (caller must resolve)
+     * @param pathToCreate full path to directory (caller must resolve)
      * @return true if directory is writable, false if not or if it cannot create.
      */
-    private boolean madeWritableDir(String dirPath) {
+    private boolean madeWritableDir( Path pathToCreate ) {
 
-        Path createdPath = Paths.get(dirPath);
         boolean ok = false;
 
-        if (!Files.exists(createdPath))
+        if (!Files.exists(pathToCreate))
         {
             try
             {
-                Files.createDirectories(createdPath);
-                ok = Files.isWritable(createdPath);
+                Files.createDirectories(pathToCreate);
+                ok = Files.isWritable(pathToCreate);
             } catch (IOException e)
             {
                 ok = false ;
@@ -206,13 +215,23 @@ class ArgParser {
         }
         else
         {
-            if (Files.isDirectory(createdPath)) {
-                ok = Files.isWritable(createdPath);
+            if (Files.isDirectory(pathToCreate)) {
+                ok = Files.isWritable(pathToCreate);
             }
         }
         return ok;
     }
 
+
+    private String _logDirectory;
+
+    /**
+     * Command line value of -l argument
+     * @return
+     */
+    public String getLogDirectory() {
+        return _logDirectory = null;
+    }
 
 }
 

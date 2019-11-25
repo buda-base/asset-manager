@@ -6,8 +6,10 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.core.lookup.StrLookup;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -54,12 +56,27 @@ class AuditTestLogController {
      * Sets the logger which gets appender rotated in and out.
      * @param testResultLogger
      */
+    @Deprecated
     public void setLogger(final org.slf4j.Logger testResultLogger) {
         // Because you can't just cast
         // this._testResultLogger = (org.apache.logging.log4j.core.Logger) testResultLogger;
         this._testResultLogger = lc.getLogger(testResultLogger.getName());
 
     }
+
+    //region appenderDirectory
+
+    public String getAppenderDirectory() {
+        return _appenderDirectory;
+    }
+
+    public void setAppenderDirectory(final String appenderDirectory) {
+        _appenderDirectory = appenderDirectory;
+    }
+
+    private String _appenderDirectory;
+
+    //endregion AppenderDirectory
 
     private Logger _testResultLogger;
     // endregion Logger property
@@ -68,17 +85,29 @@ class AuditTestLogController {
     //endregion
 
     public AuditTestLogController() {
+
         this.lc = (LoggerContext) LogManager.getContext(false);
+        // Set the default to where the logger puts its files. See log4j2.properties
+        String userHome = System.getProperty("user.home");
+        String defaultLogLocation = GetLog4jPropertyFromContext(lc,"logRoot");
+        setAppenderDirectory( Paths.get(userHome,defaultLogLocation).toString());
     }
 
-    void ChangeAppender(final String appenderFileName) {
+    boolean ChangeAppender(final String appenderFileName) {
 
         Map<String, Appender> existingAppenders = _testResultLogger.getAppenders();
+        Appender curAppender = null;
         if (existingAppenders.containsKey(EACHWORKAPPENDER))
         {
-            Appender curAppender = existingAppenders.get(EACHWORKAPPENDER);
+            curAppender = existingAppenders.get(EACHWORKAPPENDER);
             _testResultLogger.removeAppender(curAppender);
 
+        }
+
+        // just leave logging unchanged
+        if (curAppender == null)
+        {
+            return false;
         }
 
         File af = new File(appenderFileName);
@@ -89,11 +118,28 @@ class AuditTestLogController {
                                   .setConfiguration(lc.getConfiguration()).build();
         fa.start();
 
-            // Apparently you need to add it to the config before adding it to the root logger
-        lc.getConfiguration().addAppender(fa);
 
+        // Apparently you need to add it to the config before adding it to the root logger
+        lc.getConfiguration().addAppender(fa);
         // This might be safe, in case the structure changes
         _testResultLogger.addAppender(lc.getConfiguration().getAppender(fa.getName()));
         lc.updateLoggers();
+
+        return true;
     }
+
+
+    /**
+     *
+     * @param lc Logger context
+     * @param propertyKey property to fetch
+     * @return the logger name defined in the context's configuration property 'testLoggerName'
+     */
+    String GetLog4jPropertyFromContext(LoggerContext lc, String propertyKey) {
+
+        // Keep the peace. Somehow this can't resolve when you do one line
+        StrLookup _lookup = lc.getConfiguration().getStrSubstitutor().getVariableResolver();
+        return _lookup.lookup(propertyKey);
+    }
+
 }
