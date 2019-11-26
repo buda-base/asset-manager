@@ -230,7 +230,7 @@ class ArgParser {
      * @return
      */
     public String getLogDirectory() {
-        return _logDirectory = null;
+        return _logDirectory ;
     }
 
 }

@@ -51,71 +51,95 @@ public class shell {
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
     private final static Logger sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
     private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+    private final static Logger testResultLogger = LoggerFactory.getLogger("testResultLogger");
 
-    private final static int SYS_OK = 0 ;
-    private final static int SYS_ERR = 1 ;
+    private final static int SYS_OK = 0;
+    private final static int SYS_ERR = 1;
 
-    private final static AuditTestLogController testLogController = new AuditTestLogController();
+    private static AuditTestLogController testLogController;
 
     public static void main(String[] args) {
 
         Boolean anyFailed = false;
 
-        try {
+        try
+        {
+
 
             Path resourceFile = resolveResourceFile("shell.properties");
             FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
 
-            Hashtable<String, AuditTestConfig> td ;
+            Hashtable<String, AuditTestConfig> td;
 
             td = LoadDictionaryFromProperty("testJar", shellProperties);
 
             assert td != null;
             ArgParser argParser = new ArgParser(args);
 
+            testLogController = new AuditTestLogController();
+
+            testLogController.setCsvHeader(
+                    "id,test_name,outcome,detail_path,error_number,error_test");
+
+            testLogController.setTestResultLogger(testResultLogger.getName());
             testLogController.setAppenderDirectory(argParser.getLogDirectory());
 
-            if (argParser.has_Dirlist()) {
+            if (argParser.has_Dirlist())
+            {
                 ArrayList<String> dirsToTest = argParser.getDirs();
                 ResolvePaths(dirsToTest);
-                for (String aTestDir : dirsToTest) {
-                    Boolean onePassed =  RunTestsOnDir(shellProperties, td, aTestDir);
+
+
+                for (String aTestDir : dirsToTest)
+                {
+
+                    // testLogController ctor  sets test log folder
+                    testLogController.ChangeAppender(Paths.get(aTestDir).getFileName().toString());
+                    Boolean onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
                     anyFailed |= !onePassed;
                 }
             }
 
             // dont force mutually exclusive. Why not do both?
-            if (argParser.getReadStdIn()) {
+            if (argParser.getReadStdIn())
+            {
                 String curLine;
-                try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
-                    while (null != (curLine = f.readLine())) {
+                try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in)))
+                {
+                    while (null != (curLine = f.readLine()))
+                    {
                         sysLogger.debug("readLoop got line {} ", curLine);
+
+                        testLogController.ChangeAppender(Paths.get(curLine).getFileName().toString());
                         Boolean onePassed = RunTestsOnDir(shellProperties, td, curLine);
                         anyFailed |= !onePassed;
                     }
                 }
             }
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             System.out.println("Exiting on exception " + e.getMessage());
             sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
-            System.exit( SYS_ERR) ;
+            System.exit(SYS_ERR);
         }
 
-        System.exit(anyFailed ? SYS_ERR : SYS_OK );
+        System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
 
     private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties, final Hashtable<String, AuditTestConfig>
-            td, final String aTestDir)
+                                                                                            td, final String aTestDir)
     {
 
         Boolean anyFailed = false;
-        for (String testName : td.keySet()) {
+        for (String testName : td.keySet())
+        {
 
             AuditTestConfig testConfig = td.get(testName);
 
             // Do we have a value at all?
-            if (testConfig == null) {
+            if (testConfig == null)
+            {
 
                 // sysLogger foes to a csv and a log file, so add the extra parameters.
                 // log4j wont care.
@@ -127,7 +151,8 @@ public class shell {
 
             // Is this test an  IAuditTest?
             Class<?> testClass = testConfig.getTestClass();
-            if (!IAuditTest.class.isAssignableFrom(testClass)) {
+            if (!IAuditTest.class.isAssignableFrom(testClass))
+            {
                 sysLogger.error("Test found for {} does not implement IAudit", testName, "doesnt implement IAudit",
                         "Failed");
                 anyFailed = false;
@@ -150,25 +175,49 @@ public class shell {
     }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger, final String
-            testDesc, final Hashtable<String, String> propertyArgs, final String testDir)
+                                                                                                               testDesc, final Hashtable<String, String> propertyArgs, final String testDir)
     {
         sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
 
         @SuppressWarnings("unchecked")
-        TestResult tr = RunTest(testLogger, testClass, testDir, propertyArgs);
+        TestResult tr = null;
+        try
+        {
+            tr = RunTest(testLogger, testClass, testDir, propertyArgs);
 
-        testLogController.ChangeAppender("/Users/jimk/dev/tmp/at/Hibbidy.log");
+            String resultLogFormat = "folder:%15s\tResult%10s\tTest:%s";
 
-        String resultLogFormat = "folder:{}\tTest:{}\tresult:{}";
-        if (tr.Passed()) {
-            sysLogger.info(resultLogFormat, testDir, testDesc, "Passed");
-            detailLogger.info(resultLogFormat, testDir, testDesc, "Passed");
-        } else {
-            sysLogger.error(resultLogFormat, testDir, testDesc, "Failed");
-            detailLogger.error(resultLogFormat, testDir, testDesc, "Failed");
-        }
-        for (TestMessage tm : tr.getErrors()) {
-            detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
+            String workName = Paths.get(testDir).getFileName().toString();
+            String testResultLabel = tr.Passed() ? "Passed" : "Failed" ;
+
+            if (tr.Passed())
+            {
+                sysLogger.info(String.format(resultLogFormat, testDir, testResultLabel, testDesc));
+                detailLogger.info(String.format(resultLogFormat, testDir, testResultLabel, testDesc));
+
+
+            }
+            else
+            {
+                sysLogger.error(resultLogFormat, testDir, testResultLabel, testDesc);
+                detailLogger.error(resultLogFormat, testDir, testResultLabel, testDesc);
+            }
+
+            // Test result logger doesn't have levels
+            // See testLogController.setSVCFormat above. Provide params for all
+            // headings. In CSV format, first arg is ignored.
+            //"id,test_name,outcome,detail_path,error_number,error_test"
+            testResultLogger.info("", workName, testDesc, testResultLabel,testDir,null,null  );
+
+            for (TestMessage tm : tr.getErrors())
+            {
+                detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
+                testResultLogger.error("{}:{}:{}", workName, testDir, tm.getOutcome().toString(), tm.getMessage());
+            }
+        } catch (Exception e)
+        {
+            System.out.println(String.format("{} {}", testDir, testClass.getCanonicalName()));
+            e.printStackTrace();
         }
         return tr.Passed();
     }
@@ -189,17 +238,19 @@ public class shell {
         return argNames1;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked"})
     private static Hashtable<String, AuditTestConfig> LoadDictionaryFromProperty(final String testJarPropertyName,
                                                                                  FilePropertyManager resources) throws Exception
     {
 
         String jarPath = System.getProperty(testJarPropertyName);
-        if (jarPath == null) {
+        if (jarPath == null)
+        {
             String message = String.format("%s property not found", testJarPropertyName);
             throw new Exception(message);
         }
-        if (!(new File(jarPath)).isFile()) {
+        if (!(new File(jarPath)).isFile())
+        {
             throw new FileNotFoundException(jarPath);
         }
         Hashtable<String, AuditTestConfig> result = null;
@@ -207,11 +258,13 @@ public class shell {
         String libUrlStr = "jar:file:" + jarPath + "!/";
 
         ClassLoader loader;
-        try {
+        try
+        {
             URL libUrl = new URL(libUrlStr);
             loader = URLClassLoader.newInstance(
                     new URL[]{libUrl});
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException e)
+        {
             sysLogger.error(libUrlStr, e);
             throw new Exception(String.format("%s libURL not found", libUrlStr));
         }
@@ -220,8 +273,10 @@ public class shell {
         String tdClassName =
                 resources.getPropertyString(shell.testDictPropertyName);
 
-        try {
-            if (loader != null) {
+        try
+        {
+            if (loader != null)
+            {
 
                 Class<IAuditTest> testDict = (Class<IAuditTest>) Class.forName(tdClassName, true, loader); //, loader);
                 Object instance = testDict.newInstance();
@@ -229,7 +284,8 @@ public class shell {
 
                 result = (Hashtable<String, AuditTestConfig>) method.invoke(instance);
             }
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e)
+        {
             String eStr = e.toString();
             sysLogger.error(eStr, eStr, " Cant acquire resource file", "Failed");
         }
@@ -243,7 +299,8 @@ public class shell {
      * @param resolveDirs list of paths to resolve
      */
     private static void ResolvePaths(final ArrayList<String> resolveDirs) {
-        for (int i = 0; i < resolveDirs.size(); i++) {
+        for (int i = 0; i < resolveDirs.size(); i++)
+        {
             resolveDirs.set(i, Paths.get(resolveDirs.get(i)).toAbsolutePath().toString());
         }
     }
@@ -261,7 +318,8 @@ public class shell {
         String className = testClass.getCanonicalName();
 
         TestResult tr = new TestResult();
-        try {
+        try
+        {
             Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class);
             IAuditTest inst = ctor.newInstance(testLogger);
 
@@ -270,7 +328,8 @@ public class shell {
 
             tr = inst.getTestResult();
 
-        } catch (Exception eek) {
+        } catch (Exception eek)
+        {
             testLogger.error(" Exception {} when running test {}", eek, className);
             tr.setOutcome(Outcome.FAIL);
             tr.AddError(Outcome.SYS_EXC, eek.toString());
@@ -287,10 +346,12 @@ public class shell {
      */
     private static Path resolveResourceFile(String resourceFileName) {
         String resHome = System.getProperty("atHome");
-        if ((resHome == null) || resHome.isEmpty()) {
+        if ((resHome == null) || resHome.isEmpty())
+        {
             resHome = System.getenv("ATHOME");
         }
-        if ((resHome == null) || resHome.isEmpty()) {
+        if ((resHome == null) || resHome.isEmpty())
+        {
             resHome = System.getProperty("user.dir");
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");

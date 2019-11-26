@@ -75,7 +75,7 @@
                             <resources>
                                 <resource>
                                     <directory>src/scripts</directory>
-                                    <filtering>false</filtering>
+                                    <filtering></filtering>
                                 </resource>
                             </resources>
                         </configuration>
