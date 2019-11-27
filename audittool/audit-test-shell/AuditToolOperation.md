@@ -7,7 +7,6 @@ On Windows machines, the script type `.sh` is replaced with PowerShell scripts, 
 Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
 The arguments to audit tool are simply:
 ```psv
-PS C:\Users\djt\dev\at9> .\audittool.ps1
 usage: AuditTest [options] { - | Directory,Directory,Directory}
 where:
 
@@ -17,15 +16,55 @@ where:
 [options] are:
  -d,--debug             Show debugging information
  -i,--inputFile <arg>   Input file, one path per line
+ -l,--log_home <arg>    Test Result log directory. Must be writable.
+                        Default is <UserHome>/audit-test-logs/. Created if
+                        not exists
 ```
 
 The `-d` switch has no functionality as of release 0.9
-### Output
+### Outputs
 
-#### Location
-Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base folder in the Audit tool's `log4j2.properties` folder.
+### Run logs and work logs
+Audit tool creates two sets of logs:
+- Run logs, which capture one invocation of Audit tool. These are in _<User home>_/audit-tool-logs/. Two sets, 
+csv, and log files are generated.
+- Per Work logs. One .CSV file is created for each work audittool scans. A "work" in this context means a top level directory.
+It is not connected to any existing BDRC library. These are located in either the Run log home (above) or in the directory
+specified in the `-l | --log_home` argument.
 
-You can configure log file naming in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
+Note to windows users: You can change the default log home in the `log4j2.properties` file in the installer.
+That file contains a proposed Windows location.
+
+### Per work logs
+Each work which is analyzed has its output written to a file _WorkName.YYYY-MM-DD-HH-MM_.csv in the work log location (se above.)
+_YYYY-MM-DD-HH-MM_ of course, stands for the run date and time.
+
+The work log file contains the results for each test in sequence. Tests which are ordinarily found in the detail
+logs are added after the overall test result.
+
+The work run log contains a blend of the summary and the detail loggers below. A sample work log is:
+
+|id|test_name|outcome|error_number|error_test|detail_path|
+|---|---|---|---|---|---|
+|W1KG13765|No Files in Root Folder|Passed| | |/Users/dev/tmp/pub/00/W1KG13765|
+|W1KG13765|Web Image Attributes|Failed|/Users/dev/tmp/pub/00/W1KG13765| | |
+| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
+| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
+| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510075.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
+| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510101.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
+|W1KG13765|No folders allowed in Image Group folders|Passed|/Users/dev/tmp/pub/00/W1KG13765| | |
+|W1KG13765|File Sequence Test|Failed|/Users/dev/tmp/pub/00/W1KG13765 | | |
+| | |106|Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test.|/Users/dev/tmp/pub/00/W1KG13765
+| | |105|Sequence File dimensions does not end in an integer: ends with  not found|/Users/dev/tmp/pub/00/W1KG13765
+
+### Run logs
+Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
+folder in two ways:
+- edit in the Audit tool's `log4j2.properties` entry `property.logRoot` entry.
+- use the `-l | --log_home` argument in the call to `audittool.sh` 
+
+You can configure other logging properties in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
+
 Under `audit-tool-logs` are folders containing **csv** and **log**
 
 #### Log Contents
@@ -39,23 +78,25 @@ Under `audit-tool-logs` are folders containing **csv** and **log**
 
 
 The detail files contain the summary result. If there were failures, each item which failed is separately listed (see below)
-##### Comma Separated values
+##### CSV
 CSV files are output for easier analysis and collection. They follow the log files' naming conventions.
 
 Summary and detail log files have different data formats.
 The summary file contains:
 
-|path|test_name|outcome|
+|outcome|path|test_name|
 |---|---|---|
-|\\\TBRCRS3\Archive\W1KG10190|No Files in Root Folder|Passed|
+|Passed|\\\TBRCRS3\Archive\W1KG10190|No Files in Root Folder|
 
 The detail file contains:
 
-|path|error_number|error_test|
+|error_number|error_test|path|
 |---|---|---|
-|\\\TBRCRS3\Archive\W1KG10190|104|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  fails files only test.|
-|\\\TBRCRS3\Archive\W1KG10190|103|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  contains directory S0001491.JOB-A|
+|104|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  fails files only test.|\\\TBRCRS3\Archive\W1KG10190|
+|103|Image group folder \\\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  contains directory S0001491.JOB-A|\\\TBRCRS3\Archive\W1KG10190|
 
+Note that the path which failed the test is given as a separate data element: there is  no obligation that the error message contain the path,
+and separating the path allows for easier data access.
 
 
 ## Principles of operation
