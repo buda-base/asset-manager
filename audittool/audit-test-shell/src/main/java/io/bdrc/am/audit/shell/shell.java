@@ -5,10 +5,7 @@ import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,7 +43,8 @@ public class shell {
     /**
      * Property key to find class name of test dictionary
      */
-    private static final String testDictPropertyName = "testDictionaryClassName";
+    private static final String TEST_DICT_PROPERTY_NAME = "testDictionaryClassName";
+    private static final String TEST_LOGGER_HEADER = "id,test_name,outcome,error_number,error_test,detail_path\n";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
     private final static Logger sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
@@ -76,13 +74,7 @@ public class shell {
             assert td != null;
             ArgParser argParser = new ArgParser(args);
 
-            testLogController = new AuditTestLogController();
-
-            testLogController.setCsvHeader(
-                    "id,test_name,outcome,detail_path,error_number,error_test");
-
-            testLogController.setTestResultLogger(testResultLogger.getName());
-            testLogController.setAppenderDirectory(argParser.getLogDirectory());
+            testLogController = BuildTestLog(argParser, testResultLogger, TEST_LOGGER_HEADER);
 
             if (argParser.has_Dirlist())
             {
@@ -94,7 +86,7 @@ public class shell {
                 {
 
                     // testLogController ctor  sets test log folder
-                    testLogController.ChangeAppender(Paths.get(aTestDir).getFileName().toString());
+                    testLogController.ChangeAppender(Paths.get(aTestDir).getFileName().toString() + ".csv");
                     Boolean onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
                     anyFailed |= !onePassed;
                 }
@@ -127,6 +119,19 @@ public class shell {
         System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
 
+    private static AuditTestLogController BuildTestLog(final ArgParser ap, Logger parentLogger, String csvHeader)
+    {
+        AuditTestLogController tlc;
+        String logDir = ap.getLogDirectory();
+        tlc = new AuditTestLogController();
+        tlc.setCsvHeader(csvHeader);
+        tlc.setTestResultLogger(parentLogger.getName());
+
+        tlc.setAppenderDirectory(logDir);
+
+        return tlc;
+    }
+
     private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties, final Hashtable<String, AuditTestConfig>
                                                                                             td, final String aTestDir)
     {
@@ -141,7 +146,7 @@ public class shell {
             if (testConfig == null)
             {
 
-                // sysLogger foes to a csv and a log file, so add the extra parameters.
+                // sysLogger goes to a csv and a log file, so add the extra parameters.
                 // log4j wont care.
                 sysLogger.error("No test config found for {}. Contact library provider.",
                         testName, "No test config found", "Failed");
@@ -167,6 +172,7 @@ public class shell {
             // extract the property values the test needs
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
+            @SuppressWarnings("unchecked")
             Boolean onePassed = TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
                     aTestDir);
             anyFailed |= !onePassed;
@@ -174,8 +180,9 @@ public class shell {
         return !anyFailed;
     }
 
-    private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger, final String
-                                                                                                               testDesc, final Hashtable<String, String> propertyArgs, final String testDir)
+    private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
+                                           final String testDesc, final Hashtable<String, String> propertyArgs,
+                                           final String testDir)
     {
         sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
 
@@ -185,38 +192,39 @@ public class shell {
         {
             tr = RunTest(testLogger, testClass, testDir, propertyArgs);
 
-            String resultLogFormat = "folder:%15s\tResult%10s\tTest:%s";
+            // String resultLogFormat = "Result:%10s\tFolder:%20s\tTest:%30s";
+            String resultLogFormat = "{}\t{}\t\t{}";
 
             String workName = Paths.get(testDir).getFileName().toString();
-            String testResultLabel = tr.Passed() ? "Passed" : "Failed" ;
+            String testResultLabel = tr.Passed() ? "Passed" : "Failed";
 
             if (tr.Passed())
             {
-                sysLogger.info(String.format(resultLogFormat, testDir, testResultLabel, testDesc));
-                detailLogger.info(String.format(resultLogFormat, testDir, testResultLabel, testDesc));
-
-
+                sysLogger.info(resultLogFormat, testResultLabel, testDir, testDesc);
             }
             else
             {
-                sysLogger.error(resultLogFormat, testDir, testResultLabel, testDesc);
-                detailLogger.error(resultLogFormat, testDir, testResultLabel, testDesc);
+                sysLogger.error(resultLogFormat, testResultLabel, testDir, testDesc);
             }
 
             // Test result logger doesn't have levels
             // See testLogController.setSVCFormat above. Provide params for all
             // headings. In CSV format, first arg is ignored.
             //"id,test_name,outcome,detail_path,error_number,error_test"
-            testResultLogger.info("", workName, testDesc, testResultLabel,testDir,null,null  );
+            testResultLogger.info("ignoredCSV", workName, testDesc, testResultLabel, null, null, testDir);
 
             for (TestMessage tm : tr.getErrors())
             {
-                detailLogger.error("{}:{}:{}", testDir, tm.getOutcome().toString(), tm.getMessage());
-                testResultLogger.error("{}:{}:{}", workName, testDir, tm.getOutcome().toString(), tm.getMessage());
+                detailLogger.error("{}:{}:{}", tm.getOutcome().toString(), tm.getMessage(), testDir);
+
+                // We don't repeat the first few columns for detailed errors
+                // testResultLogger also has no level.
+                testResultLogger.info("ignoredCSV", null, null, null, tm.getOutcome().toString(), tm.getMessage(),
+                        testDir);
             }
         } catch (Exception e)
         {
-            System.out.println(String.format("{} {}", testDir, testClass.getCanonicalName()));
+            System.out.println(String.format("%s %s", testDir, testClass.getCanonicalName()));
             e.printStackTrace();
         }
         return tr.Passed();
@@ -271,7 +279,7 @@ public class shell {
 
 
         String tdClassName =
-                resources.getPropertyString(shell.testDictPropertyName);
+                resources.getPropertyString(shell.TEST_DICT_PROPERTY_NAME);
 
         try
         {

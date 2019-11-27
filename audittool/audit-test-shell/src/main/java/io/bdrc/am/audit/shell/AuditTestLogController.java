@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.shell;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -21,6 +22,7 @@ import java.util.Map;
 class AuditTestLogController {
 
     private static final String EACHWORKAPPENDER = "PerWorkAppender";
+    private static String DEFAULTLOGDIR;
 
     /*
      *  Operations:
@@ -43,7 +45,7 @@ class AuditTestLogController {
         return _csvHeader;
     }
 
-    public void setCsvHeader(final String csvFormat) {
+    void setCsvHeader(final String csvFormat) {
         _csvHeader = csvFormat;
 
         _layout = BuildDefaultLayout(lc);
@@ -54,31 +56,33 @@ class AuditTestLogController {
 
     //region Layout
 
-    private Layout getLayout() {
+    private Layout<String> getLayout() {
         return _layout;
     }
 
     /**
      * layout field
      */
-    private Layout _layout;
+    private Layout<String> _layout;
     //endregion
 
     //region appenderDirectory
 
-    void setAppenderDirectory(final String appenderDirectory) {
-        _appenderDirectory = appenderDirectory;
+    /**
+     * Sets the appender directory
+     * @param appenderDirectory relative or absolute path spec
+     */
+    void setAppenderDirectory( String appenderDirectory) {
+
+        _appenderDirectory = Paths.get(StringUtils.isEmpty(appenderDirectory) ? DEFAULTLOGDIR : appenderDirectory).toFile()
+                .getAbsolutePath();
     }
 
     private String _appenderDirectory;
 
     //endregion AppenderDirectory
 
-    public Logger getTestResultLogger() {
-        return _testResultLogger;
-    }
-
-    public void setTestResultLogger(final String testResultLoggerName) {
+    void setTestResultLogger(final String testResultLoggerName) {
         _testResultLogger = lc.getLogger(testResultLoggerName);
     }
 
@@ -91,16 +95,16 @@ class AuditTestLogController {
     public AuditTestLogController() {
 
         this.lc = (LoggerContext) LogManager.getContext(false);
-        // Set the default to where the logger puts its files. See log4j2.properties
-        String userHome = System.getProperty("user.home");
-        String defaultLogLocation = GetLog4jPropertyFromContext(lc, "logRoot");
-        setAppenderDirectory(Paths.get(userHome, defaultLogLocation).toString());
+        // Set the default to where the logger puts its files. See log4j2.properties.
+        // Should be fully qualified.
+        DEFAULTLOGDIR = GetLog4jPropertyFromContext(lc, "logRoot");
+        setAppenderDirectory(Paths.get(DEFAULTLOGDIR).toAbsolutePath().toString());
     }
 
-    boolean ChangeAppender(final String appenderFileName) {
+    void ChangeAppender(final String appenderFileName) {
 
         Map<String, Appender> existingAppenders = _testResultLogger.getAppenders();
-        Appender curAppender = null;
+        Appender curAppender;
         if (existingAppenders.containsKey(EACHWORKAPPENDER))
         {
             curAppender = existingAppenders.get(EACHWORKAPPENDER);
@@ -116,7 +120,8 @@ class AuditTestLogController {
 
         File af = Paths.get(_appenderDirectory, appenderFileName).toFile();
 
-        FileAppender fa = FileAppender.newBuilder()
+        FileAppender fa;
+        fa = FileAppender.newBuilder()
                                   .withAppend(false)
                                   .withFileName(af.getAbsolutePath())
                                   .setConfiguration(lc.getConfiguration())
@@ -126,7 +131,7 @@ class AuditTestLogController {
                                   .build();
 
 // I think it's just .setConfiguration(lc.getConfiguration()) that casts  upward to abstract.
-        // This one aboce compiles
+        // This one above compiles and runs
 //        FileAppender fa = FileAppender.newBuilder().withAppend(false).withFileName(af.getAbsolutePath())
 //                                  .setLayout(getLayout())
 //                                  .setName(EACHWORKAPPENDER)
@@ -134,7 +139,6 @@ class AuditTestLogController {
 
 
 
-        // Apparently you need to add it to the config before adding it to the root logger
         lc.getConfiguration().addLoggerAppender(_testResultLogger, fa);
         // This might be safe, in case the structure changes
 //        _testResultLogger.addAppender(lc.getConfiguration().getAppender(fa.getName()));
@@ -142,7 +146,6 @@ class AuditTestLogController {
 
         fa.start();
 
-        return true;
     }
 
 
@@ -151,7 +154,7 @@ class AuditTestLogController {
      * @param propertyKey property to fetch
      * @return the logger name defined in the context's configuration property 'testLoggerName'
      */
-    String GetLog4jPropertyFromContext(LoggerContext lc, String propertyKey) {
+    private String GetLog4jPropertyFromContext(LoggerContext lc, String propertyKey) {
 
         // Keep the peace. Somehow this can't resolve when you do one line
         StrLookup _lookup = lc.getConfiguration().getStrSubstitutor().getVariableResolver();
@@ -161,9 +164,9 @@ class AuditTestLogController {
     /**
      * Create a CSVParameterlayout, using the class' CSVFormat value as the header list
      *
-     * @return
+     * @return Log4JLayout object
      */
-    private Layout BuildDefaultLayout(LoggerContext loggerContext)
+    private Layout<String> BuildDefaultLayout(LoggerContext loggerContext)
     {
 //        String appenderTemplateName = GetLog4jPropertyFromContext(lc, "AppenderTemplateName");
 //        Map<String, Appender> rootAppenders = loggerContext.getRootLogger().getAppenders();
@@ -173,16 +176,15 @@ class AuditTestLogController {
         // public CsvParameterLayout(Configuration config, Charset charset, CSVFormat csvFormat, String header, String
         //    footer) {
         // super(config, charset, csvFormat, header, footer);
-        Layout layoutTemplate = new CsvParameterLayout(loggerContext.getConfiguration(), Charset.defaultCharset(),
-                CSVFormat.DEFAULT.withDelimiter(',').withQuote('"'),
-                getCsvHeader(), "");
-//        Layout layoutTemplate = rootAppenders.containsKey(appenderTemplateName)
+        //        Layout layoutTemplate = rootAppenders.containsKey(appenderTemplateName)
 //                        ? rootAppenders.get(appenderTemplateName).getLayout()
 //                        : new CsvParameterLayout(loggerContext.getConfiguration(), Charset.defaultCharset(),
 //                                CSVFormat.DEFAULT.withDelimiter(',').withQuote('"'),
 //                getCsvHeader(), null);
 
-        return layoutTemplate;
+        return new CsvParameterLayout(loggerContext.getConfiguration(), Charset.defaultCharset(),
+                CSVFormat.DEFAULT.withDelimiter(',').withQuote('"'),
+                getCsvHeader(), "");
     }
 
 
