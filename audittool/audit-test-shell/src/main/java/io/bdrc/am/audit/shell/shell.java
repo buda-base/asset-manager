@@ -14,9 +14,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -84,9 +89,7 @@ public class shell {
 
                 for (String aTestDir : dirsToTest)
                 {
-
-                    // testLogController ctor  sets test log folder
-                    testLogController.ChangeAppender(Paths.get(aTestDir).getFileName().toString() + ".csv");
+                    sysLogger.debug("arg =  {} ", aTestDir);
                     Boolean onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
                     anyFailed |= !onePassed;
                 }
@@ -132,15 +135,25 @@ public class shell {
         return tlc;
     }
 
-    private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties, final Hashtable<String, AuditTestConfig>
-                                                                                            td, final String aTestDir)
+    /**
+     * Set up, run all tests against a folder.
+     * @param shellProperties environment, used for resolving test arguments
+     * @param testSet dictionary of tests
+     * @param aTestDir test subject
+     * @return If all the tests passed or not
+     */
+    private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties,
+                                         final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
     {
 
+        // testLogController ctor sets test log folder
+        testLogController.ChangeAppender(BuildTestLogFileName(aTestDir));
+
         Boolean anyFailed = false;
-        for (String testName : td.keySet())
+        for (String testName : testSet.keySet())
         {
 
-            AuditTestConfig testConfig = td.get(testName);
+            AuditTestConfig testConfig = testSet.get(testName);
 
             // Do we have a value at all?
             if (testConfig == null)
@@ -178,6 +191,19 @@ public class shell {
             anyFailed |= !onePassed;
         }
         return !anyFailed;
+    }
+
+    /**
+     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
+     * @param aTestDir full name of folder
+     */
+    private static String  BuildTestLogFileName(final String aTestDir) {
+        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
+                                         .withLocale(Locale.getDefault())
+                                         .withZone(ZoneId.systemDefault());
+
+        String fileDate = dtf.format(Instant.now());
+        return Paths.get(aTestDir).getFileName().toString() + fileDate+ ".csv";
     }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
