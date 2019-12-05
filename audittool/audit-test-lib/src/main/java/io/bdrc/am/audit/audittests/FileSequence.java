@@ -52,8 +52,10 @@ public class FileSequence extends ImageGroupParents {
 
 
 // Creating the filter
+
+            // asset-manager #29 don't count json files in image groups
             DirectoryStream.Filter<Path> filter =
-                    entry -> !(entry.toFile().isHidden()) ;
+                    entry -> !(entry.toFile().isHidden() || entry.toString().endsWith("json")) ;
 
             try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, filter)) {
 
@@ -109,9 +111,12 @@ public class FileSequence extends ImageGroupParents {
         private void sequenceImageGroupParent(final int sequenceLength, final DirectoryStream.Filter<Path> filter, final Path imageGroupParent) throws IOException
         {
 
-            // asset-manager #23 dont count directories in image groups
+            // asset-manager #23 don't count directories in image groups
+            // asset-manager #29 don't count json files in image groups
             DirectoryStream.Filter<Path> filesInImageGroupFilter =
-                    entry -> !(entry.toFile().isHidden() || entry.toFile().isDirectory());
+                    entry -> !(entry.toFile().isHidden()
+                            || entry.toFile().isDirectory()
+                            || entry.toString().endsWith("json"));
 
             for (Path anImageGroup : Files.newDirectoryStream(imageGroupParent, filter)) {
                 boolean firstFolderFailure = false;

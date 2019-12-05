@@ -82,6 +82,9 @@ class FileSequenceBuilder {
                 }
             }
         }
+
+        // All folders must pass through json
+        final File file = File.createTempFile("file", "x.json", testRoot);
     }
 
     File BuildPassingFiles() throws IOException {
@@ -143,7 +146,7 @@ class FileSequenceBuilder {
         return _rootFolder.getRoot();
     }
 
-    void BuildImageGroups(File rootFolder, int... fillParams) throws IOException {
+    private void BuildImageGroups(File rootFolder, int... fillParams) throws IOException {
         for (int i = 0; i < imageGroupsPerParent(); i++) {
             File ig =
                     Files.createDirectory(Paths.get(rootFolder.getAbsolutePath(), String.format("folder_%d", i))).toFile();
@@ -159,7 +162,7 @@ class FileSequenceBuilder {
     }
 
     @SuppressWarnings("SameReturnValue")
-    public int imageGroupsPerParent() {
+     int imageGroupsPerParent() {
         return 4;
     }
 

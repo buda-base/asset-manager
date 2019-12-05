@@ -145,7 +145,9 @@ public class ImageAttributeTests extends ImageGroupParents {
                 }
             }
             DirectoryStream.Filter<Path> filter =
-                    entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
+                    entry -> (entry.toFile().isFile()
+                            && !(entry.toFile().isHidden()
+                                ||entry.toString().endsWith("json") ));
 
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter))
             {

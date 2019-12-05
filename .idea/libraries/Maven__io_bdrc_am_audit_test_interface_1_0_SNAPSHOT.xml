@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Maven: io.bdrc.am:audit-test-interface:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/bdrc/am/audit-test-interface/1.0-SNAPSHOT/audit-test-interface-1.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/audittool/audit-test-interface/audit-test-interface-1.0-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/bdrc/am/audit-test-interface/1.0-SNAPSHOT/audit-test-interface-1.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
