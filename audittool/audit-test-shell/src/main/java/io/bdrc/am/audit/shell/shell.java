@@ -103,7 +103,7 @@ public class shell {
             System.exit( SYS_ERR) ;
         }
 
-        sysLogger.trace("Exiting all pass? %s", String.valueOf(!anyFailed));
+        sysLogger.trace("Exiting all pass? {}", String.valueOf(!anyFailed));
         System.exit(anyFailed ? SYS_ERR : SYS_OK );
     }
 
