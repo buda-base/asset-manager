@@ -124,3 +124,9 @@ echo ('$CONFIG_ATHOME = "' + ${CONFIG_ATHOME} +  '" ') > $CONFIG
 echo ('$CONFIG_TEST_LIB_JAR_FILE = "' + ${CONFIG_TEST_LIB_JAR_FILE} +  '"') >> $CONFIG
 echo ( '$CONFIG_SHELL_JAR_FILE = "' + ${CONFIG_SHELL_JAR_FILE}  + '"') >> $CONFIG
 
+#
+# Create the security policy
+echo ('grant codeBase "file:' +  ${CONFIG_ATHOME} +  '/*" {') > audit-tool-properties
+echo ('    permission java.security.AllPermission;') >>  audit-tool-properties
+echo ('};') >> audit-tool-properties
+
