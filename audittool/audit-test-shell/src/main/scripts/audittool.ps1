@@ -1,4 +1,5 @@
 # Where am I?
+# Set-PSDebug -Trace 1
 
 $DEF_HOME = $PSScriptRoot
 
@@ -32,9 +33,23 @@ else
 #
 # You can create other logging options in other files and define them here
 $LOG_PROPS = Join-Path -Path $CONFIG_ATHOME -ChildPath log4j2.properties
+
+$env:ATHOME = $CONFIG_ATHOME
 #
 # This is the system itself. Do not change it
 $shellJar = $CONFIG_SHELL_JAR_FILE
+#
+# Unless you're goin to hack it
+# $shellJar = "C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\audit-test-shell-0.9-SNAPSHOT-1.jar"
+# no -Djava.security.manager "-Djava.security.policy=.\test.policy -DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS"
+# java  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE -Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
+java "-Djava.security.manager -Djava.security.policy=.\test.policy"  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
+# Try without jar, and without interface jar in current dir
+# nope - PS C:\tmp> C:\users\jsk\Desktop\adt9\audittool.ps1trello
+# Error: Could not find or load main class io.bdrc.am.audit.shell.shell
+# java -classpath C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\audit-test-interface-0.9-SNAPSHOT-1.jar "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" io.bdrc.am.audit.shell.shell $args
+# -classpath C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\audit-test-interface-0.9-SNAPSHOT-1.jar
 
-
-java "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
+#pushd  C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\
+#java  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
+#popd
