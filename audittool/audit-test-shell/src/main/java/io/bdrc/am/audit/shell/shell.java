@@ -177,6 +177,7 @@ public class shell {
                 continue;
             }
 
+            // ? getName() always runs logger to console
             Logger testLogger = LoggerFactory.getLogger(testClass);
 
             // descriptive

@@ -112,36 +112,38 @@ public class ImageAttributeTests extends ImageGroupParents {
             */
             // before you scan for plugins
             String classpathStr = System.getProperty("java.class.path");
-            sysLogger.debug(String.format("Classpath %s", classpathStr));
+            sysLogger.debug("Classpath {}", classpathStr);
             sysLogger.debug("Pre scan for plugins - by suffix ");
-            Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
 
-            while (ir.hasNext())
+            if (sysLogger.isDebugEnabled())
             {
-                ImageReader r = ir.next();
-                sysLogger.debug("reader obj: %s, class: %s", r, r.getClass().getCanonicalName());
-            }
+                Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
 
-            sysLogger.debug("----------------------------------------");
-            sysLogger.debug("Scan for plugins, then format name ");
-            ImageIO.scanForPlugins();
-            IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
-            ir = ImageIO.getImageReadersByFormatName("TIFF");
-            while (ir.hasNext())
-            {
-                ImageReader r = ir.next();
-                sysLogger.debug("reader obj: %s, class: %s", r, r.getClass().getCanonicalName());
-            }
+                while (ir.hasNext())
+                {
+                    ImageReader r = ir.next();
+                    sysLogger.debug("reader obj: {}, class: {}", r, r.getClass().getCanonicalName());
+                }
 
-            sysLogger.debug("----------------------------------------");
-            sysLogger.debug("Scan for plugins, then suffix");
-            ir = ImageIO.getImageReadersBySuffix("tif");
-            while (ir.hasNext())
-            {
-                ImageReader r = ir.next();
-                sysLogger.debug("reader obj: %s, class: %s", r, r.getClass().getCanonicalName());
-            }
+                sysLogger.debug("----------------------------------------");
+                sysLogger.debug("Scan for plugins, then format name ");
+                ImageIO.scanForPlugins();
+                IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+                ir = ImageIO.getImageReadersByFormatName("TIFF");
+                while (ir.hasNext())
+                {
+                    ImageReader r = ir.next();
+                    sysLogger.debug("reader obj: {}, class: {}", r, r.getClass().getCanonicalName());
+                }
 
+                sysLogger.debug("----------------------------------------");
+                sysLogger.debug("Scan for reader file suffixes");
+                String[] a = ImageIO.getReaderFileSuffixes();
+                for (int i = 0; i < a.length; i++)
+                {
+                    sysLogger.debug("reader file suffix {}: {}", i, a[i]);
+                }
+            }
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
 
@@ -168,11 +170,12 @@ public class ImageAttributeTests extends ImageGroupParents {
                                          .orElseThrow
                                                   (UnsupportedFormatException::new);
 
+                        // sysLogger.debug("Got reader from ImageReadersBySuffix");
                         ImageInputStream in = ImageIO.createImageInputStream(fileObject);
 
                         ReaderAtts ra = new ReaderAtts(reader);
 
-                        // we dont care about jpgs
+                        // we don't care about jpgs
                         if (ra.ImageFileFormat.equals(ReaderAtts.FILE_JPG))
                         {
                             continue;
@@ -188,6 +191,7 @@ public class ImageAttributeTests extends ImageGroupParents {
                                 ImageTypeSpecifier its = Streams.stream(reader.getImageTypes(0))
                                                                  .findFirst().orElseThrow(UnsupportedFormatException::new);
 
+                                // sysLogger.debug("Got imageTypeSpecifier from getImageTypes");
                                 ImageTypeAtts itas = new ImageTypeAtts();
                                 iias.ImageTypeAtts = itas;
 
@@ -264,7 +268,7 @@ im.mode (values. Caredabout: 1)
                 }
             }
 
-            sysLogger.debug("Test outcome %s error count %d", getTestResult().getOutcome(),
+            sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
                     getTestResult()
                             .getErrors().size());
             if (!IsTestFailed())

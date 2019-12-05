@@ -50,10 +50,13 @@
             <version>1.7.25</version>
         </dependency>
         <!-- try to get around dual implementations -->
+        <!-- http://www.slf4j.org/codes.html#multiple_bindings
+        Embedded components such as libraries or frameworks should not declare a dependency on any SLF4J binding
+        but only depend on slf4j-api. -->
         <!--<dependency>-->
             <!--<groupId>org.apache.logging.log4j</groupId>-->
             <!--<artifactId>log4j-slf4j-impl</artifactId>-->
-            <!--<version>2.11.2</version>-->
+            <!--<version>2.12.1</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
         <!--<groupId>org.apache.logging.log4j</groupId>-->
