@@ -41,6 +41,7 @@ Maven Assembly configRef. See ../pom.xml
                 <include>*.sh</include>
                 <include>*.ps1</include>
                 <include>*.properties</include>
+                <include>*.policy</include>
             </includes>
         </fileSet>
         <!--
