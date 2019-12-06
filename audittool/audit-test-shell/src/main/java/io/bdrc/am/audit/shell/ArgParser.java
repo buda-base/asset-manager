@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,10 @@ class ArgParser {
     private CommandLine cl;
 
     private final String infileOptionShort = "i";
+    private final String infileOptionLong = "inputFile";
+
+    private final String logHome = "l";
+    private final String logHomeLong = "log_home";
     private final String infileOptionStdin = "-";
     private final String argsep = ",";
 
@@ -44,8 +49,7 @@ class ArgParser {
 
         options.addOption("d", "debug", false, "Show debugging information");
 
-        final String infileOptionLong = "inputFile";
-        final String infileOptionStdinLong = "standard input";
+
 
         options.addOption(Option.builder(infileOptionShort)
                 .longOpt(infileOptionLong)
@@ -53,13 +57,15 @@ class ArgParser {
                 .desc("Input file, one path per line")
                 .build());
 
-        // instead of adding to the group, add to mainline options
-        // inputOptions.addOption(Option.builder(infileOptionStdin)
-//        options.addOption(Option.builder(infileOptionStdin)
-//                .longOpt(infileOptionStdinLong)
-//                .hasArg()
-//                .desc("Read Input file from Stdin")
-//                .build());
+//         instead of adding to the group, add to mainline options
+
+        options.addOption(Option.builder(logHome)
+                .longOpt(logHomeLong)
+                .hasArg(true)
+                .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
+                              ". Created if not exists ")
+                .required(false)
+                .build());
 
 
         try {
@@ -79,6 +85,26 @@ class ArgParser {
             printHelp(options);
             isParsed = false;
         }
+
+
+        if (cl.hasOption("l"))
+        {
+            Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
+            String ldpStr = logDirPath.toString();
+
+            // Log home directory must be writable. Create it now, evaluate result
+            if (!madeWritableDir(logDirPath))
+            {
+                printHelp(options);
+                logger.error("User supplied folder {} cannot be created. Using default",ldpStr);
+            }
+            else
+            {
+                _logDirectory = ldpStr ;
+            }
+        }
+
+
     }
 
     /**
@@ -122,7 +148,6 @@ class ArgParser {
      */
     ArrayList<String> getDirs() throws IOException {
 
-        String[] args;
         List<String> fileArgs;
         ArrayList<String> returned = new ArrayList<>();
 
@@ -168,6 +193,45 @@ class ArgParser {
                 options);
     }
 
+    /**
+     * Creates a directory, or checks an existing one for writability
+     * @param pathToCreate full path to directory (caller must resolve)
+     * @return true if directory is writable, false if not or if it cannot create.
+     */
+    private boolean madeWritableDir( Path pathToCreate ) {
+
+        boolean ok = false;
+
+        if (!Files.exists(pathToCreate))
+        {
+            try
+            {
+                Files.createDirectories(pathToCreate);
+                ok = Files.isWritable(pathToCreate);
+            } catch (IOException e)
+            {
+                ok = false ;
+            }
+        }
+        else
+        {
+            if (Files.isDirectory(pathToCreate)) {
+                ok = Files.isWritable(pathToCreate);
+            }
+        }
+        return ok;
+    }
+
+
+    private String _logDirectory;
+
+    /**
+     * Command line value of -l argument
+     * @return
+     */
+    public String getLogDirectory() {
+        return _logDirectory ;
+    }
 
 }
 

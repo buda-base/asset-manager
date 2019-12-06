@@ -129,3 +129,4 @@ echo ( '$CONFIG_SHELL_JAR_FILE = "' + ${CONFIG_SHELL_JAR_FILE}  + '"') >> $CONFI
 echo ('grant codeBase "file:' +  ${CONFIG_ATHOME} +  '/*" {') > audit-tool-properties
 echo ('    permission java.security.AllPermission;') >>  audit-tool-properties
 echo ('};') >> audit-tool-properties
+

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # If no config, everything is in this directory
-which readlink
 DEF_HOME=$(dirname $(readlink  $0))
 
 DEF_CONFIG=DEFAULT-BDRC-AT-CONFIG.sh
@@ -31,5 +30,5 @@ shellJar=${CONFIG_SHELL_JAR_FILE}
 echo "starting "$@
 java -cp "${shellJar}:${CONFIG_TEST_LIB_JAR_FILE}:lib/*" -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS}  io.bdrc.am.audit.shell.shell $@
 rc=$?
-echo returning $rc
+[[ $rc == 0 ]] ||  printf "Errors! returned:${rc}: check logs\n"
 exit $rc
