@@ -18,7 +18,7 @@ where:
  -i,--inputFile <arg>   Input file, one path per line
  -l,--log_home <arg>    Test Result log directory. Must be writable.
                         Default is <UserHome>/audit-test-logs/. Created if
-                        not exists
+                        not exists. Other logs are still written to default log home
 ```
 
 The `-d` switch has no functionality as of release 0.9
@@ -118,6 +118,31 @@ The tests themselves do not output results. The test framework allows the shell 
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
 to send to a database.
 
+### Test Internal logging
+To trace tests' internal logs, each test gets passed in an internal logger whose name
+ is its class name. The logger which handles these are in the `log4j2.properties` file in the section `logger.testLogger.name=io.bdrc.am.audit.audittests`
+To reduce output, this logger's appender is set to null, as shown here:
+
+```
+# ---------------------      Test Internals logging  ---------------
+
+appender.testInternals.name=testInternalsName
+#
+# To activate internal test logging, uncomment this line, and comment out
+# the remaining testInternals lines
+appender.testInternals.type=Null
+# To activate internal test logging, comment the previous line, and uncomment the next stanza
+# appender.testInternals.type=File
+# appender.testInternals.append=false
+# appender.testInternals.fileName=${logPrefix}-${TestInt}-${date:yyyy-MM-dd-HH-mm-ss}.log
+# appender.testInternals.layoutString.type = PatternLayout
+# appender.testInternals.layoutString.pattern=%d{yyyy-MM-dd HH.mm.ss}   %-5p %m   :%C:%n
+#
+# --------------------- end  Test Internals logging ----------------
+
+```
+
+You can toggle on and off logging by changing comment status as described in the log4j2.properties.
 ## Test Developer's Guide
 This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
 this material.
