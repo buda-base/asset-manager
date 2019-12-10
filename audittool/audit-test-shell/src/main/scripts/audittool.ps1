@@ -40,7 +40,11 @@ $shellJar = $CONFIG_SHELL_JAR_FILE
 # $shellJar = "C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\audit-test-shell-0.9-SNAPSHOT-1.jar"
 # no -Djava.security.manager "-Djava.security.policy=.\test.policy -DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS"
 # java  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE -Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
-java "-Djava.security.manager -Djava.security.policy=${CONFIG_ATHOME}\audit-tool.policy "  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
+#
+# To get this running on NTs machine, I had to insert this into the command line. but nowhwere else
+#
+# "-Djava.security.manager -Djava.security.policy=${CONFIG_ATHOME}\audit-tool.policy "
+java  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
 # Try without jar, and without interface jar in current dir
 # nope - PS C:\tmp> C:\users\jsk\Desktop\adt9\audittool.ps1trello
 # Error: Could not find or load main class io.bdrc.am.audit.shell.shell

@@ -24,6 +24,9 @@ class ArgParser {
     private final String infileOptionShort = "i";
     private final String infileOptionLong = "inputFile";
 
+    private final String staticLoadShort = "s";
+    private final String staticLoadLong = "staticLoad";
+
     private final String logHome = "l";
     private final String logHomeLong = "log_home";
     private final String infileOptionStdin = "-";
@@ -58,7 +61,6 @@ class ArgParser {
                 .build());
 
 //         instead of adding to the group, add to mainline options
-
         options.addOption(Option.builder(logHome)
                 .longOpt(logHomeLong)
                 .hasArg(true)
@@ -67,6 +69,13 @@ class ArgParser {
                 .required(false)
                 .build());
 
+        options.addOption(Option.builder(staticLoadShort)
+                .longOpt(staticLoadLong)
+                .hasArg(false)
+                .desc("disables dynamic load of named tests. If present, the library of tests  must " +
+                              "be on the classpath. ( -cp JVM option) ")
+                .required(false)
+                .build());
 
         try {
             cl = clp.parse(options, args);
@@ -104,7 +113,7 @@ class ArgParser {
             }
         }
 
-
+        setUseStaticLoad(cl.hasOption(staticLoadShort));
     }
 
     /**
@@ -223,6 +232,11 @@ class ArgParser {
     }
 
 
+    /**
+     * Command line value of -s argument
+     */
+    private Boolean _useStaticLoad = false;
+
     private String _logDirectory;
 
     /**
@@ -233,5 +247,12 @@ class ArgParser {
         return _logDirectory ;
     }
 
+    public Boolean getUseStaticLoad() {
+        return _useStaticLoad;
+    }
+
+    private void setUseStaticLoad(final Boolean useStaticLoad) {
+        _useStaticLoad = useStaticLoad;
+    }
 }
 

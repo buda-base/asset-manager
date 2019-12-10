@@ -15,6 +15,8 @@ $rel = "SNAPSHOT-1"
 $ver = "0.9"
 
 # Load config, or defaults. this must be the same path as audittool.sh uses
+$home = $env:HOMEPATH
+
 $CONFIG = Join-Path -Path $env:HOMEPATH -ChildPath .config/bdrc/auditTool/config.ps1
 $DEF_CONFIG =  Join-Path -Path $DEF_HOME -ChildPath "DEFAULT-BDRC-AT-CONFIG.ps1"
 
