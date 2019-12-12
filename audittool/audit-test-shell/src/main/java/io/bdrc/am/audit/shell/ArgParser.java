@@ -21,16 +21,10 @@ class ArgParser {
     /* Persist the options */
     private CommandLine cl;
 
-    private final String infileOptionShort = "i";
-    private final String infileOptionLong = "inputFile";
+    private final String infileOptionShort;
 
-    private final String staticLoadShort = "s";
-    private final String staticLoadLong = "staticLoad";
-
-    private final String logHome = "l";
-    private final String logHomeLong = "log_home";
-    private final String infileOptionStdin = "-";
-    private final String argsep = ",";
+    private final String infileOptionStdin;
+    private final String argsep;
 
     private final Logger logger = LoggerFactory.getLogger("shellLogger");
 
@@ -53,7 +47,8 @@ class ArgParser {
         options.addOption("d", "debug", false, "Show debugging information");
 
 
-
+        infileOptionShort = "i";
+        final String infileOptionLong = "inputFile";
         options.addOption(Option.builder(infileOptionShort)
                 .longOpt(infileOptionLong)
                 .hasArg()
@@ -61,19 +56,13 @@ class ArgParser {
                 .build());
 
 //         instead of adding to the group, add to mainline options
+        final String logHome = "l";
+        final String logHomeLong = "log_home";
         options.addOption(Option.builder(logHome)
                 .longOpt(logHomeLong)
                 .hasArg(true)
                 .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
                               ". Created if not exists ")
-                .required(false)
-                .build());
-
-        options.addOption(Option.builder(staticLoadShort)
-                .longOpt(staticLoadLong)
-                .hasArg(false)
-                .desc("disables dynamic load of named tests. If present, the library of tests  must " +
-                              "be on the classpath. ( -cp JVM option) ")
                 .required(false)
                 .build());
 
@@ -112,8 +101,8 @@ class ArgParser {
                 _logDirectory = ldpStr ;
             }
         }
-
-        setUseStaticLoad(cl.hasOption(staticLoadShort));
+        infileOptionStdin = "-";
+        argsep = ",";
     }
 
     /**
@@ -144,7 +133,7 @@ class ArgParser {
      *
      * @return If the user has specified reading from standard input
      */
-    Boolean get_IfArgsCommandLine() {
+    private Boolean get_IfArgsCommandLine() {
         logger.debug("get_IfArgsCommandLine nonoption args empty {}",nonOptionArgs.isEmpty());
         return !nonOptionArgs.isEmpty() && !nonOptionArgs.get(0).equals
                 (infileOptionStdin);
@@ -195,7 +184,7 @@ class ArgParser {
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("AuditTest [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
+        formatter.printHelp("audittool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
                         "folders from " +
                         "standard input\n\t" +
                         "Directory,.... is a list of directories separated by ,\n[options] are:",
@@ -217,9 +206,8 @@ class ArgParser {
             {
                 Files.createDirectories(pathToCreate);
                 ok = Files.isWritable(pathToCreate);
-            } catch (IOException e)
+            } catch (IOException ignored)
             {
-                ok = false ;
             }
         }
         else
@@ -231,28 +219,16 @@ class ArgParser {
         return ok;
     }
 
-
-    /**
-     * Command line value of -s argument
-     */
-    private Boolean _useStaticLoad = false;
-
     private String _logDirectory;
 
     /**
-     * Command line value of -l argument
-     * @return
+     *
+     * @return Command line value of -l argument
      */
-    public String getLogDirectory() {
+    String getLogDirectory() {
         return _logDirectory ;
     }
 
-    public Boolean getUseStaticLoad() {
-        return _useStaticLoad;
-    }
 
-    private void setUseStaticLoad(final Boolean useStaticLoad) {
-        _useStaticLoad = useStaticLoad;
-    }
 }
 

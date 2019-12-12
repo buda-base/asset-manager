@@ -3,7 +3,7 @@ package io.bdrc.am.audit.iaudit;
 
 import java.util.Hashtable;
 
-public class TestDictionary {
+public class TestDictionary implements ITestDictionary {
 
     public TestDictionary() {
         _TestDictionary = new Hashtable<>();

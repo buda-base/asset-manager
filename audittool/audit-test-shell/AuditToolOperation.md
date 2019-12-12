@@ -102,13 +102,14 @@ and separating the path allows for easier data access.
 ## Principles of operation
 Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.
 ### Property file
-Audit tool reads several variables from its property file `shell.properties.` These properties locate the tests and define parameters which the tests need, such as the
+Audit tool reads several variables from its property file `shell.properties.` These properties define parameters which the tests need, such as the
 folder names of parents of image groups.
 
 The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
 ### Operation
-The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java):
+The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java) can either run an internal set of tests,
+or can use an external jar file. 
 - locates the test library from the `-DtestJar=<path-to-jar-file>` command line option
 - probes the library for the supported tests
 - runs all library tests for each input argument in turn 
@@ -142,25 +143,23 @@ appender.testInternals.type=Null
 
 ```
 
+### Using an external test library
+Audit tool contains an internal library which contains various tests. To run a different library, you need to define two
+JVM options with the `-D` flag:
+- testJar:  Path to the Jar file which contains the tests
+- testDictionaryClassName: the fully qualified variable name of a public class in the `testJar` which implements 
+`io.bdrc.audit.ITestDictionary`
+
 You can toggle on and off logging by changing comment status as described in the log4j2.properties.
 ## Test Developer's Guide
 This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
 this material.
 ### Locating the tests
 #### Test Dictionary
-The shell assumes that the package `io.bdrc.am.audit.iaudit` is either in the jar file or on the class path.
-This package contains classes that any shell needs to resolve the test classes.
-Test location is documented in the property file `shell.properties:`
-```bash
-# class name of test dictionary. The jar file referenced by the system property (generally
-# # specified by the -DtestJar=<path to Jar containing audit tests> command line argument.
-# This class must expose a public method named 'getTestDictionary' which returns
-# a Java Hashset<String,io.bdrc.am.audit.iaudit.AuditTestConfig> structure, containing a friendly name for the test, and a class which implements
-# the io.bdrc.audit.iaudit.IAudit interface.
-testDictionaryClassName=io.bdrc.am.audit.audittests.TestDictionary
-```
-
-T`testDictionaryClassName` can be in any package. This definition is the library we shipped as 0.8-SNAPSHOT-2
+The shell assumes that the package `io.bdrc.am.audit.iaudit` is either:
+ - in the shell jar file itself
+ - on the class path
+ - or specified with the `-DtestJar .... -DtestDictionaryClassName` (see 'Using an external test library' above)
 
 #### Test Config objects
 

@@ -3,7 +3,6 @@ package io.bdrc.am.audit.shell;
 import io.bdrc.am.audit.iaudit.AuditTestConfig;
 
 import io.bdrc.am.audit.iaudit.IAuditTest;
-import io.bdrc.am.audit.iaudit.TestDictionary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,18 +17,7 @@ import java.util.Hashtable;
 
 public class TestJarLoader {
 
-    private Logger sysLogger = LoggerFactory.getLogger(this.getClass());
-
-
-    /**
-     * Fetches a test dictionary from a classpath bound library
-     * @return a hashtable of test names and proxy classes
-     */
-    Hashtable<String, AuditTestConfig> LoadTestDictionary()
-    {
-        TestDictionary td = new TestDictionary();
-        return td.getTestDictionary();
-    }
+    private Logger sysLogger = LoggerFactory.getLogger("mainLogger");
 
 
     @SuppressWarnings({"unchecked"})
@@ -42,11 +30,10 @@ public class TestJarLoader {
 
         sysLogger.trace( "entering {}",loc);
         String jarPath = System.getProperty(testJarSystemPropertyName);
-        if (jarPath == null)
+        if (jarPath == null ||  jarPath.isEmpty())
         {
-            String message = String.format("%s property not found", testJarSystemPropertyName);
-            sysLogger.error(message);
-            throw new Exception(message);
+            io.bdrc.am.audit.audittests.TestDictionary td = new io.bdrc.am.audit.audittests.TestDictionary();
+            return td.getTestDictionary();
         }
         if (!(new File(jarPath)).isFile())
         {

@@ -175,6 +175,12 @@
             <artifactId>log4j-core</artifactId>
             <version>2.12.1</version>
         </dependency>
+        <dependency>
+            <groupId>audit-test-lib</groupId>
+            <artifactId>audit-test-lib</artifactId>
+            <version>0.9-SNAPSHOT-1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

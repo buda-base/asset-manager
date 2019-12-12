@@ -62,28 +62,23 @@ public class shell {
 
         try
         {
-
+            sysLogger.trace("Entering main");
 
             Path resourceFile = resolveResourceFile("shell.properties");
             FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
 
             Hashtable<String, AuditTestConfig> td;
 
+            sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
 
-            if (argParser.getUseStaticLoad())
-            {
-                td = testJarLoader.LoadTestDictionary();
-            }
-            else
-            {
                 String tdClassName =  shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
                 sysLogger.debug("{} value of property :{}:",TEST_DICT_PROPERTY_NAME,tdClassName);
                 td = testJarLoader.LoadDictionaryFromProperty("testJar",tdClassName);
-            }
+
             assert td != null;
 
             testLogController = BuildTestLog(argParser, testResultLogger, TEST_LOGGER_HEADER);
