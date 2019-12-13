@@ -53,6 +53,7 @@ abstract public class PathTestBase extends AuditTestBase {
 
         // For this class, the only thing we care about is the path
         _path = params[0].toString();
+        super.setParams(params[1]);
     }
 
     // region properties

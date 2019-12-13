@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AuditTestBase implements IAuditTest {
 
@@ -39,14 +41,6 @@ public abstract class AuditTestBase implements IAuditTest {
         // Load the library's test messages
         LibTestMessages.getInstance().setMessages(libTestMessages);
 
-//        /*
-//         * use PropertyManager.getResourceAs{Int|String}(full name) to get resources
-//         *
-//         */
-//        // this.getClass() works because were in the same package (?)
-//        final ClassPropertyManager _propertyManager =
-//                new io.bdrc.am.audit.iaudit.ClassPropertyManager("/auditTool" +
-//                ".properties",getClass());
     }
 
     /**
@@ -56,7 +50,13 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param failedElement element which failed test
      */
     void FailTest(Integer why, String ...failedElement) {
-        _testResult.setOutcome(Outcome.FAIL);
+
+        // filter out some errors.
+        // For filtered errors, leave the state as is
+        if (!_passableErrors.contains(why))
+        {
+            _testResult.setOutcome(Outcome.FAIL);
+        }
         _testResult.AddError(why, failedElement);
     }
 
@@ -124,6 +124,12 @@ public abstract class AuditTestBase implements IAuditTest {
     private final TestResult _testResult;
     private final String _testName;
 
+    // See shell.properties
+    // name of the property which holds the list of errors which are not considered
+    // fatal.
+    private final String _passableErrorNumbersParameterName = "ErrorsAsWarning";
+    private LinkedList<Integer> _passableErrors = new LinkedList<>();
+
     // package private implies most of protected
     Logger sysLogger;
     // endregion
@@ -142,6 +148,18 @@ public abstract class AuditTestBase implements IAuditTest {
             if (s.length() >1 ) {
                 testParameters.put(de[0],de[1]);
             }
+        });
+
+        // Special case parameter
+        String passableErrorsStr = testParameters.getOrDefault(_passableErrorNumbersParameterName,"");
+        String[] pEArray=passableErrorsStr.split(",");
+        Arrays.stream(pEArray).forEach(x ->
+        {
+            try {
+                _passableErrors.add(Integer.parseInt(x));
+            }
+            catch (NumberFormatException ignored)
+            {}
         });
 
     }

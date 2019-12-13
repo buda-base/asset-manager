@@ -41,7 +41,10 @@ abstract public class ImageGroupParents extends PathTestBase {
                             "propertyDictionary not given.",
                     getTestName()));
         }
-        super.setParams(params[0]);
+
+        // TODO: This is not great design, for a subclass to cherry pick one specific parameter
+        // I need everybody to LoadParameters
+        super.setParams(params);
 
         _imageGroupParents = (ArrayList<String>) filterProperties(params[1], _propertyKeys);
 
