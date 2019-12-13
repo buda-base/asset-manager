@@ -6,8 +6,7 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,13 +20,10 @@ class ArgParser {
     /* Persist the options */
     private CommandLine cl;
 
-    private final String infileOptionShort = "i";
-    private final String infileOptionLong = "inputFile";
+    private final String infileOptionShort;
 
-    private final String logHome = "l";
-    private final String logHomeLong = "log_home";
-    private final String infileOptionStdin = "-";
-    private final String argsep = ",";
+    private final String infileOptionStdin;
+    private final String argsep;
 
     private final Logger logger = LoggerFactory.getLogger("shellLogger");
 
@@ -50,29 +46,32 @@ class ArgParser {
         options.addOption("d", "debug", false, "Show debugging information");
 
 
-
+        infileOptionShort = "i";
+        final String infileOptionLong = "inputFile";
         options.addOption(Option.builder(infileOptionShort)
-                .longOpt(infileOptionLong)
-                .hasArg()
-                .desc("Input file, one path per line")
-                .build());
+                                  .longOpt(infileOptionLong)
+                                  .hasArg()
+                                  .desc("Input file, one path per line")
+                                  .build());
 
 //         instead of adding to the group, add to mainline options
-
+        final String logHome = "l";
+        final String logHomeLong = "log_home";
         options.addOption(Option.builder(logHome)
-                .longOpt(logHomeLong)
-                .hasArg(true)
-                .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
-                              ". Created if not exists ")
-                .required(false)
-                .build());
+                                  .longOpt(logHomeLong)
+                                  .hasArg(true)
+                                  .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
+                                                ". Created if not exists ")
+                                  .required(false)
+                                  .build());
 
-
-        try {
+        try
+        {
             cl = clp.parse(options, args);
             isParsed = true;
             nonOptionArgs = cl.getArgList();
-        } catch (ParseException exc) {
+        } catch (ParseException exc)
+        {
             logger.error("Failed to parse {}", exc.getMessage());
 
             printHelp(options);
@@ -96,15 +95,15 @@ class ArgParser {
             if (!madeWritableDir(logDirPath))
             {
                 printHelp(options);
-                logger.error("User supplied folder {} cannot be created. Using default",ldpStr);
+                logger.error("User supplied folder {} cannot be created. Using default", ldpStr);
             }
             else
             {
-                _logDirectory = ldpStr ;
+                _logDirectory = ldpStr;
             }
         }
-
-
+        infileOptionStdin = "-";
+        argsep = ",";
     }
 
     /**
@@ -114,31 +113,29 @@ class ArgParser {
      */
     Boolean has_Dirlist() {
         Boolean rc = cl.hasOption(infileOptionShort) || get_IfArgsCommandLine();
-        logger.debug("hasOption {} !getReadStdin {} has_Dirlist net: {} " ,cl.hasOption(infileOptionShort), !getReadStdIn
-                        (),
-                rc );
+        logger.debug("hasOption {} !getReadStdin {} has_Dirlist net: {} ", cl.hasOption(infileOptionShort), !getReadStdIn
+                                                                                                                     (),
+                rc);
 
-        return rc ;
+        return rc;
     }
 
     /**
-     *
      * @return If the user has specified reading from standard input
      */
     Boolean getReadStdIn() {
-        logger.debug("nonoption args empty {}",nonOptionArgs.isEmpty());
+        logger.debug("nonoption args empty {}", nonOptionArgs.isEmpty());
         return (!nonOptionArgs.isEmpty()) && nonOptionArgs.get(0).equals
-                (infileOptionStdin);
+                                                                          (infileOptionStdin);
     }
 
     /**
-     *
      * @return If the user has specified reading from standard input
      */
-    Boolean get_IfArgsCommandLine() {
-        logger.debug("get_IfArgsCommandLine nonoption args empty {}",nonOptionArgs.isEmpty());
+    private Boolean get_IfArgsCommandLine() {
+        logger.debug("get_IfArgsCommandLine nonoption args empty {}", nonOptionArgs.isEmpty());
         return !nonOptionArgs.isEmpty() && !nonOptionArgs.get(0).equals
-                (infileOptionStdin);
+                                                                         (infileOptionStdin);
     }
 
     /**
@@ -153,25 +150,31 @@ class ArgParser {
 
         // if we have an
         if (!isParsed)
-            return returned;
+        { return returned; }
 
         // If an infile was specified, read it
-        if (cl.hasOption(infileOptionShort)) {
+        if (cl.hasOption(infileOptionShort))
+        {
             String argFile = cl.getOptionValue(infileOptionShort);
             try {
                 fileArgs =
                         Files.readAllLines(Paths.get(argFile), StandardCharsets.UTF_8);
+                fileArgs.replaceAll(x -> x.trim());
                 returned = new ArrayList<>(fileArgs);
 
-            } catch (FileNotFoundException fnfe) {
+
+            } catch (FileNotFoundException fnfe)
+            {
                 logger.error("{} {}", argFile, " not found.");
-            } catch (IOException e) {
+            } catch (IOException e)
+            {
                 e.printStackTrace();
                 throw e;
 
             }
         }
-        else {
+        else
+        {
             // If args isnt the magic stdin delimiter, parse a delimited list of paths
             String inArgs = nonOptionArgs.get(0);
             if (!getReadStdIn())
@@ -186,19 +189,20 @@ class ArgParser {
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("AuditTest [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
-                        "folders from " +
-                        "standard input\n\t" +
-                        "Directory,.... is a list of directories separated by ,\n[options] are:",
+        formatter.printHelp("audittool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
+                                    "folders from " +
+                                    "standard input\n\t" +
+                                    "Directory,.... is a list of directories separated by ,\n[options] are:",
                 options);
     }
 
     /**
      * Creates a directory, or checks an existing one for writability
+     *
      * @param pathToCreate full path to directory (caller must resolve)
      * @return true if directory is writable, false if not or if it cannot create.
      */
-    private boolean madeWritableDir( Path pathToCreate ) {
+    private boolean madeWritableDir(Path pathToCreate) {
 
         boolean ok = false;
 
@@ -208,30 +212,29 @@ class ArgParser {
             {
                 Files.createDirectories(pathToCreate);
                 ok = Files.isWritable(pathToCreate);
-            } catch (IOException e)
+            } catch (IOException ignored)
             {
-                ok = false ;
             }
         }
         else
         {
-            if (Files.isDirectory(pathToCreate)) {
+            if (Files.isDirectory(pathToCreate))
+            {
                 ok = Files.isWritable(pathToCreate);
             }
         }
         return ok;
     }
 
-
     private String _logDirectory;
 
     /**
-     * Command line value of -l argument
-     * @return
+     * @return Command line value of -l argument
      */
-    public String getLogDirectory() {
-        return _logDirectory ;
+    String getLogDirectory() {
+        return _logDirectory;
     }
+
 
 }
 

@@ -5,17 +5,12 @@ import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -67,17 +62,24 @@ public class shell {
 
         try
         {
-
+            sysLogger.trace("Entering main");
 
             Path resourceFile = resolveResourceFile("shell.properties");
             FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
 
             Hashtable<String, AuditTestConfig> td;
 
-            td = LoadDictionaryFromProperty("testJar", shellProperties);
+            sysLogger.trace("Parsing args");
+            ArgParser argParser = new ArgParser(args);
+
+            // Replaced with class
+            TestJarLoader testJarLoader = new TestJarLoader();
+
+                String tdClassName =  shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
+                sysLogger.debug("{} value of property :{}:",TEST_DICT_PROPERTY_NAME,tdClassName);
+                td = testJarLoader.LoadDictionaryFromProperty("testJar",tdClassName);
 
             assert td != null;
-            ArgParser argParser = new ArgParser(args);
 
             testLogController = BuildTestLog(argParser, testResultLogger, TEST_LOGGER_HEADER);
 
@@ -273,85 +275,6 @@ public class shell {
         argNames.forEach((String t) -> argNames1.put(t, propertyManager.getPropertyString(t)));
 
         return argNames1;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private static Hashtable<String, AuditTestConfig> LoadDictionaryFromProperty(final String testJarPropertyName,
-                                                                                 FilePropertyManager resources) throws Exception
-    {
-        String loc = "LoadDictionary";
-
-        sysLogger.trace( "entering {}",loc);
-        String jarPath = System.getProperty(testJarPropertyName);
-        if (jarPath == null)
-        {
-            String message = String.format("%s property not found", testJarPropertyName);
-            sysLogger.error(message);
-            throw new Exception(message);
-        }
-        if (!(new File(jarPath)).isFile())
-        {
-            throw new FileNotFoundException(jarPath);
-        }
-        Hashtable<String, AuditTestConfig> result = null;
-
-        String libUrlStr = "jar:file:" + jarPath + "!/";
-
-        ClassLoader loader;
-        try
-        {
-            URL libUrl = new URL(libUrlStr);
-            sysLogger.debug("Seeking libUrl {}", libUrl);
-            loader = URLClassLoader.newInstance(
-                    new URL[]{libUrl});
-            if (loader == null)
-            {
-                sysLogger.error("loader null");
-            }
-            else
-            {
-                sysLogger.debug("loader got: {}", loader.getClass().getCanonicalName());
-            }
-
-        } catch (MalformedURLException e) {
-            sysLogger.error(libUrlStr, e);
-            throw new Exception(String.format("libURL :%s: not Found ", libUrlStr));
-        }
-        catch (Exception e) {
-            sysLogger.error(libUrlStr,e);
-            throw new Exception(String.format("libURL :%s: threw exception %s",libUrlStr,e.getMessage()));
-        }
-
-
-        String tdClassName =
-                resources.getPropertyString(shell.TEST_DICT_PROPERTY_NAME);
-        sysLogger.debug("{} value of property :{}:",shell.TEST_DICT_PROPERTY_NAME,tdClassName);
-
-        try
-        {
-            if (loader != null)
-            {
-
-                Class<IAuditTest> testDict = (Class<IAuditTest>) Class.forName(tdClassName, true, loader); //, loader);
-                Object instance = testDict.newInstance();
-                Method method = testDict.getDeclaredMethod("getTestDictionary");
-
-                result = (Hashtable<String, AuditTestConfig>) method.invoke(instance);
-            }
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e)
-        {
-            String eStr = e.toString();
-            sysLogger.error(eStr, eStr, " Cant acquire resource file", "Failed");
-        }
-        catch (Exception e2)
-        {
-            String eStr = e2.toString();
-            sysLogger.error("Other Exception ", e2);
-            throw e2;
-        }
-
-        sysLogger.trace("leaving {} result non-null? {}", loc, String.valueOf(result != null));
-        return result;
     }
 
     /**

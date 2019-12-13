@@ -116,6 +116,16 @@ public class TestFileSequence extends AuditTestTestBase{
         assertEquals(LibOutcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
     }
 
+    @Test
+    public void TestFilterOutFiles() {
+        Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
+            put("ArchiveImageGroupParent", "testImages");
+            put("IgnoreFileExpressions","*.json,hoopsty");
+        }};
+        FileSequence st = runTest("src/test/images/WFilterOutJson",_activeSequenceTestParams);
+        assertTrue(st.IsTestPassed());
+    }
+
 
     @Test
     public void setPath() {
