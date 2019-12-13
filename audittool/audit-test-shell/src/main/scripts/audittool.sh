@@ -23,6 +23,7 @@ export LOG_PROPS=${CONFIG_ATHOME}/log4j2.properties
 # This is the system itself. Do not change it
 shellJar=${CONFIG_SHELL_JAR_FILE}
 
+
 # shellJar was built to point to its own mainclass
 # OK, https://stackoverflow.com/questions/15930782/call-java-jar-myfile-jar-with-additional-classpath-option
 # Says you cant use -cp and -jar, and you cant find the 
