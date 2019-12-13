@@ -32,15 +32,11 @@ $LOG_PROPS = Join-Path -Path $CONFIG_ATHOME -ChildPath log4j2.properties
 # This is the system itself. Do not change it
 $shellJar = $CONFIG_SHELL_JAR_FILE
 
+#
+# or -DatHome=${CONFIG_ATHOME} in shell
 $env:ATHOME = $CONFIG_ATHOME
 
+#
+# Windows uses embedded test jar
 java "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
-# Try without jar, and without interface jar in current dir
-# nope - PS C:\tmp> C:\users\jsk\Desktop\adt9\audittool.ps1trello
-# Error: Could not find or load main class io.bdrc.am.audit.shell.shell
-# java -classpath C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\audit-test-interface-0.9-SNAPSHOT-1.jar "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" io.bdrc.am.audit.shell.shell $args
-# -classpath C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\audit-test-interface-0.9-SNAPSHOT-1.jar
 
-#pushd  C:\Users\jsk\dev\asset-manager\audittool\audit-test-shell\target\output\
-#java  "-DtestJar=$CONFIG_TEST_LIB_JAR_FILE" "-Dlog4j.configurationFile=$LOG_PROPS" -jar $shellJar $args
-#popd
