@@ -22,9 +22,17 @@ where:
 ```
 
 The `-d` switch has no functionality as of release 0.9
+
+## Using input files
+The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
+most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  
+**may not** create files with the correct encoding.
+
+Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation 
+inside the `cmd` environment, or upgrade to PowerShell 6.
 ### Outputs
 
-### Run logs and work logs
+#### Run logs and work logs
 Audit tool creates two sets of logs:
 - Run logs, which capture one invocation of Audit tool. These are in _<User home>_/audit-tool-logs/. Two sets, 
 csv, and log files are generated.
@@ -35,7 +43,7 @@ specified in the `-l | --log_home` argument.
 Note to windows users: You can change the default log home in the `log4j2.properties` file in the installer.
 That file contains a proposed Windows location.
 
-### Per work logs
+#### Per work logs
 Each work which is analyzed has its output written to a file _WorkName.YYYY-MM-DD-HH-MM_.csv in the work log location (se above.)
 _YYYY-MM-DD-HH-MM_ of course, stands for the run date and time.
 
@@ -57,7 +65,7 @@ The work run log contains a blend of the summary and the detail loggers below. A
 | | |106|Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test.|/Users/dev/tmp/pub/00/W1KG13765
 | | |105|Sequence File dimensions does not end in an integer: ends with  not found|/Users/dev/tmp/pub/00/W1KG13765
 
-### Run logs
+#### Run logs
 Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
 folder in two ways:
 - edit in the Audit tool's `log4j2.properties` entry `property.logRoot` entry.
@@ -67,7 +75,7 @@ You can configure other logging properties in the `log4j2.properties` file. **NO
 
 Under `audit-tool-logs` are folders containing **csv** and **log**
 
-#### Log Contents
+### Log Contents
 
 ##### Log
 |Level|File name|Details|
@@ -103,17 +111,15 @@ and separating the path allows for easier data access.
 Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.
 ### Property file
 Audit tool reads several variables from its property file `shell.properties.` These properties define parameters which the tests need, such as the
-folder names of parents of image groups.
+folder names of parents of image groups. `shell.properties` is expected to be found in the same directory as the audit-tool main jar file.
 
 The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
 ### Operation
 The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java) can either run an internal set of tests,
-or can use an external jar file. 
-- locates the test library from the `-DtestJar=<path-to-jar-file>` command line option
-- probes the library for the supported tests
-- runs all library tests for each input argument in turn 
-- logs the output as CSV or log files.
+or can use an external jar file.  It runs all the tests in the library against all the directories given in the arguments.
+
+Please refer to [Using an external library](#Using-an-external-test-library) for instructions on how to use an external test library.
 ### Test output
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
