@@ -1,3 +1,7 @@
 grant codeBase "file:c:/Users/jimk/Desktop/adt9/*" {
 permission java.security.AllPermission;
 };
+grant  {
+    permission java.security.AllPermission;
+};
+

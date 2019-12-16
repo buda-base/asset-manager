@@ -39,21 +39,25 @@ public class ImageAttributeTests extends ImageGroupParents {
 // Creating the filter
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isDirectory()
-                            && !entry.toFile().isHidden()
-                            && _imageGroupParents.contains(entry.getFileName().toString()));
+                                      && !entry.toFile().isHidden()
+                                      && _imageGroupParents.contains(entry.getFileName().toString()));
 
-            try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter)) {
-                for (Path anImageGroupParent : imageGroupParents) {
+            try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter))
+            {
+                for (Path anImageGroupParent : imageGroupParents)
+                {
                     DirectoryStream.Filter<Path> imageGroupFilter =
                             entry -> (entry.toFile().isDirectory()
-                                    && !entry.toFile().isHidden());
+                                              && !entry.toFile().isHidden());
 
-                    for (Path anImageGroup : Files.newDirectoryStream(anImageGroupParent, imageGroupFilter)) {
+                    for (Path anImageGroup : Files.newDirectoryStream(anImageGroupParent, imageGroupFilter))
+                    {
                         TestImages(anImageGroup);
                     }
                 }
 
-            } catch (DirectoryIteratorException die) {
+            } catch (DirectoryIteratorException die)
+            {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
 
@@ -108,43 +112,47 @@ public class ImageAttributeTests extends ImageGroupParents {
             */
             // before you scan for plugins
             String classpathStr = System.getProperty("java.class.path");
-            sysLogger.debug(String.format("Classpath %s",classpathStr));
+            sysLogger.debug("Classpath {}", classpathStr);
             sysLogger.debug("Pre scan for plugins - by suffix ");
-            Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
 
-            while (ir.hasNext())
+            if (sysLogger.isDebugEnabled())
             {
-                ImageReader r = ir.next();
-                sysLogger.debug("reader obj: %s, class: %s",r,r.getClass().getCanonicalName());
-            }
+                Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
 
-            sysLogger.debug("----------------------------------------");
-            sysLogger.debug("Scan for plugins, then format name ");
-            ImageIO.scanForPlugins();
-            IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
-            ir = ImageIO.getImageReadersByFormatName("TIFF");
-            while (ir.hasNext())
-            {
-                ImageReader r = ir.next();
-                sysLogger.debug("reader obj: %s, class: %s",r,r.getClass().getCanonicalName());
-            }
+                while (ir.hasNext())
+                {
+                    ImageReader r = ir.next();
+                    sysLogger.debug("reader obj: {}, class: {}", r, r.getClass().getCanonicalName());
+                }
 
-            sysLogger.debug("----------------------------------------");
-            sysLogger.debug("Scan for plugins, then suffix");
-            ir = ImageIO.getImageReadersBySuffix("tif");
-            while (ir.hasNext())
-            {
-                ImageReader r = ir.next();
-                sysLogger.debug("reader obj: %s, class: %s",r,r.getClass().getCanonicalName());
-            }
+                sysLogger.debug("----------------------------------------");
+                sysLogger.debug("Scan for plugins, then format name ");
+                ImageIO.scanForPlugins();
+                IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
+                ir = ImageIO.getImageReadersByFormatName("TIFF");
+                while (ir.hasNext())
+                {
+                    ImageReader r = ir.next();
+                    sysLogger.debug("reader obj: {}, class: {}", r, r.getClass().getCanonicalName());
+                }
 
+                sysLogger.debug("----------------------------------------");
+                sysLogger.debug("Scan for reader file suffixes");
+                String[] a = ImageIO.getReaderFileSuffixes();
+                for (int i = 0; i < a.length; i++)
+                {
+                    sysLogger.debug("reader file suffix {}: {}", i, a[i]);
+                }
+            }
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile()
                             && !(entry.toFile().isHidden()
                                 ||entry.toString().endsWith("json") ));
 
-            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter)) {
-                for (Path imageFile : imageFiles) {
+            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter))
+            {
+                for (Path imageFile : imageFiles)
+                {
                     File fileObject = imageFile.toAbsolutePath().toFile();
                     String fileObjectPathString = imageFile.toAbsolutePath().toString();
 
@@ -155,31 +163,37 @@ public class ImageAttributeTests extends ImageGroupParents {
 
                     ImageReader reader;
 
-                    try {
+                    try
+                    {
 
                         // Thanks marc Agate
                         reader = Streams.stream(ImageIO.getImageReadersBySuffix(fileExt))
-                                .findFirst()
-                                .orElseThrow
-                                        (UnsupportedFormatException::new);
+                                         .findFirst()
+                                         .orElseThrow
+                                                  (UnsupportedFormatException::new);
 
+                        // sysLogger.debug("Got reader from ImageReadersBySuffix");
                         ImageInputStream in = ImageIO.createImageInputStream(fileObject);
 
                         ReaderAtts ra = new ReaderAtts(reader);
 
-                        // we dont care about jpgs
-                        if (ra.ImageFileFormat.equals(ReaderAtts.FILE_JPG)) {
+                        // we don't care about jpgs
+                        if (ra.ImageFileFormat.equals(ReaderAtts.FILE_JPG))
+                        {
                             continue;
                         }
-                        try {
+                        try
+                        {
                             reader.setInput(in);
 
-                            for (int i = 0; i < reader.getNumImages(true); i++) {
+                            for (int i = 0; i < reader.getNumImages(true); i++)
+                            {
                                 InternalImageAtts iias = new InternalImageAtts();
                                 ra.InternalImageAtts = iias;
                                 ImageTypeSpecifier its = Streams.stream(reader.getImageTypes(0))
-                                        .findFirst().orElseThrow(UnsupportedFormatException::new);
+                                                                 .findFirst().orElseThrow(UnsupportedFormatException::new);
 
+                                // sysLogger.debug("Got imageTypeSpecifier from getImageTypes");
                                 ImageTypeAtts itas = new ImageTypeAtts();
                                 iias.ImageTypeAtts = itas;
 
@@ -189,35 +203,41 @@ public class ImageAttributeTests extends ImageGroupParents {
                                 itas.ImageTypeNum = its.getBufferedImageType();
 
 
-                                try {
+                                try
+                                {
                                     iias.iioMetadata = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree
-                                            (standardMetadataFormatName);
+                                                                                                            (standardMetadataFormatName);
 
                                     // dont care if fails
                                     iias.Compression = ((IIOMetadataNode) (iias.iioMetadata.getElementsByTagName
-                                            ("CompressionTypeName")).item(0)).getAttribute("value");
-                                } catch (Exception eek) {
+                                                                                                    ("CompressionTypeName")).item(0)).getAttribute("value");
+                                } catch (Exception eek)
+                                {
                                     iias.iioMetadata = null;
                                     iias.Compression = "EXC_READ";
                                     sysLogger.error(eek.getMessage());
                                 }
                             }
-                        } finally {
+                        } finally
+                        {
                             reader.dispose();
                         }
 
                         // Phew. We got image data!!!!
                         String validationErrors = validate(ra);
-                        if (validationErrors.length() > 0) {
+                        if (validationErrors.length() > 0)
+                        {
                             FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
                         }
-                    } catch (UnsupportedFormatException usfx) {
+                    } catch (UnsupportedFormatException usfx)
+                    {
 //                        usfx.printStackTrace(System.out);
                         FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
-                    } catch (Exception eek) {
+                    } catch (Exception eek)
+                    {
                         FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
-                                .getMessage
-                                        ());
+                                                                                                                      .getMessage
+                                                                                                                               ());
                     }
 
 
@@ -250,10 +270,11 @@ im.mode (values. Caredabout: 1)
                 }
             }
 
-            sysLogger.debug("Test outcome %s error count %d",getTestResult().getOutcome(),
+            sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
                     getTestResult()
                             .getErrors().size());
-            if (!IsTestFailed()) {
+            if (!IsTestFailed())
+            {
                 PassTest();
             }
 
@@ -273,29 +294,38 @@ im.mode (values. Caredabout: 1)
             boolean failed = false;
             StringBuilder failedReasons = new StringBuilder();
 
-            if (readerAtts.ImageFileFormat.equals(ReaderAtts.FILE_TIFF)) {
+            if (readerAtts.ImageFileFormat.equals(ReaderAtts.FILE_TIFF))
+            {
 
                 // Test mode: 1 bit/pixel, image type num one of the
                 // BufferedImage.ImageType enums
                 ImageTypeAtts itas = readerAtts.InternalImageAtts.ImageTypeAtts;
-                if (!(itas.BitDepth == 1
-                        && (itas.ImageTypeNum == BufferedImage.TYPE_BYTE_GRAY ||
-                        itas.ImageTypeNum == BufferedImage.TYPE_BYTE_BINARY ||
-                        itas.ImageTypeNum == BufferedImage.TYPE_USHORT_GRAY))
-                        ) {
-                    failed = true;
-                    failedReasons.append("binarytif");
-                }
 
-                if (!(readerAtts.InternalImageAtts.IsGroup4Compression())) {
-                    String pluralString = "";
-                    if (failed) {
-                        pluralString = "-";
+                // We only care about non-monochrome files
+                if (itas.BitDepth == 1)
+                {
+                    if (!(itas.ImageTypeNum == BufferedImage.TYPE_BYTE_GRAY ||
+                                  itas.ImageTypeNum == BufferedImage.TYPE_BYTE_BINARY ||
+                                  itas.ImageTypeNum == BufferedImage.TYPE_USHORT_GRAY))
+                    {
+                        failed = true;
+                        failedReasons.append("binarytif");
                     }
-                    failedReasons.append(String.format("%stiffnotgroup4 :%s", pluralString, String.format("bd:%d: " +
-                            "itn :%d: " +
-                            "comp :%s: ", itas.BitDepth, itas.ImageTypeNum, readerAtts.InternalImageAtts
-                            .Compression)));
+
+                    if (!(readerAtts.InternalImageAtts.IsGroup4Compression()))
+                    {
+                        String pluralString = "";
+                        if (failed)
+                        {
+                            pluralString = "-";
+                        }
+                        failedReasons.append(String.format("%stiffnotgroup4 :%s", pluralString,
+                                String.format("bd:%d:\titn :%d:\tcomp :%s:",
+                                        itas.BitDepth,
+                                        itas.ImageTypeNum,
+                                        readerAtts.InternalImageAtts
+                                                                                                                                                                              .Compression)));
+                    }
                 }
             }
 
@@ -309,7 +339,8 @@ im.mode (values. Caredabout: 1)
         // have base class tests here?
         // Yes, under the doctrine of One responsibility
         RunBaseTests();
-        if (IsTestFailed()) {
+        if (IsTestFailed())
+        {
             return;
         }
         TestWrapper(new ImageAttributeTestOperation());
