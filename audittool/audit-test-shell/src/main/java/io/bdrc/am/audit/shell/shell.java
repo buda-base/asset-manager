@@ -294,7 +294,7 @@ public class shell {
         {
             Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class);
             IAuditTest inst = ctor.newInstance(testLogger);
-
+// TODO: Look at breaking this up
             inst.setParams((Object[]) params);
             inst.LaunchTest();
 

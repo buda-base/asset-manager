@@ -10,17 +10,17 @@ import java.util.Hashtable;
  */
 abstract public class ImageGroupParents extends PathTestBase {
 
-    public ImageGroupParents(String testName) {
+    ImageGroupParents(String testName) {
         super(testName);
     }
 
 
     // Special case folders, define parents of image groups. Only image group folders have to
     // match some tests
-    protected ArrayList<String> _imageGroupParents = new ArrayList<>();
+    ArrayList<String> _imageGroupParents = new ArrayList<>();
 
     // Extract only the values for these properties. For example, see audit-test-shell.scripts/shell.properties
-    protected final ArrayList<String> _propertyKeys = new ArrayList<String>() {{
+    private final ArrayList<String> _propertyKeys = new ArrayList<String>() {{
         add("ArchiveImageGroupParent");
         add("DerivedImageGroupParent");
     }};
@@ -30,7 +30,7 @@ abstract public class ImageGroupParents extends PathTestBase {
     /**
      * FileSequence parameters:
      * 1: path: String
-     * 2: HashTable<String,String> Properties
+     * 2: HashTable<String,String> Keyword args
      *
      * @param params array of parameters, implementation dependent
      * @throws IllegalArgumentException when arguments dont contain a hashset of values
@@ -42,14 +42,18 @@ abstract public class ImageGroupParents extends PathTestBase {
                     getTestName()));
         }
 
-        // TODO: This is not great design, for a subclass to cherry pick one specific parameter
-        // I need everybody to LoadParameters
         super.setParams(params);
-
-        _imageGroupParents = (ArrayList<String>) filterProperties(params[1], _propertyKeys);
+        _imageGroupParents = (ArrayList<String>) filterProperties(keywordArgParams, _propertyKeys);
 
     }
 
+    /**
+     * Load into a private field only the kwargs we need
+     *
+     * @param argDict input properties
+     * @param seekList properties to load into this class
+     * @return the values of the properties in argDict which were filtered
+     */
     @SuppressWarnings("unchecked")
     private Collection<String> filterProperties(Object argDict, Collection<String> seekList) {
 

@@ -29,6 +29,25 @@ public class TestFilteredErrors extends AuditTestTestBase {
         tr = runAttributesTest("src/test/images/WOtherTiffFails");
         Assert.assertTrue("Test failed, expected pass", tr.Passed());
     }
+    @Test(expected=NumberFormatException.class)
+    public void TestBadErrorWarning()
+    {
+
+        // Magic property: see shell.properties
+        _testParams.put("ErrorsAsWarning","110,a111,106");
+        TestResult tr = runAttributesTest("src/test/images/WOtherTiffFails");
+    }
+
+    @Test
+    public void TestEmptyFilter()
+    {
+        // Magic property: see shell.properties
+        _testParams.put("ErrorsAsWarning",",,");
+
+        TestResult tr = runAttributesTest("src/test/images/WOtherTiffFails");
+        Assert.assertFalse("Test passes expected fail with empty filter", tr.Passed());
+    }
+
 
     private TestResult runAttributesTest(String grandParentOfImageGroup)  {
         ImageAttributeTests imageAttributeTests = runTest(grandParentOfImageGroup, _testParams);

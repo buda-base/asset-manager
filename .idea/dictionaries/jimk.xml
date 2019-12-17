@@ -5,8 +5,10 @@
       <w>appenders</w>
       <w>audittests</w>
       <w>bdrc</w>
+      <w>dest</w>
       <w>dummheit</w>
       <w>fnfe</w>
+      <w>kwname</w>
       <w>logconfig</w>
       <w>rollingtest</w>
       <w>unglaubische</w>
