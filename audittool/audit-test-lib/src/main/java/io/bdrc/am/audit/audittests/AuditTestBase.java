@@ -137,7 +137,7 @@ public abstract class AuditTestBase implements IAuditTest {
             // Unchecked /
             keywordArgParams = (Hashtable<String, String>) params[1];
         }
-        parseLoad(_errorsWarningsPropertyKey, ErrorsAsWarnings);
+        parseLoad(_errorsWarningsPropertyKey, _passableErrors);
     }
 
     // region fields
@@ -147,7 +147,7 @@ public abstract class AuditTestBase implements IAuditTest {
     // See shell.properties
     // name of the property which holds the list of errors which are not considered
     // fatal.
-    private final String _passableErrorNumbersParameterName = "ErrorsAsWarning";
+    private final String _errorsWarningsPropertyKey = "ErrorsAsWarning";
     private LinkedList<Integer> _passableErrors = new LinkedList<>();
 
     // package private implies most of protected
@@ -157,8 +157,7 @@ public abstract class AuditTestBase implements IAuditTest {
     // region TestParameter properties
     Hashtable<String, String> keywordArgParams = new Hashtable<>();
 
-    private LinkedList<Integer> ErrorsAsWarnings = new LinkedList<>();
-    private final String _errorsWarningsPropertyKey = "ErrorsAsWarning";
+
 
 //    /**
 //     * transform inbound parameters from KWArg format (key=value) to
