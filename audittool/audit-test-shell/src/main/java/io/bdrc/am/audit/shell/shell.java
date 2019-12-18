@@ -75,9 +75,9 @@ public class shell {
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
 
-                String tdClassName =  shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
-                sysLogger.debug("{} value of property :{}:",TEST_DICT_PROPERTY_NAME,tdClassName);
-                td = testJarLoader.LoadDictionaryFromProperty("testJar",tdClassName);
+            String tdClassName = shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
+            sysLogger.debug("{} value of property :{}:", TEST_DICT_PROPERTY_NAME, tdClassName);
+            td = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
 
             assert td != null;
 
@@ -123,7 +123,7 @@ public class shell {
 
 
         sysLogger.trace("Exiting all pass? {}", String.valueOf(!anyFailed));
-        System.exit(anyFailed ? SYS_ERR : SYS_OK );
+        System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
 
     private static AuditTestLogController BuildTestLog(final ArgParser ap, Logger parentLogger, String csvHeader)
@@ -141,9 +141,10 @@ public class shell {
 
     /**
      * Set up, run all tests against a folder.
+     *
      * @param shellProperties environment, used for resolving test arguments
-     * @param testSet dictionary of tests
-     * @param aTestDir test subject
+     * @param testSet         dictionary of tests
+     * @param aTestDir        test subject
      * @return If all the tests passed or not
      */
     private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties,
@@ -186,9 +187,8 @@ public class shell {
 
             // descriptive
             String testDesc = testConfig.getFullName();
+            Hashtable<String, String> propertyArgs = getTestArgs(shellProperties, testConfig);
 
-            // extract the property values the test needs
-            Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
             @SuppressWarnings("unchecked")
             Boolean onePassed = TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
@@ -198,18 +198,6 @@ public class shell {
         return !anyFailed;
     }
 
-    /**
-     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
-     * @param aTestDir full name of folder
-     */
-    private static String  BuildTestLogFileName(final String aTestDir) {
-        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
-                                         .withLocale(Locale.getDefault())
-                                         .withZone(ZoneId.systemDefault());
-
-        String fileDate = dtf.format(Instant.now());
-        return Paths.get(aTestDir).getFileName().toString() + fileDate+ ".csv";
-    }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
                                            final String testDesc, final Hashtable<String, String> propertyArgs,
@@ -344,5 +332,38 @@ public class shell {
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
         return Paths.get(resHome, resourceFileName);
+    }
+
+    /**
+     * Extract the parameter values from the shell property
+     * @param shellProperties Properties object
+     * @param testConfig Holds lists os parameters we need
+     * @return The test's parameters, if they exist in the properties
+     */
+    private static Hashtable<String, String> getTestArgs(final FilePropertyManager shellProperties, final AuditTestConfig testConfig) {
+        // extract the property values the test needs
+        Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
+
+        // Add global parameters
+        String errorsAsWarning = shellProperties.getPropertyString("ErrorsAsWarning");
+        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
+        {
+            propertyArgs.put("ErrorsAsWarning", errorsAsWarning);
+        }
+        return propertyArgs;
+    }
+
+    /**
+     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
+     *
+     * @param aTestDir full name of folder
+     */
+    private static String BuildTestLogFileName(final String aTestDir) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
+                                        .withLocale(Locale.getDefault())
+                                        .withZone(ZoneId.systemDefault());
+
+        String fileDate = dtf.format(Instant.now());
+        return Paths.get(aTestDir).getFileName().toString() + fileDate + ".csv";
     }
 }

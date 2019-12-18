@@ -30,7 +30,7 @@ public class ImageSizeTests extends PathTestBase {
             Path rootFolder = Paths.get(getPath());
 
             // This test only examines derived image image groups
-            Path examineDir = Paths.get(getPath(), testParameters.get("DerivedImageGroupParent"));
+            Path examineDir = Paths.get(getPath(), keywordArgParams.get("DerivedImageGroupParent"));
 
 // Creating the filter
             DirectoryStream.Filter<Path> filter =
@@ -53,7 +53,7 @@ public class ImageSizeTests extends PathTestBase {
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
 
-            Long imageLimit = parseFilesize(testParameters.get("MaximumImageSize"));
+            Long imageLimit = parseFilesize(keywordArgParams.get("MaximumImageSize"));
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroup, filter)) {
                 for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
@@ -81,14 +81,14 @@ public class ImageSizeTests extends PathTestBase {
          * parse human readable file sizes
          *
          * @param in input string, in format numeric, or numeric[KMG][ ]*B{0,1}
-         * @return
+         * @return value in readable character, suffixed with KGM, etc.
          */
-        public long parseFilesize(String in) {
+         long parseFilesize(String in) {
             in = in.trim();
             in = in.replaceAll(",", ".");
             try {
                 return Long.parseLong(in);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
             final Matcher m = Pattern.compile("([\\d.,]+)\\s*(\\w)").matcher(in);
             m.find();
@@ -132,7 +132,6 @@ public class ImageSizeTests extends PathTestBase {
                             "propertyDictionary not given.",
                     getTestName()));
         }
-        super.setParams(params[0]);
-        LoadParameters((String[]) (params[1]));
+        super.setParams(params);
     }
 }

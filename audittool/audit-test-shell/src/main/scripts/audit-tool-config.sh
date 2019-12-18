@@ -36,15 +36,6 @@ else
 fi
 fi
 
-read -p "Enter the path to the jar file which contains the tests [ default \"${CONFIG_TEST_LIB_JAR_FILE}\" ]?" TEST_TEST_JAR
-
-[[ -z ${TEST_TEST_JAR} ]] && [[ -z ${CONFIG_TEST_LIB_JAR_FILE} ]]  && { echo "No default found and no input given. Cannot continue." ; exit 1 ;}
-
-# Resolve any relative dirs in input
-CONFIG_TEST_LIB_JAR_FILE=$(readlink -m ${TEST_TEST_JAR:-${CONFIG_TEST_LIB_JAR_FILE}}) ;
-
-[[ -f ${CONFIG_TEST_LIB_JAR_FILE} ]] || { echo "Warning: test jar file \"${CONFIG_TEST_LIB_JAR_FILE}\" does not exist (yet) " ; }
-
  #
  #
  # Get the shell location
@@ -70,5 +61,4 @@ CONFIG_TEST_LIB_JAR_FILE=$(readlink -m ${TEST_TEST_JAR:-${CONFIG_TEST_LIB_JAR_FI
 # Write config
 #
 echo "CONFIG_ATHOME=${CONFIG_ATHOME}" > ${CONFIG}
-echo "CONFIG_TEST_LIB_JAR_FILE=${CONFIG_TEST_LIB_JAR_FILE}" >> ${CONFIG}
 echo "CONFIG_SHELL_JAR_FILE=${CONFIG_SHELL_JAR_FILE}" >> ${CONFIG}
