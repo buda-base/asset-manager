@@ -64,11 +64,9 @@ if ( [System.String]::IsNullOrEmpty( $TEST_SHELL_JAR))
 # And finally, set
 $CONFIG_SHELL_JAR_FILE=[System.IO.Path]::GetFullPath($TEST_SHELL_JAR)
 
-#
-# Same process with the shell jar file
 if ( -not [System.IO.File]::Exists($CONFIG_SHELL_JAR_FILE))
 {
-    echo "Warning: test jar file "$CONFIG_SHELL_JAR_FILE " does not exist (yet) "
+    echo "Warning: shell jar file "$CONFIG_SHELL_JAR_FILE " does not exist (yet) "
 }
 
 # And call the activation directory the directory of the
