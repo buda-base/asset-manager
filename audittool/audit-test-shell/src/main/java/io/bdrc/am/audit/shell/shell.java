@@ -346,7 +346,7 @@ public class shell {
 
         // Add global parameters
         String errorsAsWarning = shellProperties.getPropertyString("ErrorsAsWarning");
-        if (errorsAsWarning != null)
+        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
         {
             propertyArgs.put("ErrorsAsWarning", errorsAsWarning);
         }

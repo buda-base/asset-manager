@@ -89,7 +89,6 @@ if ( [System.IO.File]::Exists($CONFIG))
 # This literal quoting is tricky
 #
 echo ('$CONFIG_ATHOME = "' + ${CONFIG_ATHOME} +  '" ') > $CONFIG
-echo ('$CONFIG_TEST_LIB_JAR_FILE = "' + ${CONFIG_TEST_LIB_JAR_FILE} +  '"') >> $CONFIG
 echo ( '$CONFIG_SHELL_JAR_FILE = "' + ${CONFIG_SHELL_JAR_FILE}  + '"') >> $CONFIG
 
 #
