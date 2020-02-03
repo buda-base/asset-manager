@@ -34,8 +34,8 @@ inside the `cmd` environment, or upgrade to PowerShell 6.
 
 #### Run logs and work logs
 Audit tool creates two sets of logs:
-- Run logs, which capture one invocation of Audit tool. These are in _<User home>_/audit-tool-logs/. Two sets, 
-csv, and log files are generated.
+- Run logs, which capture one invocation of Audit tool. These are in _\<User home\>_/audit-tool-logs/. Two sets, 
+csv, and log files are generated. _\<User home\>_ is the interactive user's home directory.
 - Per Work logs. One .CSV file is created for each work audittool scans. A "work" in this context means a top level directory.
 It is not connected to any existing BDRC library. These are located in either the Run log home (above) or in the directory
 specified in the `-l | --log_home` argument.
