@@ -14,10 +14,9 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
+import static java.nio.file.Paths.*;
 
 
 /**
@@ -88,11 +87,7 @@ public class shell {
 
             if (argParser.has_Dirlist())
             {
-                ArrayList<String> dirsToTest = argParser.getDirs();
-                ResolvePaths(dirsToTest);
-
-
-                for (String aTestDir : dirsToTest)
+                for (String aTestDir : ResolvePaths(argParser.getDirs()))
                 {
                     sysLogger.debug("arg =  {} ", aTestDir);
                     onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
@@ -218,7 +213,7 @@ public class shell {
                                          .withZone(ZoneId.systemDefault());
 
         String fileDate = dtf.format(Instant.now());
-        return Paths.get(aTestDir).getFileName().toString() + fileDate+ ".csv";
+        return get(aTestDir).getFileName().toString() + fileDate+ ".csv";
     }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
@@ -236,7 +231,7 @@ public class shell {
             // String resultLogFormat = "Result:%10s\tFolder:%20s\tTest:%30s";
             String resultLogFormat = "{}\t{}\t\t{}";
 
-            String workName = Paths.get(testDir).getFileName().toString();
+            String workName = get(testDir).getFileName().toString();
             String testResultLabel = tr.Passed() ? "Passed" : "Failed";
 
             if (tr.Passed())
@@ -291,12 +286,13 @@ public class shell {
      * In place replacement of paths with their resolved value
      *
      * @param resolveDirs list of paths to resolve
+     * @return entries fully qualified
      */
-    private static void ResolvePaths(final ArrayList<String> resolveDirs) {
-        for (int i = 0; i < resolveDirs.size(); i++)
-        {
-            resolveDirs.set(i, Paths.get(resolveDirs.get(i)).toAbsolutePath().toString());
-        }
+    private static List<String> ResolvePaths( List<String> resolveDirs) {
+        List<String> outList = new ArrayList<>();
+
+        resolveDirs.stream().forEach(z -> outList.add(Paths.get(z).toAbsolutePath().toString()));
+        return outList;
     }
 
 
@@ -353,6 +349,6 @@ public class shell {
             sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return Paths.get(resHome, resourceFileName);
+        return get(resHome, resourceFileName);
     }
 }

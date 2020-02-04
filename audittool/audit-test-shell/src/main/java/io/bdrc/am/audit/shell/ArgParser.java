@@ -13,7 +13,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 class ArgParser {
 
@@ -69,7 +71,8 @@ class ArgParser {
         {
             cl = clp.parse(options, args);
             isParsed = true;
-            nonOptionArgs = cl.getArgList();
+            cl.getArgList().stream().forEach(z -> logger.debug("Pre-recurse: Found arg :{}:",z));
+            nonOptionArgs = RecurseParse(cl.getArgList());
         } catch (ParseException exc)
         {
             logger.error("Failed to parse {}", exc.getMessage());
@@ -104,6 +107,25 @@ class ArgParser {
         }
         infileOptionStdin = "-";
         argsep = ",";
+    }
+
+    /**
+     * parses  a list of values and comma separated values into a an output list
+      * @param argList
+     * @return each blank-trimmed value between
+     */
+    private List<String> RecurseParse(final List<String> argList) {
+        List<String> outlist = new ArrayList<>();
+        argList.stream().forEach(z -> {
+            logger.debug("\tIn recurse:{}:",z);
+            if (z != ",")
+            {
+                String[] innerArgs = z.split(",");
+                Arrays.stream(innerArgs).forEach( zz -> outlist.add(zz));
+            }
+        });
+
+        return outlist;
     }
 
     /**
@@ -143,10 +165,10 @@ class ArgParser {
      *
      * @return contents of the "-i --input" argument or the ,delimited list of arguments
      */
-    ArrayList<String> getDirs() throws IOException {
+    List<String> getDirs() throws IOException {
 
         List<String> fileArgs;
-        ArrayList<String> returned = new ArrayList<>();
+        List<String> returned = new LinkedList<>();
 
         // if we have an
         if (!isParsed)
@@ -175,11 +197,10 @@ class ArgParser {
         }
         else
         {
-            // If args isnt the magic stdin delimiter, parse a delimited list of paths
-            String inArgs = nonOptionArgs.get(0);
+
             if (!getReadStdIn())
             {
-                returned = new ArrayList<>(Arrays.asList(inArgs.split(argsep)));
+                returned = nonOptionArgs;
             }
 
         }
@@ -192,7 +213,8 @@ class ArgParser {
         formatter.printHelp("audittool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
                                     "folders from " +
                                     "standard input\n\t" +
-                                    "Directory,.... is a list of directories separated by ,\n[options] are:",
+                                    "Directory .... is a list of directories separated by whitespace " +
+                                    "\n[options] are:",
                 options);
     }
 
