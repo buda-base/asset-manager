@@ -1,6 +1,5 @@
 package io.bdrc.am.audit.shell;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -207,7 +206,20 @@ class AuditTestLogController {
         // Create the dest file path from the folder, the prefix and the file name
         String destFileName = prefixValue + appenderPath.getFileName().toString();
         Path destPath = Paths.get(appenderDirName,destFileName);
-        Files.move(appenderPath,destPath);
+
+        try
+        {
+            GetFileAppender().stop();
+            Files.move(appenderPath, destPath);
+        }
+        catch (IOException ioeek)
+        {
+            throw ioeek;
+        }
+        catch (Exception eek)
+        {
+            // the log stream could be borked here.
+        }
 
     }
     /**
