@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
@@ -59,9 +60,11 @@ public class shell {
     public static void main(String[] args) {
 
         Boolean anyFailed = false;
+        Boolean onePassed  ;
 
         try
         {
+            onePassed = false ;
             sysLogger.trace("Entering main");
 
             Path resourceFile = resolveResourceFile("shell.properties");
@@ -92,7 +95,7 @@ public class shell {
                 for (String aTestDir : dirsToTest)
                 {
                     sysLogger.debug("arg =  {} ", aTestDir);
-                    Boolean onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
+                    onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
                     anyFailed |= !onePassed;
                 }
             }
@@ -106,9 +109,7 @@ public class shell {
                     while (null != (curLine = f.readLine()))
                     {
                         sysLogger.debug("readLoop got line {} ", curLine);
-
-                        testLogController.ChangeAppender(Paths.get(curLine).getFileName().toString());
-                        Boolean onePassed = RunTestsOnDir(shellProperties, td, curLine);
+                        onePassed = RunTestsOnDir(shellProperties, td, curLine);
                         anyFailed |= !onePassed;
                     }
                 }
@@ -148,6 +149,7 @@ public class shell {
      */
     private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties,
                                          final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
+            throws IOException
     {
 
         // testLogController ctor sets test log folder
@@ -194,6 +196,14 @@ public class shell {
             Boolean onePassed = TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
                     aTestDir);
             anyFailed |= !onePassed;
+        }
+        if (anyFailed)
+        {
+            testLogController.RenameLogFail();
+        }
+        else
+        {
+            testLogController.RenameLogPass();
         }
         return !anyFailed;
     }

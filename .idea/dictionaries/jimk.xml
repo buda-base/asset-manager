@@ -5,6 +5,7 @@
       <w>appenders</w>
       <w>audittests</w>
       <w>bdrc</w>
+      <w>dest</w>
       <w>dummheit</w>
       <w>fnfe</w>
       <w>logconfig</w>
