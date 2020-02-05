@@ -10,9 +10,9 @@ The arguments to audit tool are simply:
 usage: AuditTest [options] { - | Directory,Directory,Directory}
 where:
 
-                 - read folders from standard input
+                 - read folders from standard input (not supported on PowerShell)
 
-                 Directory,.... is a list of directories separated by ,
+                 Directory .... is a list of directories separated by whitespace.
 [options] are:
  -d,--debug             Show debugging information
  -i,--inputFile <arg>   Input file, one path per line
@@ -26,7 +26,8 @@ The `-d` switch has no functionality as of release 0.9
 ## Using input files
 The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
 most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  
-**may not** create files with the correct encoding.
+**may not** create files with the correct encoding. Powershell's pipe operator doesn't behave like
+Linux, so piping a output of a file to
 
 Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation 
 inside the `cmd` environment, or upgrade to PowerShell 6.
@@ -44,13 +45,27 @@ Note to windows users: You can change the default log home in the `log4j2.proper
 That file contains a proposed Windows location.
 
 #### Per work logs
+##### File name
+
 Each work which is analyzed has its output written to a file _WorkName.YYYY-MM-DD-HH-MM_.csv in the work log location (se above.)
 _YYYY-MM-DD-HH-MM_ of course, stands for the run date and time.
 
+Optionally, the user can indicate the pass or fail status of each work's test by setting properties
+in the installation's `log4j2.propertes` file. This shows the properties:
+
+```properties
+property.passPrefix=PASS-
+property.failPrefix=FAIL-
+```
+
+Any unicode text is allowed, but please bear in mind that support staff might not have the fonts
+installed on their machines.
+
+##### Work log contents
 The work log file contains the results for each test in sequence. Tests which are ordinarily found in the detail
 logs are added after the overall test result.
 
-The work run log contains a blend of the summary and the detail loggers below. A sample work log is:
+The work run log contains a blend of the summary and the detail loggers below, in `csv` format. A sample work log is:
 
 |id|test_name|outcome|error_number|error_test|detail_path|
 |---|---|---|---|---|---|
