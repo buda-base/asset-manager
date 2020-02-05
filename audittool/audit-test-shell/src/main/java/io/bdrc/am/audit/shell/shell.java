@@ -59,11 +59,10 @@ public class shell {
     public static void main(String[] args) {
 
         Boolean anyFailed = false;
-        Boolean onePassed  ;
+        Boolean onePassed = false ;
 
         try
         {
-            onePassed = false ;
             sysLogger.trace("Entering main");
 
             Path resourceFile = resolveResourceFile("shell.properties");
@@ -77,9 +76,9 @@ public class shell {
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
 
-                String tdClassName =  shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
-                sysLogger.debug("{} value of property :{}:",TEST_DICT_PROPERTY_NAME,tdClassName);
-                td = testJarLoader.LoadDictionaryFromProperty("testJar",tdClassName);
+            String tdClassName = shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
+            sysLogger.debug("{} value of property :{}:", TEST_DICT_PROPERTY_NAME, tdClassName);
+            td = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
 
             assert td != null;
 
@@ -138,8 +137,8 @@ public class shell {
     /**
      * Set up, run all tests against a folder.
      * @param shellProperties environment, used for resolving test arguments
-     * @param testSet dictionary of tests
-     * @param aTestDir test subject
+     * @param testSet         dictionary of tests
+     * @param aTestDir        test subject
      * @return If all the tests passed or not
      */
     private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties,
@@ -269,17 +268,24 @@ public class shell {
     /**
      * build dictionary of property arguments, pass to each test
      *
-     * @param argNames        collection of properties to find
-     * @param propertyManager handles property lookup
+     * @param argNames  collection of properties to find
+     * @param pm        property lookup
      * @return copy of argNames with found values added:  argNames[x]+property value
      */
     private static Hashtable<String, String> ResolveArgNames(final List<String> argNames,
-                                                             PropertyManager propertyManager)
+                                                             PropertyManager pm)
     {
-        Hashtable<String, String> argNames1 = new Hashtable<>();
-        argNames.forEach((String t) -> argNames1.put(t, propertyManager.getPropertyString(t)));
+        Hashtable<String, String> argValues = new Hashtable<>();
+        argNames.forEach((String t) -> argValues.put(t, pm.getPropertyString(t)));
 
-        return argNames1;
+        // Add global parameters
+        String errorsAsWarning = pm.getPropertyString("ErrorsAsWarning");
+        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
+        {
+            argValues.put("ErrorsAsWarning", errorsAsWarning);
+        }
+
+        return argValues;
     }
 
     /**
@@ -294,7 +300,6 @@ public class shell {
         resolveDirs.stream().forEach(z -> outList.add(Paths.get(z).toAbsolutePath().toString()));
         return outList;
     }
-
 
     /**
      * RunTest
@@ -350,5 +355,24 @@ public class shell {
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
         return get(resHome, resourceFileName);
+    }
+
+    /**
+     * Extract the parameter values from the shell property
+     * @param shellProperties Properties object
+     * @param testConfig Holds lists os parameters we need
+     * @return The test's parameters, if they exist in the properties
+     */
+    private static Hashtable<String, String> getTestArgs(final FilePropertyManager shellProperties, final AuditTestConfig testConfig) {
+        // extract the property values the test needs
+        Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
+
+        // Add global parameters
+        String errorsAsWarning = shellProperties.getPropertyString("ErrorsAsWarning");
+        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
+        {
+            propertyArgs.put("ErrorsAsWarning", errorsAsWarning);
+        }
+        return propertyArgs;
     }
 }

@@ -35,8 +35,8 @@ inside the `cmd` environment, or upgrade to PowerShell 6.
 
 #### Run logs and work logs
 Audit tool creates two sets of logs:
-- Run logs, which capture one invocation of Audit tool. These are in _<User home>_/audit-tool-logs/. Two sets, 
-csv, and log files are generated.
+- Run logs, which capture one invocation of Audit tool. These are in _\<User home\>_/audit-tool-logs/. Two sets, 
+csv, and log files are generated. _\<User home\>_ is the interactive user's home directory.
 - Per Work logs. One .CSV file is created for each work audittool scans. A "work" in this context means a top level directory.
 It is not connected to any existing BDRC library. These are located in either the Run log home (above) or in the directory
 specified in the `-l | --log_home` argument.
@@ -138,7 +138,9 @@ Please refer to [Using an external library](#Using-an-external-test-library) for
 ### Test output
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
-to send to a database.
+to send to a database. 
+
+You can toggle on and off logging by changing comment status as described in the `log4j2.properties` file.
 
 ### Test Internal logging
 To trace tests' internal logs, each test gets passed in an internal logger whose name
@@ -171,7 +173,12 @@ JVM options with the `-D` flag:
 - testDictionaryClassName: the fully qualified variable name of a public class in the `testJar` which implements 
 `io.bdrc.audit.ITestDictionary`
 
-You can toggle on and off logging by changing comment status as described in the log4j2.properties.
+Example:
+```
+java -DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar -DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary -DatHome=${CONFIG_ATHOME}  io.bdrc.am.audit.shell.shell /Volumes/Archive/W2KG20927
+```
+
+
 ## Test Developer's Guide
 This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
 this material.

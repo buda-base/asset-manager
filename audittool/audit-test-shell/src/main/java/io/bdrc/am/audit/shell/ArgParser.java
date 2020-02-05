@@ -20,15 +20,11 @@ import java.util.stream.Stream;
 class ArgParser {
 
     /* Persist the options */
-    private CommandLine cl;
-
-    private final String infileOptionShort;
-
-    private final String infileOptionStdin;
-    private final String argsep;
-
     private final Logger logger = LoggerFactory.getLogger("shellLogger");
 
+    private CommandLine cl;
+    private final String infileOptionShort;
+    private final String infileOptionStdin;
     private Boolean isParsed;
     private List<String> nonOptionArgs;
 
@@ -39,17 +35,13 @@ class ArgParser {
      */
     ArgParser(String[] args) {
 
-
         // Create the parser
         CommandLineParser clp = new DefaultParser();
-
         Options options = new Options();
-
         options.addOption("d", "debug", false, "Show debugging information");
-
-
         infileOptionShort = "i";
         final String infileOptionLong = "inputFile";
+
         options.addOption(Option.builder(infileOptionShort)
                                   .longOpt(infileOptionLong)
                                   .hasArg()
@@ -71,8 +63,10 @@ class ArgParser {
         {
             cl = clp.parse(options, args);
             isParsed = true;
-            cl.getArgList().stream().forEach(z -> logger.debug("Pre-recurse: Found arg :{}:",z));
-            nonOptionArgs = RecurseParse(cl.getArgList());
+            cl.getArgList().stream().forEach(z -> logger.debug("Found arg :{}:",z));
+
+            // nonOptionArgs = RecurseParse(cl.getArgList());
+            nonOptionArgs = cl.getArgList() ;
         } catch (ParseException exc)
         {
             logger.error("Failed to parse {}", exc.getMessage());
@@ -106,26 +100,6 @@ class ArgParser {
             }
         }
         infileOptionStdin = "-";
-        argsep = ",";
-    }
-
-    /**
-     * parses  a list of values and comma separated values into a an output list
-      * @param argList
-     * @return each blank-trimmed value between
-     */
-    private List<String> RecurseParse(final List<String> argList) {
-        List<String> outlist = new ArrayList<>();
-        argList.stream().forEach(z -> {
-            logger.debug("\tIn recurse:{}:",z);
-            if (z != ",")
-            {
-                String[] innerArgs = z.split(",");
-                Arrays.stream(innerArgs).forEach( zz -> outlist.add(zz));
-            }
-        });
-
-        return outlist;
     }
 
     /**

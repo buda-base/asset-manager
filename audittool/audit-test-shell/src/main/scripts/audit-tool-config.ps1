@@ -64,11 +64,9 @@ if ( [System.String]::IsNullOrEmpty( $TEST_SHELL_JAR))
 # And finally, set
 $CONFIG_SHELL_JAR_FILE=[System.IO.Path]::GetFullPath($TEST_SHELL_JAR)
 
-#
-# Same process with the shell jar file
 if ( -not [System.IO.File]::Exists($CONFIG_SHELL_JAR_FILE))
 {
-    echo "Warning: test jar file "$CONFIG_SHELL_JAR_FILE " does not exist (yet) "
+    echo "Warning: shell jar file "$CONFIG_SHELL_JAR_FILE " does not exist (yet) "
 }
 
 # And call the activation directory the directory of the
@@ -89,7 +87,6 @@ if ( [System.IO.File]::Exists($CONFIG))
 # This literal quoting is tricky
 #
 echo ('$CONFIG_ATHOME = "' + ${CONFIG_ATHOME} +  '" ') > $CONFIG
-echo ('$CONFIG_TEST_LIB_JAR_FILE = "' + ${CONFIG_TEST_LIB_JAR_FILE} +  '"') >> $CONFIG
 echo ( '$CONFIG_SHELL_JAR_FILE = "' + ${CONFIG_SHELL_JAR_FILE}  + '"') >> $CONFIG
 
 #
