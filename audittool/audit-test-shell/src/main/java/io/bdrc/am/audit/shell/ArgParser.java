@@ -13,20 +13,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 class ArgParser {
 
     /* Persist the options */
-    private CommandLine cl;
-
-    private final String infileOptionShort;
-
-    private final String infileOptionStdin;
-    private final String argsep;
-
     private final Logger logger = LoggerFactory.getLogger("shellLogger");
 
+    private CommandLine cl;
+    private final String infileOptionShort;
+    private final String infileOptionStdin;
     private Boolean isParsed;
     private List<String> nonOptionArgs;
 
@@ -37,17 +35,13 @@ class ArgParser {
      */
     ArgParser(String[] args) {
 
-
         // Create the parser
         CommandLineParser clp = new DefaultParser();
-
         Options options = new Options();
-
         options.addOption("d", "debug", false, "Show debugging information");
-
-
         infileOptionShort = "i";
         final String infileOptionLong = "inputFile";
+
         options.addOption(Option.builder(infileOptionShort)
                                   .longOpt(infileOptionLong)
                                   .hasArg()
@@ -69,7 +63,10 @@ class ArgParser {
         {
             cl = clp.parse(options, args);
             isParsed = true;
-            nonOptionArgs = cl.getArgList();
+            cl.getArgList().stream().forEach(z -> logger.debug("Found arg :{}:",z));
+
+            // nonOptionArgs = RecurseParse(cl.getArgList());
+            nonOptionArgs = cl.getArgList() ;
         } catch (ParseException exc)
         {
             logger.error("Failed to parse {}", exc.getMessage());
@@ -103,7 +100,6 @@ class ArgParser {
             }
         }
         infileOptionStdin = "-";
-        argsep = ",";
     }
 
     /**
@@ -143,10 +139,10 @@ class ArgParser {
      *
      * @return contents of the "-i --input" argument or the ,delimited list of arguments
      */
-    ArrayList<String> getDirs() throws IOException {
+    List<String> getDirs() throws IOException {
 
         List<String> fileArgs;
-        ArrayList<String> returned = new ArrayList<>();
+        List<String> returned = new LinkedList<>();
 
         // if we have an
         if (!isParsed)
@@ -175,11 +171,10 @@ class ArgParser {
         }
         else
         {
-            // If args isnt the magic stdin delimiter, parse a delimited list of paths
-            String inArgs = nonOptionArgs.get(0);
+
             if (!getReadStdIn())
             {
-                returned = new ArrayList<>(Arrays.asList(inArgs.split(argsep)));
+                returned = nonOptionArgs;
             }
 
         }
@@ -192,7 +187,8 @@ class ArgParser {
         formatter.printHelp("audittool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
                                     "folders from " +
                                     "standard input\n\t" +
-                                    "Directory,.... is a list of directories separated by ,\n[options] are:",
+                                    "Directory .... is a list of directories separated by whitespace " +
+                                    "\n[options] are:",
                 options);
     }
 

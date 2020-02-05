@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
@@ -13,10 +14,9 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
+import static java.nio.file.Paths.*;
 
 
 /**
@@ -59,6 +59,7 @@ public class shell {
     public static void main(String[] args) {
 
         Boolean anyFailed = false;
+        Boolean onePassed = false ;
 
         try
         {
@@ -85,14 +86,10 @@ public class shell {
 
             if (argParser.has_Dirlist())
             {
-                ArrayList<String> dirsToTest = argParser.getDirs();
-                ResolvePaths(dirsToTest);
-
-
-                for (String aTestDir : dirsToTest)
+                for (String aTestDir : ResolvePaths(argParser.getDirs()))
                 {
                     sysLogger.debug("arg =  {} ", aTestDir);
-                    Boolean onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
+                    onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
                     anyFailed |= !onePassed;
                 }
             }
@@ -106,9 +103,7 @@ public class shell {
                     while (null != (curLine = f.readLine()))
                     {
                         sysLogger.debug("readLoop got line {} ", curLine);
-
-                        testLogController.ChangeAppender(Paths.get(curLine).getFileName().toString());
-                        Boolean onePassed = RunTestsOnDir(shellProperties, td, curLine);
+                        onePassed = RunTestsOnDir(shellProperties, td, curLine);
                         anyFailed |= !onePassed;
                     }
                 }
@@ -123,7 +118,7 @@ public class shell {
 
 
         sysLogger.trace("Exiting all pass? {}", String.valueOf(!anyFailed));
-        System.exit(anyFailed ? SYS_ERR : SYS_OK);
+        System.exit(anyFailed ? SYS_ERR : SYS_OK );
     }
 
     private static AuditTestLogController BuildTestLog(final ArgParser ap, Logger parentLogger, String csvHeader)
@@ -141,7 +136,6 @@ public class shell {
 
     /**
      * Set up, run all tests against a folder.
-     *
      * @param shellProperties environment, used for resolving test arguments
      * @param testSet         dictionary of tests
      * @param aTestDir        test subject
@@ -149,6 +143,7 @@ public class shell {
      */
     private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties,
                                          final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
+            throws IOException
     {
 
         // testLogController ctor sets test log folder
@@ -187,17 +182,38 @@ public class shell {
 
             // descriptive
             String testDesc = testConfig.getFullName();
-            Hashtable<String, String> propertyArgs = getTestArgs(shellProperties, testConfig);
 
+            // extract the property values the test needs
+            Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
             @SuppressWarnings("unchecked")
             Boolean onePassed = TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
                     aTestDir);
             anyFailed |= !onePassed;
         }
+        if (anyFailed)
+        {
+            testLogController.RenameLogFail();
+        }
+        else
+        {
+            testLogController.RenameLogPass();
+        }
         return !anyFailed;
     }
 
+    /**
+     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
+     * @param aTestDir full name of folder
+     */
+    private static String  BuildTestLogFileName(final String aTestDir) {
+        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
+                                         .withLocale(Locale.getDefault())
+                                         .withZone(ZoneId.systemDefault());
+
+        String fileDate = dtf.format(Instant.now());
+        return get(aTestDir).getFileName().toString() + fileDate+ ".csv";
+    }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
                                            final String testDesc, final Hashtable<String, String> propertyArgs,
@@ -214,7 +230,7 @@ public class shell {
             // String resultLogFormat = "Result:%10s\tFolder:%20s\tTest:%30s";
             String resultLogFormat = "{}\t{}\t\t{}";
 
-            String workName = Paths.get(testDir).getFileName().toString();
+            String workName = get(testDir).getFileName().toString();
             String testResultLabel = tr.Passed() ? "Passed" : "Failed";
 
             if (tr.Passed())
@@ -252,31 +268,38 @@ public class shell {
     /**
      * build dictionary of property arguments, pass to each test
      *
-     * @param argNames        collection of properties to find
-     * @param propertyManager handles property lookup
+     * @param argNames  collection of properties to find
+     * @param pm        property lookup
      * @return copy of argNames with found values added:  argNames[x]+property value
      */
     private static Hashtable<String, String> ResolveArgNames(final List<String> argNames,
-                                                             PropertyManager propertyManager)
+                                                             PropertyManager pm)
     {
-        Hashtable<String, String> argNames1 = new Hashtable<>();
-        argNames.forEach((String t) -> argNames1.put(t, propertyManager.getPropertyString(t)));
+        Hashtable<String, String> argValues = new Hashtable<>();
+        argNames.forEach((String t) -> argValues.put(t, pm.getPropertyString(t)));
 
-        return argNames1;
+        // Add global parameters
+        String errorsAsWarning = pm.getPropertyString("ErrorsAsWarning");
+        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
+        {
+            argValues.put("ErrorsAsWarning", errorsAsWarning);
+        }
+
+        return argValues;
     }
 
     /**
      * In place replacement of paths with their resolved value
      *
      * @param resolveDirs list of paths to resolve
+     * @return entries fully qualified
      */
-    private static void ResolvePaths(final ArrayList<String> resolveDirs) {
-        for (int i = 0; i < resolveDirs.size(); i++)
-        {
-            resolveDirs.set(i, Paths.get(resolveDirs.get(i)).toAbsolutePath().toString());
-        }
-    }
+    private static List<String> ResolvePaths( List<String> resolveDirs) {
+        List<String> outList = new ArrayList<>();
 
+        resolveDirs.stream().forEach(z -> outList.add(Paths.get(z).toAbsolutePath().toString()));
+        return outList;
+    }
 
     /**
      * RunTest
@@ -331,7 +354,7 @@ public class shell {
             sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return Paths.get(resHome, resourceFileName);
+        return get(resHome, resourceFileName);
     }
 
     /**
@@ -351,19 +374,5 @@ public class shell {
             propertyArgs.put("ErrorsAsWarning", errorsAsWarning);
         }
         return propertyArgs;
-    }
-
-    /**
-     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
-     *
-     * @param aTestDir full name of folder
-     */
-    private static String BuildTestLogFileName(final String aTestDir) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
-                                        .withLocale(Locale.getDefault())
-                                        .withZone(ZoneId.systemDefault());
-
-        String fileDate = dtf.format(Instant.now());
-        return Paths.get(aTestDir).getFileName().toString() + fileDate + ".csv";
     }
 }
