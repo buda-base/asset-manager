@@ -152,8 +152,6 @@ public abstract class AuditTestBase implements IAuditTest {
     // region TestParameter properties
     Hashtable<String, String> keywordArgParams = new Hashtable<>();
 
-
-
 //    /**
 //     * transform inbound parameters from KWArg format (key=value) to
 //     * HashDictionary<>(key, value)</>
@@ -191,6 +189,8 @@ public abstract class AuditTestBase implements IAuditTest {
                 put(LibOutcome.NO_IMAGE_READER, new TestMessageFormat(1, "Image file %s has no suitable reader."));
                 put(LibOutcome.INVALID_TIFF, new TestMessageFormat(2, "Image file %s is invalid TIFF. Reasons: %s "));
                 put(LibOutcome.FILE_SIZE, new TestMessageFormat(3, "Image file %s size %s exceeds maximum of %s" ));
+                put(LibOutcome.BAD_FILE_SIZE_ARG, new TestMessageFormat(1, "Invalid file size argument %s. Requires " +
+                                                                                   "n[K|M|G]" ));
 
             }};
 

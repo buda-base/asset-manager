@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.Outcome;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -25,13 +26,13 @@ public class ImageSizeTests extends PathTestBase {
     public class ImageSizeTestOperation implements AuditTestBase.ITestOperation {
         @Override
         public void run() throws IOException {
-            // throw new IOException("Not implemented");
+
             Path rootFolder = Paths.get(getPath());
 
             // This test only examines derived image image groups
-            Path examineDir = Paths.get(getPath(), keywordArgParams.get("DerivedImageGroupParent"));
+            Path examineDir = Paths.get(getPath(), keywordArgParams.getOrDefault("DerivedImageGroupParent",""));
 
-// Creating the filter
+            // Creating the filter for non-hidden directories
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isDirectory() && !(entry.toFile().isHidden()));
 
@@ -39,11 +40,14 @@ public class ImageSizeTests extends PathTestBase {
                 for (Path imagegroup : imageGroupDirs) {
                     TestImages(imagegroup);
                 }
-
             } catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
-                FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
-
+                throw die;
+            }
+            catch (NoSuchFileException nsfie)
+            {
+                sysLogger.error("No such file {}", getPath());
+                FailTest(LibOutcome.ROOT_NOT_FOUND, getPath());
             }
         }
 
@@ -52,7 +56,7 @@ public class ImageSizeTests extends PathTestBase {
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
 
-            Long imageLimit = parseFilesize(keywordArgParams.get("MaximumImageSize"));
+            Long imageLimit = parseFilesize(keywordArgParams.getOrDefault("MaximumImageSize","400K"));
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroup, filter)) {
                 for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
@@ -80,31 +84,52 @@ public class ImageSizeTests extends PathTestBase {
          * parse human readable file sizes
          *
          * @param in input string, in format numeric, or numeric[KMG][ ]*B{0,1}
-         * @return value in readable character, suffixed with KGM, etc.
+         * @return value in readable character, optionally suffixed with KGM, etc.
          */
          long parseFilesize(String in) {
-            in = in.trim().replaceAll(",", ".").toUpperCase();
-            try {
-                return Long.parseLong(in);
-            } catch (NumberFormatException ignored) {
-            }
-            final Matcher m = Pattern.compile("([\\d.,]+)\\s*(\\w)").matcher(in);
-            m.find();
-            int scale = 1;
+            in = in.trim().replaceAll(",", "").toUpperCase();
+            // One or more digits, followed by an optional decimal point, then more digits
+             // optionally followed by some whitespace, and then optionally by one of the
+             // characters K,M,G for scale
 
-            // clever: uses fall throgugh
-            switch (m.group(2).charAt(0)) {
-                case 'G':
-                    scale *= 1024;
-                case 'M':
-                    scale *= 1024;
-                case 'K':
-                    scale *= 1024;
-                    break;
-                default:
-                    throw new IllegalArgumentException();
+            final Matcher m = Pattern.compile("([\\d]+.?[\\d]*)\\s*([KMG])?").matcher(in);
+
+            if (!m.find())
+            {
+                FailTest(LibOutcome.BAD_FILE_SIZE_ARG,"in");
+                return -1;
             }
-            return Math.round(Double.parseDouble(m.group(1)) * scale);
+
+
+            int scale = 1;
+             String scaleStr ;
+             try
+             {
+                 scaleStr = m.group(2);
+                 if (!StringUtils.isEmpty(scaleStr))
+                 {
+
+                     // clever: uses fall through
+                     switch (m.group(2).charAt(0))
+                     {
+                         case 'G':
+                             scale *= 1024;
+                         case 'M':
+                             scale *= 1024;
+                         case 'K':
+                             scale *= 1024;
+                             break;
+                         default:
+                             FailTest(LibOutcome.BAD_FILE_SIZE_ARG, "in");
+                             break;
+                     }
+                 }
+             } catch (IndexOutOfBoundsException ie)
+             {
+                 // do nothing
+             }
+            return (IsTestFailed() ? -1 : Math.round(Double.parseDouble(m.group(1)) * scale);
+
         }
     }
 

@@ -30,10 +30,26 @@ public class TestImageSizeTest extends AuditTestTestBase {
             put("MaximumImageSize","nonIntegerShouldFail");
         }};
 
-           ImageSizeTests imageSizeTests = runTest("src/test/imagesWCalibrate", _testParams);
+           ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
+           TestResult tr =  imageSizeTests.getTestResult();
+           assertFalse("Test passed, expected fail.",tr.Passed());
+           assertEquals("Should have failed on exception",3L,(long)tr.getOutcome());
+       }
+
+       @Test
+        public void TestNoDir() {
+        Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
+            // This value is for published images
+            // put("DerivedImageGroupParent",  "images");
+            // this tests our collateral
+            put("DerivedImageGroupParent",  "testImages");
+            put("MaximumImageSize","nonIntegerShouldFail");
+        }};
+
+           ImageSizeTests imageSizeTests = runTest("/IDontExist", _testParams);
            TestResult tr =  imageSizeTests.getTestResult();
            assertFalse("Test failed when should pass",tr.Passed());
-           assertEquals("Should have failed on exception",3L,(long)tr.getOutcome());
+           assertEquals("Should have failed on FileNotFound",2L,(long)tr.getOutcome());
        }
 
     @Test
