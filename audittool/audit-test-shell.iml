@@ -6,13 +6,14 @@
     <content url="file://$MODULE_DIR$/audit-test-shell">
       <sourceFolder url="file://$MODULE_DIR$/audit-test-shell/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/audit-test-shell/src/main/scripts" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/audit-test-shell/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/audit-test-shell/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.11.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.logging.log4j:log4j-core:2.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.12.1" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.12.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.12.1" level="project" />
