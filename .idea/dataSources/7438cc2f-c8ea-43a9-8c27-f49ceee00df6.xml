@@ -43,23 +43,19 @@
     </column>
     <index id="14" parent="6" name="Tests_testNumber_uindex">
       <ColNames>testNumber</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="15" parent="6" name="sqlite_autoindex_Tests_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>testNumber</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="16" parent="6" name="Tests_testShort_uindex">
       <ColNames>testShort</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="17" parent="6" name="Tests_test_desc_uindex">
       <ColNames>test_desc</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="18" parent="6">
@@ -106,7 +102,6 @@
     </column>
     <index id="28" parent="9" name="works_workName_uindex">
       <ColNames>workName</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="29" parent="9">
