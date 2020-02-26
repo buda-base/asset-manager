@@ -1,23 +1,18 @@
 package io.bdrc.am.audit.audittests;
 
-import io.bdrc.am.audit.iaudit.*;
-
+import io.bdrc.am.audit.iaudit.IAuditTest;
+import io.bdrc.am.audit.iaudit.Outcome;
+import io.bdrc.am.audit.iaudit.TestResult;
 import io.bdrc.am.audit.iaudit.message.LibTestMessages;
 import io.bdrc.am.audit.iaudit.message.TestMessageFormat;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
-import java.lang.reflect.Type;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.IntSupplier;
-import java.util.function.ToIntBiFunction;
-import java.util.function.ToIntFunction;
 
 public abstract class AuditTestBase implements IAuditTest {
 
@@ -195,9 +190,7 @@ public abstract class AuditTestBase implements IAuditTest {
                 put(LibOutcome.FILE_COUNT, new TestMessageFormat(3, "Folder %s expected %s files in folder , found %s"));
                 put(LibOutcome.NO_IMAGE_READER, new TestMessageFormat(1, "Image file %s has no suitable reader."));
                 put(LibOutcome.INVALID_TIFF, new TestMessageFormat(2, "Image file %s is invalid TIFF. Reasons: %s "));
-                put(LibOutcome.FILE_SIZE, new TestMessageFormat(3, "Image file %s size %s exceeds maximum of %s" +
-                                                                           "invalid " +
-                                                                           "TIFF. Reasons: %s"));
+                put(LibOutcome.FILE_SIZE, new TestMessageFormat(3, "Image file %s size %s exceeds maximum of %s" ));
 
             }};
 

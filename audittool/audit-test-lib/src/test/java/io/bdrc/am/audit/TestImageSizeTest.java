@@ -8,7 +8,11 @@ import org.junit.rules.TemporaryFolder;
 
 import java.util.Hashtable;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 public class TestImageSizeTest extends AuditTestTestBase {
+
 
 
         @Rule
@@ -25,10 +29,41 @@ public class TestImageSizeTest extends AuditTestTestBase {
             put("DerivedImageGroupParent",  "testImages");
             put("MaximumImageSize","nonIntegerShouldFail");
         }};
-           ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
+
+           ImageSizeTests imageSizeTests = runTest("src/test/imagesWCalibrate", _testParams);
            TestResult tr =  imageSizeTests.getTestResult();
+           assertFalse("Test failed when should pass",tr.Passed());
+           assertEquals("Should have failed on exception",3L,(long)tr.getOutcome());
        }
 
+    @Test
+    public void TestTooBigfail() {
+        Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
+            // This value is for published images
+            // put("DerivedImageGroupParent",  "images");
+            // this tests our collateral
+            put("DerivedImageGroupParent",  "testImages");
+            put("MaximumImageSize","200k");
+        }};
+        ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
+        TestResult tr =  imageSizeTests.getTestResult();
+        assertFalse("Passed when should have failed",tr.Passed());
+        assertEquals(2L,(long)tr.getOutcome());
+    }
+
+
+    @Test
+    public void TestNoProperty() {
+        Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
+            // This value is for published images
+            // put("DerivedImageGroupParent",  "images");
+            // this tests our collateral
+            put("DerivedImageGroupParent",  "testImages");
+          //  put("MaximumImageSize","nonIntegerShouldFail");
+        }};
+        ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
+        TestResult tr =  imageSizeTests.getTestResult();
+    }
 
     private ImageSizeTests runTest(String path, Hashtable<String,String> testParams ) {
         ImageSizeTests st = new ImageSizeTests(logger);

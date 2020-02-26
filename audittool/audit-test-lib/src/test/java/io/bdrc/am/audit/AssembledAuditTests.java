@@ -8,6 +8,7 @@ import io.bdrc.am.audit.iaudit.TestResult;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -19,8 +20,11 @@ import java.util.Hashtable;
 
 /**
  * Class for testing with existing data
+ * Ignored because only works on a MacOS when /Volumes/Archive is mounted.
  */
+@Ignore
 @RunWith(Parameterized.class)
+
 public class AssembledAuditTests {
 
 

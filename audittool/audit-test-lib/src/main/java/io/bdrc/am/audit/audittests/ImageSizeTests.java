@@ -1,14 +1,13 @@
 package io.bdrc.am.audit.audittests;
 
 import io.bdrc.am.audit.iaudit.Outcome;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
 
 public class ImageSizeTests extends PathTestBase {
 
@@ -84,8 +83,7 @@ public class ImageSizeTests extends PathTestBase {
          * @return value in readable character, suffixed with KGM, etc.
          */
          long parseFilesize(String in) {
-            in = in.trim();
-            in = in.replaceAll(",", ".");
+            in = in.trim().replaceAll(",", ".").toUpperCase();
             try {
                 return Long.parseLong(in);
             } catch (NumberFormatException ignored) {
