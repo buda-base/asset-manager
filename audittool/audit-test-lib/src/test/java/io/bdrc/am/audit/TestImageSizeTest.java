@@ -33,7 +33,7 @@ public class TestImageSizeTest extends AuditTestTestBase {
            ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
            TestResult tr =  imageSizeTests.getTestResult();
            assertFalse("Test passed, expected fail.",tr.Passed());
-           assertEquals("Should have failed on exception",3L,(long)tr.getOutcome());
+           assertEquals("Should have failed on exception",2L,(long)tr.getOutcome());
        }
 
        @Test
@@ -43,7 +43,7 @@ public class TestImageSizeTest extends AuditTestTestBase {
             // put("DerivedImageGroupParent",  "images");
             // this tests our collateral
             put("DerivedImageGroupParent",  "testImages");
-            put("MaximumImageSize","nonIntegerShouldFail");
+            put("MaximumImageSize","42");
         }};
 
            ImageSizeTests imageSizeTests = runTest("/IDontExist", _testParams);

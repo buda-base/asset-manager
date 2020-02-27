@@ -3,6 +3,7 @@ package io.bdrc.am.audit.audittests;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,17 @@ import java.util.regex.Pattern;
 public class ImageSizeTests extends PathTestBase {
 
 
+
+    /**
+     * Constructor with builtin logger
+     * Useful if you want your slf4j profile to drive logging.
+     * note base class must pass its test (such as directory exists)
+     * IDC about https://stackoverflow.com/questions/285177/how-do-i-call-one-constructor-from-another-in-java
+     * The factory method is not the simplest way to write an external library.
+     */
+    public ImageSizeTests() {
+        this(LoggerFactory.getLogger(ImageSizeTests.class));
+    }
     /**
      * new AuditTestBase
      *
@@ -23,12 +35,25 @@ public class ImageSizeTests extends PathTestBase {
         sysLogger = logger;
     }
 
+    // see parseFileSize()
+    // This one fails 123456789. and 324, because it wants the last character to fill the
+    // second group
+    //private final  String  NUMERIC_PATTERN  = "([\\d.,]+)\\s*(\\w)";
+    // So make the second group optional
+    // But this fails a55, because it doesnt require the string begin with numbers
+//    private final  String  NUMERIC_PATTERN  = "([\\d.,]+)\\s*(\\w?)";
+    private final  String  NUMERIC_PATTERN  = "^([\\d.,]+)\\s*(\\w?)$";
+
     public class ImageSizeTestOperation implements AuditTestBase.ITestOperation {
         @Override
         public void run() throws IOException {
 
-            Path rootFolder = Paths.get(getPath());
+            Long imageLimit = parseFilesize(keywordArgParams.getOrDefault("MaximumImageSize","400K"));
 
+            if (IsTestFailed())
+            {
+                return;
+            }
             // This test only examines derived image image groups
             Path examineDir = Paths.get(getPath(), keywordArgParams.getOrDefault("DerivedImageGroupParent",""));
 
@@ -38,7 +63,7 @@ public class ImageSizeTests extends PathTestBase {
 
             try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir, filter)) {
                 for (Path imagegroup : imageGroupDirs) {
-                    TestImages(imagegroup);
+                    TestImages(imagegroup, imageLimit);
                 }
             } catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
@@ -49,14 +74,18 @@ public class ImageSizeTests extends PathTestBase {
                 sysLogger.error("No such file {}", getPath());
                 FailTest(LibOutcome.ROOT_NOT_FOUND, getPath());
             }
+
+            if (!IsTestFailed())
+            {
+                PassTest();
+            }
         }
 
-        private void TestImages(final Path imageGroup) {
+        private void TestImages(final Path imageGroup, Long imageLimit) {
 
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile() && !(entry.toFile().isHidden()));
 
-            Long imageLimit = parseFilesize(keywordArgParams.getOrDefault("MaximumImageSize","400K"));
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroup, filter)) {
                 for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
@@ -92,7 +121,7 @@ public class ImageSizeTests extends PathTestBase {
              // optionally followed by some whitespace, and then optionally by one of the
              // characters K,M,G for scale
 
-            final Matcher m = Pattern.compile("([\\d]+.?[\\d]*)\\s*([KMG])?").matcher(in);
+            final Matcher m = Pattern.compile(NUMERIC_PATTERN).matcher(in);
 
             if (!m.find())
             {
@@ -128,7 +157,17 @@ public class ImageSizeTests extends PathTestBase {
              {
                  // do nothing
              }
-            return (IsTestFailed() ? -1 : Math.round(Double.parseDouble(m.group(1)) * scale);
+
+             Double maxSize = -1.0 ;
+             try {
+                 maxSize = Double.parseDouble(m.group(1));
+             }
+             catch(NumberFormatException nfe)
+             {
+                 FailTest(LibOutcome.BAD_FILE_SIZE_ARG,m.group(1));
+             }
+
+            return (IsTestFailed()) ? -1 : Math.round( maxSize * scale);
 
         }
     }
