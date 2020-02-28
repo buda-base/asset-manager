@@ -73,6 +73,10 @@ public class FileSequence extends ImageGroupParents {
                     }
                 }
 
+                // Because we have a "non-set" state
+                if (!IsTestFailed()) {
+                    PassTest();
+                }
             } catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
@@ -80,6 +84,12 @@ public class FileSequence extends ImageGroupParents {
                 sysLogger.error("Number Format error", nfe);
                 FailTest(Outcome.SYS_EXC, nfe.getCause().getLocalizedMessage());
 
+            }
+            catch (NoSuchFileException nsfe)
+            {
+                String badPath = nsfe.getFile();
+                sysLogger.error("No such file {}", badPath);
+                FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
             }
         }
 

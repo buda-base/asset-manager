@@ -65,20 +65,23 @@ public class ImageSizeTests extends PathTestBase {
                 for (Path imagegroup : imageGroupDirs) {
                     TestImages(imagegroup, imageLimit);
                 }
+                if (!IsTestFailed())
+                {
+                    PassTest();
+                }
             } catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
+                FailTest(Outcome.SYS_EXC,die.getMessage());
                 throw die;
             }
-            catch (NoSuchFileException nsfie)
+            catch (NoSuchFileException nsfe)
             {
-                sysLogger.error("No such file {}", getPath());
-                FailTest(LibOutcome.ROOT_NOT_FOUND, getPath());
+                String badPath = nsfe.getFile();
+                sysLogger.error("No such file {}", badPath);
+                FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
             }
 
-            if (!IsTestFailed())
-            {
-                PassTest();
-            }
+
         }
 
         private void TestImages(final Path imageGroup, Long imageLimit) {
