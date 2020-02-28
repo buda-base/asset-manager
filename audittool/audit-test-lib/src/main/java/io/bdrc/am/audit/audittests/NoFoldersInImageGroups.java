@@ -63,7 +63,14 @@ public class NoFoldersInImageGroups extends ImageGroupParents {
 
                     }
                 }
-            } catch (DirectoryIteratorException die) {
+            }
+            catch (NoSuchFileException nsfe)
+            {
+                String badPath = nsfe.getFile();
+                sysLogger.error("No such file {}", badPath);
+                FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
+            }
+            catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
             }
@@ -82,6 +89,7 @@ public class NoFoldersInImageGroups extends ImageGroupParents {
          */
         private void testNoFolders(Path testFolder) throws IOException {
 
+            String testFolderString = testFolder.toString();
             // Creating the filter. Bring in only directories
             DirectoryStream.Filter<Path> filter = entry -> (entry.toFile().isDirectory());
 
@@ -95,13 +103,19 @@ public class NoFoldersInImageGroups extends ImageGroupParents {
 
                     // Fail the test
                     if (!hasDirs) {
-                        FailTest(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, testFolder.toString());
+                        FailTest(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, testFolderString);
                         hasDirs = true;
                     }
-                    FailTest(LibOutcome.DIR_IN_IMAGES_FOLDER, testFolder.toString(), entry.getFileName().toString());
-
+                    FailTest(LibOutcome.DIR_IN_IMAGES_FOLDER, testFolderString, entry.getFileName().toString());
                 }
-            } catch (DirectoryIteratorException die) {
+            }
+            catch (NoSuchFileException nsfe)
+            {
+                String badPath = nsfe.getFile();
+                sysLogger.error("No such file {}", badPath);
+                FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
+            }
+            catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
             }

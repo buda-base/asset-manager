@@ -44,8 +44,10 @@ public class ImageAttributeTests extends ImageGroupParents {
 
             try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter))
             {
+                boolean visitedAPath = false;
                 for (Path anImageGroupParent : imageGroupParents)
                 {
+                    visitedAPath = true;
                     DirectoryStream.Filter<Path> imageGroupFilter =
                             entry -> (entry.toFile().isDirectory()
                                               && !entry.toFile().isHidden());
@@ -56,12 +58,31 @@ public class ImageAttributeTests extends ImageGroupParents {
                     }
                 }
 
+                if (!visitedAPath)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    _imageGroupParents.forEach(x -> sb.append(x + " "));
+                    String badPath = String.format("Some folders under root %s : %s", getPath(), sb.toString());
+                    throw new NoSuchFileException(badPath);
+                }
+
+                // Because we have a "non-set" state
+                if (!IsTestFailed())
+                {
+                    PassTest();
+                }
+            } catch (NoSuchFileException nsfe)
+            {
+
+                sysLogger.error("No such file {}", nsfe.getFile());
+                FailTest(LibOutcome.ROOT_NOT_FOUND, nsfe.getFile());
             } catch (DirectoryIteratorException die)
             {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
 
             }
+
         }
 
         @Override
@@ -146,8 +167,8 @@ public class ImageAttributeTests extends ImageGroupParents {
             }
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile()
-                            && !(entry.toFile().isHidden()
-                                ||entry.toString().endsWith("json") ));
+                                      && !(entry.toFile().isHidden()
+                                                   || entry.toString().endsWith("json")));
 
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter))
             {
@@ -233,6 +254,11 @@ public class ImageAttributeTests extends ImageGroupParents {
                     {
 //                        usfx.printStackTrace(System.out);
                         FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
+                    } catch (NoSuchFileException nsfe)
+                    {
+                        String badPath = nsfe.getFile();
+                        sysLogger.error("No such file {}", badPath);
+                        FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
                     } catch (Exception eek)
                     {
                         FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
@@ -324,7 +350,7 @@ im.mode (values. Caredabout: 1)
                                         itas.BitDepth,
                                         itas.ImageTypeNum,
                                         readerAtts.InternalImageAtts
-                                                                                                                                                                              .Compression)));
+                                                .Compression)));
                     }
                 }
             }
