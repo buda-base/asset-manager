@@ -14,9 +14,12 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Locale;
 
-import static java.nio.file.Paths.*;
+import static java.nio.file.Paths.get;
 
 
 /**
@@ -59,7 +62,7 @@ public class shell {
     public static void main(String[] args) {
 
         Boolean anyFailed = false;
-        Boolean onePassed = false ;
+        Boolean onePassed ;
 
         try
         {
@@ -82,7 +85,7 @@ public class shell {
 
             assert td != null;
 
-            testLogController = BuildTestLog(argParser, testResultLogger, TEST_LOGGER_HEADER);
+            testLogController = BuildTestLog(argParser, TEST_LOGGER_HEADER);
 
             if (argParser.has_Dirlist())
             {
@@ -118,16 +121,16 @@ public class shell {
 
 
         sysLogger.trace("Exiting all pass? {}", String.valueOf(!anyFailed));
-        System.exit(anyFailed ? SYS_ERR : SYS_OK );
+        System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
 
-    private static AuditTestLogController BuildTestLog(final ArgParser ap, Logger parentLogger, String csvHeader)
+    private static AuditTestLogController BuildTestLog(final ArgParser ap, String csvHeader)
     {
         AuditTestLogController tlc;
         String logDir = ap.getLogDirectory();
         tlc = new AuditTestLogController();
         tlc.setCsvHeader(csvHeader);
-        tlc.setTestResultLogger(parentLogger.getName());
+        tlc.setTestResultLogger(shell.testResultLogger.getName());
 
         tlc.setAppenderDirectory(logDir);
 
@@ -136,6 +139,7 @@ public class shell {
 
     /**
      * Set up, run all tests against a folder.
+     *
      * @param shellProperties environment, used for resolving test arguments
      * @param testSet         dictionary of tests
      * @param aTestDir        test subject
@@ -204,15 +208,16 @@ public class shell {
 
     /**
      * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
+     *
      * @param aTestDir full name of folder
      */
-    private static String  BuildTestLogFileName(final String aTestDir) {
-        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
-                                         .withLocale(Locale.getDefault())
-                                         .withZone(ZoneId.systemDefault());
+    private static String BuildTestLogFileName(final String aTestDir) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
+                                        .withLocale(Locale.getDefault())
+                                        .withZone(ZoneId.systemDefault());
 
         String fileDate = dtf.format(Instant.now());
-        return get(aTestDir).getFileName().toString() + fileDate+ ".csv";
+        return get(aTestDir).getFileName().toString() + fileDate + ".csv";
     }
 
     private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
@@ -231,15 +236,28 @@ public class shell {
             String resultLogFormat = "{}\t{}\t\t{}";
 
             String workName = get(testDir).getFileName().toString();
-            String testResultLabel = tr.Passed() ? "Passed" : "Failed";
 
-            if (tr.Passed())
+            String testResultLabel ;
+
+            if (tr.getOutcome().equals(Outcome.SYS_EXC) || tr.getOutcome().equals(Outcome.FAIL))
             {
+                testResultLabel = "Failed";
+                sysLogger.error(resultLogFormat, testResultLabel, testDir, testDesc);
+            }
+            else if (tr.getOutcome().equals(Outcome.PASS))
+            {
+                testResultLabel =  "Passed";
                 sysLogger.info(resultLogFormat, testResultLabel, testDir, testDesc);
+            }
+            else if (tr.getOutcome().equals(Outcome.NOT_RUN))
+            {
+                testResultLabel = "Not Run";
+                sysLogger.warn(resultLogFormat, testResultLabel, testDir, testDesc);
             }
             else
             {
-                sysLogger.error(resultLogFormat, testResultLabel, testDir, testDesc);
+                testResultLabel = String.format("Unknown result status %d", tr.getOutcome());
+                sysLogger.error(resultLogFormat, testResultLabel , testDir, testDesc);
             }
 
             // Test result logger doesn't have levels
@@ -262,14 +280,17 @@ public class shell {
             System.out.println(String.format("%s %s", testDir, testClass.getCanonicalName()));
             e.printStackTrace();
         }
+
+        assert tr != null;
         return tr.Passed();
+
     }
 
     /**
      * build dictionary of property arguments, pass to each test
      *
-     * @param argNames  collection of properties to find
-     * @param pm        property lookup
+     * @param argNames collection of properties to find
+     * @param pm       property lookup
      * @return copy of argNames with found values added:  argNames[x]+property value
      */
     private static Hashtable<String, String> ResolveArgNames(final List<String> argNames,
@@ -280,7 +301,7 @@ public class shell {
 
         // Add global parameters
         String errorsAsWarning = pm.getPropertyString("ErrorsAsWarning");
-        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
+        if ((errorsAsWarning != null) && !errorsAsWarning.isEmpty())
         {
             argValues.put("ErrorsAsWarning", errorsAsWarning);
         }
@@ -294,7 +315,7 @@ public class shell {
      * @param resolveDirs list of paths to resolve
      * @return entries fully qualified
      */
-    private static List<String> ResolvePaths( List<String> resolveDirs) {
+    private static List<String> ResolvePaths(List<String> resolveDirs) {
         List<String> outList = new ArrayList<>();
 
         resolveDirs.stream().forEach(z -> outList.add(Paths.get(z).toAbsolutePath().toString()));
@@ -357,22 +378,23 @@ public class shell {
         return get(resHome, resourceFileName);
     }
 
-    /**
-     * Extract the parameter values from the shell property
-     * @param shellProperties Properties object
-     * @param testConfig Holds lists os parameters we need
-     * @return The test's parameters, if they exist in the properties
-     */
-    private static Hashtable<String, String> getTestArgs(final FilePropertyManager shellProperties, final AuditTestConfig testConfig) {
-        // extract the property values the test needs
-        Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
-
-        // Add global parameters
-        String errorsAsWarning = shellProperties.getPropertyString("ErrorsAsWarning");
-        if ((errorsAsWarning != null) &&  !errorsAsWarning.isEmpty())
-        {
-            propertyArgs.put("ErrorsAsWarning", errorsAsWarning);
-        }
-        return propertyArgs;
-    }
+//    /**
+//     * Extract the parameter values from the shell property
+//     *
+//     * @param shellProperties Properties object
+//     * @param testConfig      Holds lists os parameters we need
+//     * @return The test's parameters, if they exist in the properties
+//     */
+//    private static Hashtable<String, String> getTestArgs(final FilePropertyManager shellProperties, final AuditTestConfig testConfig) {
+//        // extract the property values the test needs
+//        Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
+//
+//        // Add global parameters
+//        String errorsAsWarning = shellProperties.getPropertyString("ErrorsAsWarning");
+//        if ((errorsAsWarning != null) && !errorsAsWarning.isEmpty())
+//        {
+//            propertyArgs.put("ErrorsAsWarning", errorsAsWarning);
+//        }
+//        return propertyArgs;
+//    }
 }

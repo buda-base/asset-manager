@@ -3,11 +3,7 @@ package io.bdrc.am.audit.audittests;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.slf4j.Logger;
 
-import java.nio.file.DirectoryIteratorException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 /**
  * NoFilesInRoot tests that, for a Standard Submission Structure (
@@ -54,7 +50,14 @@ public class NoFilesInRoot extends PathTestBase  {
                         // return;
                     }
                 }
-            } catch (DirectoryIteratorException die) {
+            }
+            catch (NoSuchFileException nsfe)
+            {
+                String badPath = nsfe.getFile();
+                sysLogger.error("No such file {}", badPath);
+                FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
+            }
+            catch (DirectoryIteratorException die) {
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
             }
 

@@ -68,19 +68,6 @@ public class TestFileSequence extends AuditTestTestBase{
     }
 
     @Test
-    @Ignore
-    public void TestSomething()  {
-         Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
-            put("ArchiveImageGroupParent", "archive");
-            put("DerivedImageGroupParent", "image");
-        }};
-        FileSequence fst = runTest("/Users/jimk/tmp/AuditToolTestData/W1KG11900", _activeSequenceTestParams);
-        TestResult tr = fst.getTestResult();
-        Assert.assertFalse("Test should have failed", tr.Passed());
-
-    }
-
-    @Test
     public void TestDuplicateFiles() throws IOException {
         File fileRoot = _IGPfileSequenceBuilder.BuildMissingFiles(12,1,2);
         FileSequence fst = runTest(fileRoot.getAbsolutePath(),_activeSequenceTestParams);

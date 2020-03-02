@@ -21,12 +21,14 @@ public class TestFilteredErrors extends AuditTestTestBase {
     public void TestFilteredErrorFail()
     {
 
+        String glurm = System.getProperty("user.dir");
         TestResult tr = runAttributesTest("src/test/images/WOtherTiffFails");
         Assert.assertFalse( "Test passed, expected fail", tr.Passed());
 
         // Magic property: see shell.properties
         _testParams.put("ErrorsAsWarning","110,111,106");
         tr = runAttributesTest("src/test/images/WOtherTiffFails");
+        Assert.assertNotEquals("unexpected system exception",3L,(long)tr.getOutcome());
         Assert.assertTrue("Test failed, expected pass", tr.Passed());
     }
     @Test(expected=NumberFormatException.class)

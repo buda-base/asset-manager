@@ -3,19 +3,15 @@ package io.bdrc.am.audit;
 
 
 import io.bdrc.am.audit.audittests.ImageAttributeTests;
-
-import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestResult;
 import io.bdrc.am.audit.iaudit.message.TestMessage;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.Hashtable;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class TestProcessedImage extends AuditTestTestBase {
 
@@ -43,20 +39,23 @@ public class TestProcessedImage extends AuditTestTestBase {
      * "src/test/images/WOtherTiffFails",
      */
     @Test
-    public void TestImagePasses()  {
+    public void TestImagePasses()   {
+
+        // jimk: try root as target/test-classes
+//        TestResult tr = runAttributesTest("src/test/images/WPass");
+        try
+        {
+            String current = new java.io.File( "." ).getCanonicalPath();
+            String currentDir = System.getProperty("user.dir");
+            logger.debug(". {} wd {}", current, currentDir);
+            System.out.println (String.format(". %s wd %s", current, currentDir));
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
         TestResult tr = runAttributesTest("src/test/images/WPass");
         // TestResult tr = runAttributesTest("/Volumes/Archive/W21725");
-        for (TestMessage tm : tr.getErrors()) {
-            System.out.println(tm.getMessage());
-        }
-        Assert.assertTrue("Test failed, expected pass", tr.Passed());
-    }
-    @Test
-    @Ignore
-    public void TestPublishedImages()  {
-        _testParams.remove("DerivedImageGroupParent");
-        _testParams.put("DerivedImageGroupParent",  "images");
-        TestResult tr = runAttributesTest("/Volumes/Archive/W00EGS1016240");
         for (TestMessage tm : tr.getErrors()) {
             System.out.println(tm.getMessage());
         }
@@ -65,7 +64,7 @@ public class TestProcessedImage extends AuditTestTestBase {
 
     @Test
     public void TestImageOtherFails()  {
-        TestResult tr = runAttributesTest("src/test/images/WOtherTiffFails");
+        TestResult tr = runAttributesTest("src/test/imagesWOtherTiffFails");
         Assert.assertFalse( "Test passed, expected fail", tr.Passed());
     }
 

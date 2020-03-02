@@ -45,7 +45,9 @@ public class TestDictionary {
             put("WebImageAttributes", new AuditTestConfig("Web Image Attributes",
                     Arrays.asList("DerivedImageGroupParent"),"WebImageAttributes",
                     ImageAttributeTests.class));
+
+            put("FileSizeTests", new AuditTestConfig("File Size Test",
+                    Arrays.asList("DerivedImageGroupParent"),"FileSizeTest",ImageSizeTests.class));
         }
     };
-
 }

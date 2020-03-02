@@ -45,7 +45,7 @@ public class IsInstanceTest extends AuditTestTestBase {
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         Assert.assertNotNull(libTests);
-        Assert.assertEquals("Number of tests doesnt match", 4, libTests.size());
+        Assert.assertEquals("Number of tests doesnt match", 5, libTests.size());
     }
 
     @Test
@@ -80,8 +80,9 @@ public class IsInstanceTest extends AuditTestTestBase {
             thisTest.LaunchTest();
             TestResult tr = thisTest.getTestResult();
             Assert.assertNotNull(tr);
-            Assert.assertSame(Outcome.FAIL, tr.getOutcome());
-            Assert.assertEquals(LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
+            Assert.assertSame(String.format("Test %s not expected", thisTest.getTestName()),
+                    Outcome.FAIL, tr.getOutcome());
+            Assert.assertEquals(String.format("Test %s not expected", thisTest.getTestName()),LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
         }
     }
 }

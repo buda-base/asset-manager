@@ -69,24 +69,6 @@ public class TestNoFoldersInImageGroups extends AuditTestTestBase{
 
     }
 
-
-
-    /**
-     * This tests a known success path
-     */
-    @Test
-    @Ignore
-    public void TestSomething()  {
-         Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
-            put("ArchiveImageGroupParent", "archive");
-            put("DerivedImageGroupParent", "image");
-        }};
-        NoFoldersInImageGroups fst = runTest("/Users/jimk/tmp/AuditToolTestData/W1KG11900", _activeSequenceTestParams);
-        TestResult tr = fst.getTestResult();
-        Assert.assertFalse("Test should have failed", tr.Passed());
-
-    }
-
     @Test
     public void TestNotExist() {
 
