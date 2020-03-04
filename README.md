@@ -24,7 +24,7 @@
 - `mkdocs gh-deploy` to push to [Asset Manager Github page](https://buda-base.github.io/asset-manager)
 
 ## Copyright and License
-   Copyright [yyyy] [name of copyright owner]
+   Copyright 2019 Buddhist Digital Resource Center
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use any resource in this project except in compliance with the License.
