@@ -3,6 +3,7 @@ package io.bdrc.am.audit;
 
 
 import io.bdrc.am.audit.audittests.ImageAttributeTests;
+import io.bdrc.am.audit.audittests.TestArgNames;
 import io.bdrc.am.audit.iaudit.TestResult;
 import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.junit.Assert;
@@ -18,17 +19,17 @@ public class TestProcessedImage extends AuditTestTestBase {
     /**
      * Put image group parents we want to test in here.
      * Possible  choices for keys are:
-     *         "ArchiveImageGroupParent"
-     *         "DerivedImageGroupParent"
+     *         ARC_GROUP_PARENT
+     *         DERIVED_GROUP_PARENT
      *  Since we dont want to test archive images, we dont add it here.
      *  We're declaring here that only folders with the name 'testImages' contain
      *  folders we want to test.
      */
     private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
         // This value is for published images
-        // put("DerivedImageGroupParent",  "images");
+        // put(DERIVED_GROUP_PARENT,  "images");
         // this tests our collateral
-        put("DerivedImageGroupParent",  "testImages");
+        put(TestArgNames.DERIVED_GROUP_PARENT,  "testImages");
     }};
 
     @Rule

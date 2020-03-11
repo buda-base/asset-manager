@@ -7,13 +7,15 @@ import org.junit.Test;
 
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
+
 public class TestFilteredErrors extends AuditTestTestBase {
 
     private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
         // This value is for published images
-        // put("DerivedImageGroupParent",  "images");
+        // put(DERIVED_GROUP_PARENT,  "images");
         // this tests our collateral
-        put("DerivedImageGroupParent",  "testImages");
+        put(DERIVED_GROUP_PARENT,  "testImages");
     }};
 
 

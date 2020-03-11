@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.*;
+
+
 /**
  * ImageGroupParents is a specific path base test where the names of special "imageGroup"
  * folders are passed in
@@ -21,8 +24,8 @@ abstract public class ImageGroupParents extends PathTestBase {
 
     // Extract only the values for these properties. For example, see audit-test-shell.scripts/shell.properties
     private final ArrayList<String> _propertyKeys = new ArrayList<String>() {{
-        add("ArchiveImageGroupParent");
-        add("DerivedImageGroupParent");
+        add(ARC_GROUP_PARENT);
+        add(DERIVED_GROUP_PARENT);
     }};
 
     // region overrides
