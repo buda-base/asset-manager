@@ -18,6 +18,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.ARC_GROUP_PARENT;
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
+
 /**
  * Class for testing with existing data
  * Ignored because only works on a MacOS when /Volumes/Archive is mounted.
@@ -55,8 +58,8 @@ public class AssembledAuditTests {
     public static Collection Directories() {
         Hashtable<String,String> properties = new Hashtable<String,String>() {
             {
-             put("ArchiveImageGroupParent","archive");
-             put("DerivedImageGroupParent","images");
+             put(ARC_GROUP_PARENT,"archive");
+             put(DERIVED_GROUP_PARENT,"images");
             }
         };
 
