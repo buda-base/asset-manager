@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
+import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
+
 /**
  * Parameterized test
  */
@@ -29,7 +32,7 @@ public class TestImageSizeParametersTest {
     private final Hashtable<String, String> properties;
 //endregion
 
-    private final static String MAX_IMAGE_SIZE_KEY = "MaximumImageSize";
+
 
     public TestImageSizeParametersTest(String pTestSizeExpression, Boolean pShouldTestPass) {
         testSizeExpression = pTestSizeExpression;
@@ -39,8 +42,8 @@ public class TestImageSizeParametersTest {
         properties = new Hashtable<String, String>() {
             {
                 // this is invariant, because it's not the variable under test
-                put("DerivedImageGroupParent", "testImages");
-                put(MAX_IMAGE_SIZE_KEY, pTestSizeExpression);
+                put(DERIVED_GROUP_PARENT, "testImages");
+                put(MAX_IMAGE_FILE_SIZE, pTestSizeExpression);
             }
         };
     }
@@ -139,7 +142,7 @@ public class TestImageSizeParametersTest {
 
         if (expectedToPass)
         {
-            Assert.assertTrue(String.format("Size test parameter %s unexpected result:", properties.get(MAX_IMAGE_SIZE_KEY))
+            Assert.assertTrue(String.format("Size test parameter %s unexpected result:", properties.get(MAX_IMAGE_FILE_SIZE))
                     , (tr.getOutcome().equals(Outcome.PASS))
                               || (tr.getOutcome().equals(Outcome.FAIL)) && !(errors
                                                                                      .get(0)
@@ -153,7 +156,7 @@ public class TestImageSizeParametersTest {
             // only to parse: not fail the size test
 
             Assert.assertTrue(String.format("Size test parameter %s unexpected result:", properties.get
-                                                                                                            (MAX_IMAGE_SIZE_KEY))
+                                                                                                            (MAX_IMAGE_FILE_SIZE))
                     ,
                     (tr.getOutcome().equals(Outcome.FAIL)) && (errors.get(0).getOutcome().equals(LibOutcome
                                                                                                          .BAD_FILE_SIZE_ARG)));

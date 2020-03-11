@@ -8,6 +8,8 @@ import org.junit.rules.TemporaryFolder;
 
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
+import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -24,10 +26,10 @@ public class TestImageSizeTest extends AuditTestTestBase {
         public void TestNoSize() {
         Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
             // This value is for published images
-            // put("DerivedImageGroupParent",  "images");
+            // put(DERIVED_GROUP_PARENT,  "images");
             // this tests our collateral
-            put("DerivedImageGroupParent",  "testImages");
-            put("MaximumImageSize","nonIntegerShouldFail");
+            put(DERIVED_GROUP_PARENT,  "testImages");
+            put(MAX_IMAGE_FILE_SIZE,"nonIntegerShouldFail");
         }};
 
            ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
@@ -40,10 +42,10 @@ public class TestImageSizeTest extends AuditTestTestBase {
         public void TestNoDir() {
         Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
             // This value is for published images
-            // put("DerivedImageGroupParent",  "images");
+            // put(DERIVED_GROUP_PARENT,  "images");
             // this tests our collateral
-            put("DerivedImageGroupParent",  "testImages");
-            put("MaximumImageSize","42");
+            put(DERIVED_GROUP_PARENT,  "testImages");
+            put(MAX_IMAGE_FILE_SIZE,"42");
         }};
 
            ImageSizeTests imageSizeTests = runTest("/IDontExist", _testParams);
@@ -56,10 +58,10 @@ public class TestImageSizeTest extends AuditTestTestBase {
     public void TestTooBigfail() {
         Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
             // This value is for published images
-            // put("DerivedImageGroupParent",  "images");
+            // put(DERIVED_GROUP_PARENT,  "images");
             // this tests our collateral
-            put("DerivedImageGroupParent",  "testImages");
-            put("MaximumImageSize","200k");
+            put(DERIVED_GROUP_PARENT,  "testImages");
+            put(MAX_IMAGE_FILE_SIZE,"200k");
         }};
         ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
         TestResult tr =  imageSizeTests.getTestResult();
@@ -72,10 +74,10 @@ public class TestImageSizeTest extends AuditTestTestBase {
     public void TestNoProperty() {
         Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
             // This value is for published images
-            // put("DerivedImageGroupParent",  "images");
+            // put(DERIVED_GROUP_PARENT,  "images");
             // this tests our collateral
-            put("DerivedImageGroupParent",  "testImages");
-          //  put("MaximumImageSize","nonIntegerShouldFail");
+            put(DERIVED_GROUP_PARENT,  "testImages");
+          //  put(MAX_IMAGE_FILE_SIZE,"nonIntegerShouldFail");
         }};
         ImageSizeTests imageSizeTests = runTest("src/test/images/WCalibrate", _testParams);
         TestResult tr =  imageSizeTests.getTestResult();

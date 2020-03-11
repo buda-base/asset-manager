@@ -3,9 +3,11 @@ package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFoldersInImageGroups;
-import io.bdrc.am.audit.iaudit.message.TestMessage;
 import io.bdrc.am.audit.iaudit.TestResult;
-import org.junit.*;
+import io.bdrc.am.audit.iaudit.message.TestMessage;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -16,6 +18,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import static io.bdrc.am.audit.audittests.TestArgNames.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -31,8 +35,8 @@ public class TestNoFoldersInImageGroups extends AuditTestTestBase{
 
     private final Hashtable<String, String> _emptySequenceTestParams = new Hashtable<>();
     private final Hashtable<String,String> _igParentsTestParams = new Hashtable<String,String>() {{
-            put("ArchiveImageGroupParent", "harkeBeepar0lYn");
-            put("DerivedImageGroupParent", "SchmengUndDreck");
+            put(ARC_GROUP_PARENT, "harkeBeepar0lYn");
+            put(DERIVED_GROUP_PARENT, "SchmengUndDreck");
         }};
 
 

@@ -11,6 +11,8 @@ import java.nio.file.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.*;
+
 public class ImageSizeTests extends PathTestBase {
 
 
@@ -48,14 +50,14 @@ public class ImageSizeTests extends PathTestBase {
         @Override
         public void run() throws IOException {
 
-            Long imageLimit = parseFilesize(keywordArgParams.getOrDefault("MaximumImageSize","400K"));
+            Long imageLimit = parseFilesize(keywordArgParams.getOrDefault(MAX_IMAGE_FILE_SIZE,"400K"));
 
             if (IsTestFailed())
             {
                 return;
             }
             // This test only examines derived image image groups
-            Path examineDir = Paths.get(getPath(), keywordArgParams.getOrDefault("DerivedImageGroupParent",""));
+            Path examineDir = Paths.get(getPath(), keywordArgParams.getOrDefault(DERIVED_GROUP_PARENT,""));
 
             // Creating the filter for non-hidden directories
             DirectoryStream.Filter<Path> filter =

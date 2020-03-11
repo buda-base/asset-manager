@@ -5,6 +5,8 @@ import io.bdrc.am.audit.iaudit.AuditTestConfig;
 import java.util.Arrays;
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.*;
+
 /**
  * Moved from shell, so I can use class objects here, with names
  * placeholder for true dynamic linking:
@@ -29,7 +31,7 @@ public class TestDictionary {
                     // This statement asserts that the caller has to provide values for these
                     // arguments
                     Arrays.asList(
-                            "ArchiveImageGroupParent", "DerivedImageGroupParent"),
+                            ARC_GROUP_PARENT , DERIVED_GROUP_PARENT),
                     "FileSequence", FileSequence.class));
 
             //noinspection ArraysAsListWithZeroOrOneArgument
@@ -39,15 +41,16 @@ public class TestDictionary {
                     NoFilesInRoot.class));
 
             put("NoFoldersInImageGroups", new AuditTestConfig("No folders allowed in Image Group folders",
-                    Arrays.asList("ArchiveImageGroupParent", "DerivedImageGroupParent"),"NoFoldersInImageGroups",
+                    Arrays.asList(   ARC_GROUP_PARENT , DERIVED_GROUP_PARENT),"NoFoldersInImageGroups",
                     NoFoldersInImageGroups.class));
 
             put("WebImageAttributes", new AuditTestConfig("Web Image Attributes",
-                    Arrays.asList("DerivedImageGroupParent"),"WebImageAttributes",
+                    Arrays.asList(DERIVED_GROUP_PARENT),"WebImageAttributes",
                     ImageAttributeTests.class));
 
             put("FileSizeTests", new AuditTestConfig("File Size Test",
-                    Arrays.asList("DerivedImageGroupParent"),"FileSizeTest",ImageSizeTests.class));
+                    Arrays.asList( DERIVED_GROUP_PARENT,MAX_IMAGE_FILE_SIZE),"FileSizeTest",ImageSizeTests
+                                                                                                          .class));
         }
     };
 }

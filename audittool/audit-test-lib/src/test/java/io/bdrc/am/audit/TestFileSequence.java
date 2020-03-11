@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import static io.bdrc.am.audit.audittests.TestArgNames.ARC_GROUP_PARENT;
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import static org.junit.Assert.*;
@@ -27,8 +29,8 @@ public class TestFileSequence extends AuditTestTestBase{
 
     private final Hashtable<String, String> _emptySequenceTestParams = new Hashtable<>();
     private final Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
-            put("ArchiveImageGroupParent", "harkeBeepar0lYn");
-            put("DerivedImageGroupParent", "SchmengUndDreck");
+            put(ARC_GROUP_PARENT, "harkeBeepar0lYn");
+            put(DERIVED_GROUP_PARENT, "SchmengUndDreck");
         }};
 
 
@@ -106,7 +108,7 @@ public class TestFileSequence extends AuditTestTestBase{
     @Test
     public void TestFilterOutFiles() {
         Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
-            put("ArchiveImageGroupParent", "testImages");
+            put(ARC_GROUP_PARENT, "testImages");
             put("IgnoreFileExpressions","*.json,hoopsty");
         }};
         FileSequence st = runTest("src/test/images/WFilterOutJson",_activeSequenceTestParams);
