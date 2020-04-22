@@ -1,8 +1,7 @@
-*/workspace.xml
+
 __pycache__/
 .DS_Store
 site/
-*~
 export
 export/
 target/
