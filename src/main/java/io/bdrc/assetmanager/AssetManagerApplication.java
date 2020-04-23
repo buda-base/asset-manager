@@ -23,11 +23,10 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
  */
 // @SpringBootApplication
 
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-
+// @SpringBootApplication(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class AssetManagerApplication {
 
-	public static void main(String[] args) {
+	private /*public */ static void main(String[] args) {
 		SpringApplication.run(AssetManagerApplication.class, args);
 	}
 
