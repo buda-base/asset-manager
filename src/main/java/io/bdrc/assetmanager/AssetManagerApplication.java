@@ -21,10 +21,11 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
     @ComponentScan: Tells Spring to look for other components, configurations, and services in the com/example package,
     letting it find the controllers.
  */
-// @SpringBootApplication
+
+@SpringBootApplication
 
 // @SpringBootApplication(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-public class AssetManagerApplication {
+class AssetManagerApplication {
 
 	private /*public */ static void main(String[] args) {
 		SpringApplication.run(AssetManagerApplication.class, args);
