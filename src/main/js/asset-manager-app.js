@@ -3,7 +3,7 @@ const ReactDOM = require('react-dom');
 const client = require('./client');
 
 // Can we rename App?
-class App extends React.Component {
+class AssetManagerApp extends React.Component {
 
     constructor(props) {
         super(props);
@@ -60,6 +60,6 @@ class Employee extends React.Component{
 
 // Launcher
 ReactDOM.render(
-    <App />,
+    <AssetManagerApp />,
     document.getElementById('react')
 )

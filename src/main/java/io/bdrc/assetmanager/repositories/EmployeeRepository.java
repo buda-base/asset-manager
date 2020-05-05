@@ -1,10 +1,9 @@
 package io.bdrc.assetmanager.repositories;
 
 import io.bdrc.assetmanager.entities.Employee;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface EmployeeRepository extends CrudRepository<Employee, Long> {
+public interface EmployeeRepository extends PagingAndSortingRepository<Employee, Long> {
 
 
     }

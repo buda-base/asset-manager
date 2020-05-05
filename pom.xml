@@ -13,6 +13,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>AssetManager</name>
 	<description>Shell for Asset Manager</description>
+<!--	1/2. https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#build-tool-plugins-maven-packaging-->
+	<packaging>jar</packaging>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -97,6 +99,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!--	2/2. https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#build-tool-plugins-maven-packaging-->
+				<configuration>
+					<mainClass>io.bdrc.assetmanager.ReactAndSpringAssetManagerApplication</mainClass>
+				</configuration>
 			</plugin>
 
 			<!-- https://spring.io/guides/tutorials/react-and-spring-data-rest/ -->
