@@ -22,12 +22,12 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
     letting it find the controllers.
  */
 
-// @SpringBootApplication
+@SpringBootApplication
 
 // @SpringBootApplication(exclude={DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-class AssetManagerApplication {
+public class AssetManagerApplication {
 
-	private /*public */ static void main(String[] args) {
+	/* private */ public static void main(String[] args) {
 		SpringApplication.run(AssetManagerApplication.class, args);
 	}
 
