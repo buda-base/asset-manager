@@ -104,6 +104,7 @@
 					<mainClass>io.bdrc.assetmanager.ReactAndSpringAssetManagerApplication</mainClass>
 				</configuration>
 			</plugin>
+<!-- dont to do add jar with dependencies - not needed, breaks things -->
 
 			<!-- https://spring.io/guides/tutorials/react-and-spring-data-rest/ -->
 			<plugin>
