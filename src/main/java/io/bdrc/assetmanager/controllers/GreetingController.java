@@ -15,10 +15,10 @@ This code uses Spring @RestController annotation, which marks the class as a con
 
 @RestController
 public class GreetingController {
+    private static final String template = "Hello, %s!";
+    private final AtomicLong counter = new AtomicLong();
 
-    c
-
-    @GetMapping("/old_greeting")
+    @GetMapping("/greeting")
     public GreetingModel greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
         return new GreetingModel(counter.incrementAndGet(), String.format(template, name));
     }

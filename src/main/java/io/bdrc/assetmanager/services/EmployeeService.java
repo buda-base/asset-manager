@@ -5,19 +5,20 @@ import io.bdrc.assetmanager.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+/**
+ * Problematic. This is a layer over the repository which doesn't really add
+ * anything. Except if we need finer grained ways of getting data by some special criteria
+ */
 @Service
-public class EmployeeService {
+public class EmployeeService implements IEmployeeService {
 
     private final EmployeeRepository repository;
 
-
-    // Note were Dep Inj this instead of it being a mock bean (see tests)
-    public EmployeeService(final EmployeeRepository repository) {
+    public EmployeeService( EmployeeRepository repository) {
         this.repository = repository;
     }
 
@@ -28,9 +29,8 @@ public class EmployeeService {
     public List<Employee> getbyFirstName(String firstName)
     {
         List<Employee> employees = (List <Employee>) this.repository.findAll();
-        return employees.stream().findAny(x ->  ((Employee)x).getFirstName().equals(firstName)) ;
-
-
-
+        return employees.stream()
+                .filter(x -> x.getFirstName().equals(firstName))
+                .collect(Collectors.toList());
     }
 }
