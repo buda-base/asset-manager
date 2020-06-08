@@ -34,7 +34,7 @@ public class EmployeeServiceController {
 
 
     @RequestMapping("/semployee/get/{firstName}")
-    public @ResponseBody getEmployees(String firstName) {
+    public @ResponseBody List<Employee> getEmployees(String firstName) {
         return employeeService.getbyFirstName(firstName);
     }
 
