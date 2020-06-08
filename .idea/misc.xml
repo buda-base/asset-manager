@@ -35,6 +35,7 @@
         <option value="$PROJECT_DIR$/audittool/pom.xml" />
         <option value="$PROJECT_DIR$/audittool/audit-test-interface/pom.xml" />
         <option value="$PROJECT_DIR$/audittool/audit-test-lib/pom.xml" />
+        <option value="$PROJECT_DIR$/asset-manager-web/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
