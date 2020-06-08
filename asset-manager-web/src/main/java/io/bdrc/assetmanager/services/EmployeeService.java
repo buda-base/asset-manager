@@ -2,12 +2,10 @@ package io.bdrc.assetmanager.services;
 
 import io.bdrc.assetmanager.entities.Employee;
 import io.bdrc.assetmanager.repositories.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Problematic. This is a layer over the repository which doesn't really add
@@ -19,6 +17,7 @@ public class EmployeeService implements IEmployeeService {
     private final EmployeeRepository repository;
 
     public EmployeeService( EmployeeRepository repository) {
+
         this.repository = repository;
     }
 
