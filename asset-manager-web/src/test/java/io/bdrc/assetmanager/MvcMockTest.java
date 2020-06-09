@@ -26,7 +26,6 @@ public class MvcMockTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @MockBean
     private EmployeeService service;
 
