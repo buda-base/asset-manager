@@ -1,6 +1,5 @@
-package io.bdrc.assetmanager.repositories;
+package io.bdrc.assetmanager.employee;
 
-import io.bdrc.assetmanager.entities.Employee;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface EmployeeRepository extends PagingAndSortingRepository<Employee, Long> {

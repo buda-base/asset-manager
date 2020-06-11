@@ -1,4 +1,4 @@
-package io.bdrc.assetmanager.entities;
+package io.bdrc.assetmanager.employee;
 
 
 import javax.persistence.* ;

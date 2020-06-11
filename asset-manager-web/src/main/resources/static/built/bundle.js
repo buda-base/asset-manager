@@ -28566,13 +28566,13 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*
 		};
 
 		/**
-		 * MIME type support for request and response entities.  Entities are
+		 * MIME type support for request and response employee.  Entities are
 		 * (de)serialized using the converter for the MIME type.
 		 *
-		 * Request entities are converted using the desired converter and the
+		 * Request employee are converted using the desired converter and the
 		 * 'Accept' request header prefers this MIME.
 		 *
-		 * Response entities are converted based on the Content-Type response header.
+		 * Response employee are converted based on the Content-Type response header.
 		 *
 		 * @param {Client} [client] client to wrap
 		 * @param {string} [config.mime='text/plain'] MIME type to encode the request

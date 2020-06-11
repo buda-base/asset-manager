@@ -1,4 +1,4 @@
-package io.bdrc.assetmanager.models;
+package io.bdrc.assetmanager.Greeting;
 
 public class GreetingModel {
 

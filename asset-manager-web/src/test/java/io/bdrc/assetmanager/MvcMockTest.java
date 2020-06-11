@@ -1,9 +1,9 @@
 package io.bdrc.assetmanager;
 
 
-import io.bdrc.assetmanager.controllers.EmployeeServiceController;
-import io.bdrc.assetmanager.entities.Employee;
-import io.bdrc.assetmanager.services.EmployeeService;
+import io.bdrc.assetmanager.employee.EmployeeServiceController;
+import io.bdrc.assetmanager.employee.Employee;
+import io.bdrc.assetmanager.employee.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

@@ -1,12 +1,11 @@
-package io.bdrc.assetmanager.controllers;
+package io.bdrc.assetmanager.employee;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import io.bdrc.assetmanager.models.GreetingModel;
-import org.springframework.stereotype.Controller;
+import io.bdrc.assetmanager.Greeting.GreetingModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /*
 This code uses Spring @RestController annotation, which marks the class as a controller where every method returns a domain object instead of a view. It is shorthand for including both
