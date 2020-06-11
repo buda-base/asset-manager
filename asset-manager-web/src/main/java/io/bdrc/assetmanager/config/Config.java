@@ -26,8 +26,8 @@ public class Config {
     public Config(String workTestLibrary) {
         this.workTestLibrary = workTestLibrary;
     }
-˚
-    public Long getId() {˚
+
+    public Long getId() {
         return id;
     }
     public void setId(Long id) { this.id = id ;}
