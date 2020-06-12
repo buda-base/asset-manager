@@ -1,4 +1,4 @@
-package io.bdrc.assetmanager.employee;
+package io.bdrc.assetmanager.WorkTest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
