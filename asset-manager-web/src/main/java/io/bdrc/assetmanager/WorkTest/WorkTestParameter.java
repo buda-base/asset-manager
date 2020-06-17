@@ -1,6 +1,8 @@
 package io.bdrc.assetmanager.WorkTest;
 
 
+import io.bdrc.assetmanager.InvalidObjectData;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -25,7 +27,7 @@ public class WorkTestParameter {
 
     }
 
-    public WorkTestParameter(String name, String value, WorkTest workTest) {
+    public WorkTestParameter(String name, String value, WorkTest workTest) throws InvalidObjectData {
         this.paramName = name;
         this.paramValue = value;
         this.setWorkTest(workTest);
@@ -56,7 +58,8 @@ public class WorkTestParameter {
         paramValue = newValue;
     }
 
-    public void setWorkTest(WorkTest newValue) {
+    // TODO : I left off here thinking about cascading throws declarations
+    public void setWorkTest(WorkTest newValue) throws InvalidObjectData {
         this.workTest = newValue;
 
         // ACHTUNG!! Add to containers set
