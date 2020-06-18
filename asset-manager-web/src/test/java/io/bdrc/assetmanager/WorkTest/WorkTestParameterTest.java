@@ -1,5 +1,6 @@
 package io.bdrc.assetmanager.WorkTest;
 
+import io.bdrc.assetmanager.InvalidObjectData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class WorkTestParameterTest extends WorkTestTestBase {
     List<WorkTestParameter> workTestParameterList = new ArrayList<>();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InvalidObjectData {
         BaseSetup();
 
         workTestParameterRepository.findAll().forEach(x -> workTestParameterList.add(x));

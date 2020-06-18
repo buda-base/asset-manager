@@ -33,6 +33,18 @@ public class WorkTestParameter {
         this.setWorkTest(workTest);
     }
 
+    /**
+     * Copy constructor
+     * @param source WorkTestParameter to copy
+     * Does not copy work test, as that would violate the testName unique constraint
+     */
+    @SuppressWarnings("CopyConstructorMissesField")
+    public WorkTestParameter(WorkTestParameter source ) {
+        this.paramName = source.paramName;
+        this.paramValue = source.paramValue;
+        // since this would violate the uniqueness constraint
+    }
+
     // region accessors
     public String getName() {
         return paramName;
@@ -74,7 +86,7 @@ public class WorkTestParameter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkTestParameter workTestParameter = (WorkTestParameter) o;
-        return Objects.equals(id, workTestParameter.id) &&
+        return
                 Objects.equals(paramName, workTestParameter.paramName) &&
                 Objects.equals(paramValue, workTestParameter.paramValue) &&
                 Objects.equals(workTest, workTestParameter.workTest);

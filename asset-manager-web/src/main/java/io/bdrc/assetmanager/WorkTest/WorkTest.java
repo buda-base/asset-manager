@@ -2,6 +2,7 @@ package io.bdrc.assetmanager.WorkTest;
 
 
 import io.bdrc.assetmanager.InvalidObjectData;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -18,6 +19,8 @@ public class WorkTest {
     @GeneratedValue
     Long id;
 
+    // TODO:  Need to map this to a jar + test name combination
+    @NaturalId
     private String testName;
 
     // Persist auto calls the repository to save
@@ -25,7 +28,7 @@ public class WorkTest {
     private Set<WorkTestParameter> workTestParameters;
 
     @Transient
-    Hashtable<String, String> argKV;
+    Hashtable<String, String> argKV = new Hashtable<>();
     //endregion
 
     //region constructors
@@ -36,6 +39,17 @@ public class WorkTest {
     public WorkTest(String testName) {
         this.workTestParameters = new HashSet<>();
         setTestName(testName);
+    }
+
+    /**
+     * Copy constructor
+     *
+     * @param source source workTest
+     */
+    @SuppressWarnings("CopyConstructorMissesField")
+    public WorkTest(WorkTest source) throws InvalidObjectData {
+        this.setTestName(source.getTestName());
+        this.setWorkTestParameters(source.getWorkTestParameters());
     }
 
     // endregion
@@ -59,12 +73,11 @@ public class WorkTest {
         this.workTestParameters = workTestParameters;
 
         // Add back pointer
-        try {
-            this.workTestParameters.forEach(wtp -> wtp.setWorkTest(this));
+        // you can't put a routine which throws into a .forEach statement
+        for (WorkTestParameter wtp : this.workTestParameters) {
+            wtp.setWorkTest(this);
         }
 
-        // we've already
-        finally {}
     }
 
 
@@ -92,14 +105,15 @@ public class WorkTest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkTest workTest = (WorkTest) o;
-        return Objects.equals(id, workTest.id) &&
+
+        return
                 Objects.equals(testName, workTest.testName) &&
-                Objects.equals(workTestParameters, workTest.workTestParameters);
+                        Objects.equals(workTestParameters, workTest.workTestParameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, workTestParameters);
+        return Objects.hash(testName);
     }
     // endregion
 
@@ -118,14 +132,14 @@ public class WorkTest {
      */
     private void enforceUniqueConstraint(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData
     {
-        try {
-            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-            Hashtable<String, String> setNames = new Hashtable<>();
-            workTestParameters.forEach(x ->
-                    setNames.put(x.getName(), "")
-            );
-        } catch (Exception e) {
-            throw new InvalidObjectData("WorkTestParameter Collection has duplicate elements", e);
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+        Hashtable<String, String> setNames = new Hashtable<>();
+        workTestParameters.forEach(x ->
+                setNames.put(x.getName(), ""));
+
+        // did hashtable replace a value?
+        if (setNames.keySet().size() != workTestParameters.size()) {
+            throw new InvalidObjectData("WorkTestParameter Collection has duplicate elements");
         }
     }
 
@@ -135,10 +149,13 @@ public class WorkTest {
      * @param workTestParameter test object - getName() must not be found in existing
      * @throws InvalidObjectData when a duplicate name would be created
      */
+
+    // TODO: Left off here realizing that this could be an update operation, so I don't really care.
+    // Have to change 'add' to 'addOrUpdate'
     private void enforceUniqueConstraint(final WorkTestParameter workTestParameter) throws InvalidObjectData
     {
         try {
-            argKV.put(workTestParameter.getName(), null);
+            argKV.put(workTestParameter.getName(), "");
 
             // We don't set this here
             argKV.remove(workTestParameter.getName());
