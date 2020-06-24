@@ -1,8 +1,6 @@
 package io.bdrc.assetmanager.WorkTest;
 
 
-import io.bdrc.assetmanager.InvalidObjectData;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -27,7 +25,7 @@ public class WorkTestParameter {
 
     }
 
-    public WorkTestParameter(String name, String value, WorkTest workTest) throws InvalidObjectData {
+    public WorkTestParameter(String name, String value, WorkTest workTest)  {
         this.paramName = name;
         this.paramValue = value;
         this.setWorkTest(workTest);
@@ -70,13 +68,30 @@ public class WorkTestParameter {
         paramValue = newValue;
     }
 
-    // TODO : I left off here thinking about cascading throws declarations
-    public void setWorkTest(WorkTest newValue) throws InvalidObjectData {
-        this.workTest = newValue;
+    // Done: TO DO : I left off here thinking about cascading throws declarations
+    /**
+     * Moves this testParameter from its current test to a new test
+     * @param newValue new containing test
+     * removes test from current parent
+     *
+     */
+    public void setWorkTest(WorkTest newValue)  {
+        if (newValue == null) {
+            this.deleteWorkTest();
+        }
+        else {
+            workTest = newValue;
+            newValue.replaceWorkTestParameter(this);
+        }
+    }
 
-        // ACHTUNG!! Add to containers set
-        newValue.addWorkTestParameter(this);
-
+    public void deleteWorkTest()
+    {
+        if (this.workTest != null)
+        {
+            this.workTest.removeWorkTestParameter(this);
+        }
+        this.workTest = null;
     }
 
     // endregion
@@ -89,7 +104,9 @@ public class WorkTestParameter {
         return
                 Objects.equals(paramName, workTestParameter.paramName) &&
                 Objects.equals(paramValue, workTestParameter.paramValue) &&
-                Objects.equals(workTest, workTestParameter.workTest);
+
+                        // dont include the complete WorkTest.equals
+                Objects.equals(workTest.getTestName(), workTestParameter.workTest.getTestName());
     }
 
     @Override

@@ -5,10 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +17,7 @@ class WorkTestTest extends WorkTestTestBase {
     List<WorkTest> workTestList = new ArrayList<>();
 
     @BeforeEach
-    void setUp() throws InvalidObjectData {
+    void setUp()  {
         BaseSetup();
         workTestRepository.findAll().forEach(x -> workTestList.add(x));
         // get all the workTestParameters
@@ -38,20 +35,20 @@ class WorkTestTest extends WorkTestTestBase {
     void workRepositoryTestWorkParametersWorkTest() {
         //List<WorkTest> workTests = (List<WorkTest>)
         workTestRepository.findAll().forEach((WorkTest x) ->
-        workTestParameterRepository.findByWorkTest(x)
-                .forEach(wtp -> assertThat(wtp.getWorkTest().equals(x))));
+                workTestParameterRepository.findByWorkTest(x)
+                        .forEach(wtp -> assertThat(wtp.getWorkTest().equals(x))));
     }
 
     @Test
-    void addWorkTestParameter() throws InvalidObjectData {
+    void addWorkTestParameter() {
         WorkTest wt = workTestList.get(0);
         Set<WorkTestParameter> w_forWtp = wt.getWorkTestParameters();
         int preWtps = w_forWtp.size();
         new WorkTestParameter("wtpnew", "wtpnewValue", wt);
         int postWtps = wt.getWorkTestParameters().size();
         Set<WorkTestParameter> w_forWtpPost = wt.getWorkTestParameters();
-        assertThat(w_forWtpPost.size() ==  postWtps );
-        assertThat(postWtps ==  1 + preWtps );
+        assertThat(w_forWtpPost.size() == postWtps);
+        assertThat(postWtps == 1 + preWtps);
     }
 
     @Test
@@ -81,8 +78,8 @@ class WorkTestTest extends WorkTestTestBase {
     void uniqueWorkTestReplaceParameters() {
         WorkTest wt = new WorkTest("wtpName");
         Set<WorkTestParameter> newWtps = new HashSet<>();
-        newWtps.add( new WorkTestParameter("wtp1name","wtp1value"));
-        newWtps.add( new WorkTestParameter("wtp1name","wtp2value"));
+        newWtps.add(new WorkTestParameter("wtp1name", "wtp1value"));
+        newWtps.add(new WorkTestParameter("wtp1name", "wtp2value"));
 
         Exception exception = assertThrows(InvalidObjectData.class, () -> wt.setWorkTestParameters(newWtps));
 
@@ -93,6 +90,7 @@ class WorkTestTest extends WorkTestTestBase {
         assertTrue(actualMessage.contains(expectedMessage));
 
     }
+
     @Test
     void getId() {
     }
@@ -103,22 +101,22 @@ class WorkTestTest extends WorkTestTestBase {
 
     @Test
     void getTestName() {
-        final String testName = "TestName" ;
+        final String testName = "TestName";
         WorkTest workTest = new WorkTest(testName);
-        assertEquals(workTest.getTestName(),testName);
+        assertEquals(workTest.getTestName(), testName);
     }
 
     @Test
     void setTestName() {
-        final String testName = "TestName" ;
+        final String testName = "TestName";
         final String newTestName = "newTestName";
         WorkTest workTest = new WorkTest(testName);
-        workTest.setTestName(newTestName );
-        assertEquals(workTest.getTestName(),newTestName);
+        workTest.setTestName(newTestName);
+        assertEquals(workTest.getTestName(), newTestName);
     }
 
     @Test
-    void testEquals()  throws InvalidObjectData {
+    void testEquals() throws InvalidObjectData {
         final String oldName = "oldWorkTestName";
 
         WorkTest wtOld = new WorkTest(oldName);
@@ -127,10 +125,56 @@ class WorkTestTest extends WorkTestTestBase {
 
         WorkTest wtNew = new WorkTest(wtOld);
 
-        assertEquals(wtNew,wtOld);
+        assertEquals(wtNew, wtOld);
     }
 
     @Test
     void testHashCode() {
+    }
+
+    @Test
+    void replaceWorkTestParameter() throws InvalidObjectData {
+
+        // Arrange
+        final String oldName = "oldWorkTestName";
+        final String newValue = new UUID(8,8).toString();
+
+        WorkTest wtOld = new WorkTest(oldName);
+        Set<WorkTestParameter> origParams = newWorkTestParametersWithoutWorks();
+        wtOld.setWorkTestParameters(origParams);
+
+        int nParamsPre = wtOld.getWorkTestParameters().size();
+
+        WorkTestParameter newWtp = null;
+        for (WorkTestParameter wtp : origParams) {
+            newWtp = new WorkTestParameter(wtp);
+            break;
+        }
+
+        //
+        assert newWtp != null;
+        newWtp.setValue(newValue);
+
+        // Act
+        // Should replace the existing newWtp.getName()
+        wtOld.replaceWorkTestParameter(newWtp);
+
+        // Assert
+        assertEquals(nParamsPre, wtOld.getWorkTestParameters().size());
+
+        for (WorkTestParameter wtp :  wtOld.getWorkTestParameters()) {
+            if (wtp.getName().equals(newWtp.getName())) {
+                assertEquals(newValue,wtp.getValue());
+                break;
+            }
+            else {
+                // We're kinda testing set here
+                assertNotEquals(newValue,wtp.getValue());
+            }
+        }
+    }
+
+    @Test
+    void removeWorkTestParameter() {
     }
 }

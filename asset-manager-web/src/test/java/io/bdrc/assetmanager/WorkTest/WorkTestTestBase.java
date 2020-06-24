@@ -1,6 +1,5 @@
 package io.bdrc.assetmanager.WorkTest;
 
-import io.bdrc.assetmanager.InvalidObjectData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class WorkTestTestBase {
     @Autowired
     protected WorkTestParameterRepository workTestParameterRepository;
 
-    protected void BaseSetup()  throws InvalidObjectData {
+    protected void BaseSetup() {
         List<WorkTest> workTests = new ArrayList<>();
 
         for (int i = 1; i < 4; i++) {
@@ -37,9 +36,9 @@ public class WorkTestTestBase {
 
     protected Set<WorkTestParameter> newWorkTestParametersWithoutWorks() {
         Set<WorkTestParameter> workTestParameterHashSet = new HashSet<>();
-        workTestParameterHashSet.add( new WorkTestParameter("wtp1name","wtp1value"));
-        workTestParameterHashSet.add( new WorkTestParameter("wtp2name","wtp2value"));
-        workTestParameterHashSet.add( new WorkTestParameter("wtp3name","wtp3value"));
+        workTestParameterHashSet.add(new WorkTestParameter("wtp1name", "wtp1value"));
+        workTestParameterHashSet.add(new WorkTestParameter("wtp2name", "wtp2value"));
+        workTestParameterHashSet.add(new WorkTestParameter("wtp3name", "wtp3value"));
 
         return workTestParameterHashSet;
 

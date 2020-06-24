@@ -5,10 +5,8 @@ import io.bdrc.assetmanager.InvalidObjectData;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -25,10 +23,8 @@ public class WorkTest {
 
     // Persist auto calls the repository to save
     @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private Set<WorkTestParameter> workTestParameters;
+    private final Set<WorkTestParameter> workTestParameters = new HashSet<>();
 
-    @Transient
-    Hashtable<String, String> argKV = new Hashtable<>();
     //endregion
 
     //region constructors
@@ -37,7 +33,6 @@ public class WorkTest {
     }
 
     public WorkTest(String testName) {
-        this.workTestParameters = new HashSet<>();
         setTestName(testName);
     }
 
@@ -49,17 +44,40 @@ public class WorkTest {
     @SuppressWarnings("CopyConstructorMissesField")
     public WorkTest(WorkTest source) throws InvalidObjectData {
         this.setTestName(source.getTestName());
-        this.setWorkTestParameters(source.getWorkTestParameters());
+         this.setWorkTestParameters(source.getWorkTestParameters());
     }
 
     // endregion
 
     // region methods
-    public void addWorkTestParameter(WorkTestParameter workTestParameter) throws InvalidObjectData
+
+    /**
+     * Adds or replaces a workTestParameter
+     *
+     * @param workTestParameter new or updated WorkTestParameter
+     */
+    public void replaceWorkTestParameter(WorkTestParameter workTestParameter)
     {
-        enforceUniqueConstraint(workTestParameter);
-        workTestParameters.add(workTestParameter);
-        argKV.put(workTestParameter.getName(), workTestParameter.getValue());
+        List<WorkTestParameter> wtpf =
+        workTestParameters.stream()
+                .filter(x -> x.getName().equals(workTestParameter.getName()))
+                .collect(Collectors.toList());
+        wtpf.forEach(this::removeWorkTestParameter);
+
+        // workTestParameter.setWorkTest(this);
+        // Dont add directly.
+        // let the child find its parent
+        this.workTestParameters.add(workTestParameter);
+    }
+
+    /**
+     * remove a WorkTestParameter, don't worry if it's not there
+     *
+     * @param workTestParameter to be removed
+     */
+    public void removeWorkTestParameter(WorkTestParameter workTestParameter)
+    {
+        workTestParameters.remove(workTestParameter);
     }
     //endregion
 
@@ -68,17 +86,27 @@ public class WorkTest {
         return workTestParameters;
     }
 
+    /**
+     * Replace existing test parameters with new set
+     *
+     * @param workTestParameters new set of workTestParameters
+     * @throws InvalidObjectData when the input set has duplicate test names
+     */
     public void setWorkTestParameters(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData {
         enforceUniqueConstraint(workTestParameters);
-        this.workTestParameters = workTestParameters;
 
-        // Add back pointer
-        // you can't put a routine which throws into a .forEach statement
-        for (WorkTestParameter wtp : this.workTestParameters) {
-            wtp.setWorkTest(this);
+        for (WorkTestParameter wtp : workTestParameters)
+        {
+            WorkTestParameter newWtp = new WorkTestParameter(wtp);
+            newWtp.setWorkTest(this);
+
         }
-
     }
+
+//    public void setWorkTestParameters(final List<WorkTestParameter> wtpList) throws InvalidObjectData
+//    {
+//        this.setWorkTestParameters(new HashSet<>(wtpList));
+//    }
 
 
     public Long getId() {
@@ -122,10 +150,10 @@ public class WorkTest {
 
     /**
      * enforces that all the inputs in a candidate input set
-     * must have unique names. Uses Hashtable property that keys must be unique.
+     * must have unique names.
      * This overload tests the internal set for consistency. The
-     * overload (final WorkTestParameter workTestParamater) tests an
-     * individual WorkTestParameter against the existing set5
+     * overload (final WorkTestParameter workTestParameter) tests an
+     * individual WorkTestParameter against the existing set
      *
      * @param workTestParameters complete set of work test parameters
      * @throws InvalidObjectData when any workTestParameters have a duplicate name
@@ -133,35 +161,13 @@ public class WorkTest {
     private void enforceUniqueConstraint(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData
     {
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-        Hashtable<String, String> setNames = new Hashtable<>();
+        HashSet<String> setNames = new HashSet<>();
         workTestParameters.forEach(x ->
-                setNames.put(x.getName(), ""));
+                setNames.add(x.getName()));
 
         // did hashtable replace a value?
-        if (setNames.keySet().size() != workTestParameters.size()) {
+        if (setNames.size() != workTestParameters.size()) {
             throw new InvalidObjectData("WorkTestParameter Collection has duplicate elements");
-        }
-    }
-
-    /**
-     * Test an individual WorkTestParameter for uniqueness in this' current set
-     *
-     * @param workTestParameter test object - getName() must not be found in existing
-     * @throws InvalidObjectData when a duplicate name would be created
-     */
-
-    // TODO: Left off here realizing that this could be an update operation, so I don't really care.
-    // Have to change 'add' to 'addOrUpdate'
-    private void enforceUniqueConstraint(final WorkTestParameter workTestParameter) throws InvalidObjectData
-    {
-        try {
-            argKV.put(workTestParameter.getName(), "");
-
-            // We don't set this here
-            argKV.remove(workTestParameter.getName());
-        } catch (Exception e) {
-            throw new InvalidObjectData(String.format("Cannot add Duplicate work Test Parameter Name %s to existing",
-                    workTestParameter.getName()), e);
         }
     }
     // endregion
