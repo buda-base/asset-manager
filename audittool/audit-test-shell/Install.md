@@ -6,7 +6,7 @@
 ## Supported Platforms
 
 - Windows 10 with Powershell 3.0 and above
-- Mac OS X 10.14 (High Sierra) with Bash 4 (gnu coreutils)
+- Mac OS X 10.14 (High Sierra) with Bash 4 ( **requires gnu coreutils** )
 - Debian 10
 
 ** Note ** A shell script ending in `.sh` has the same name on windows, but the suffix `.ps1` 
