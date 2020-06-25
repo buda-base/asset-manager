@@ -41,9 +41,9 @@ nobody@Nowhere:audit-test-shell-0.8-SNAPSHOT-2$
 ```
 
 ### Walkthrough
-- audit-tool-config.sh sets two environment variables which the running script, `audittool.sh` refers to:
-  - CONFIG_TEST_LIB_JAR_FILE: The file name of the .JAR which contains tests
+- audit-tool-config.sh sets  environment variables which the running script, `audittool.sh` refers to:
   - CONFIG_SHELL_JAR_FILE: the file name of the .JAR which launches the tests and logs their results.
+  - CONFIG_ATHOME: The folder in which Audit Tool is installed. This is useful, because it allows you to move `audittool.sh` into your path, and it will still run the jar file in the configured path.
 
 Since audit-tool-config.sh stores preferences in a **per-user** folder, you might want to create a template which saves these variables.
 You do this by editing `$AT_INSTALL_HOME/DEFAULT-BDRC-AT-CONFIG.sh` When you know the location of the  downloaded files.
