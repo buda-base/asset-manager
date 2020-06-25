@@ -1,6 +1,6 @@
 # Running Audit tool
 ## References
-[Audit Tool installation and configuration](https://github.com/buda-base/asset-manager/blob/v0.9-alpha/audittool/audit-test-shell/Install.md)
+[Audit Tool installation and configuration](https://github.com/buda-base/asset-manager/blob/master/audittool/audit-test-shell/AuditToolOperation.md)
 
 ## Synopsis
 
