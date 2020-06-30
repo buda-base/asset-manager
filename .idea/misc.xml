@@ -39,6 +39,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/asset-manager-web/pom.xml" />
         <option value="$PROJECT_DIR$/audittool/pom.xml" />
       </set>
     </option>

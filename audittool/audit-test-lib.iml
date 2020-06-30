@@ -7,8 +7,6 @@
       <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/test/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/main" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/test/images" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/audit-test-lib/target" />
