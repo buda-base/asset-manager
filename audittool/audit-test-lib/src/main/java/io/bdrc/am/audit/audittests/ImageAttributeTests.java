@@ -241,6 +241,8 @@ public class ImageAttributeTests extends ImageGroupParents {
                             }
                         } finally
                         {
+                            // jimk asset-manager-73
+                            // in.close();
                             reader.dispose();
                         }
 
