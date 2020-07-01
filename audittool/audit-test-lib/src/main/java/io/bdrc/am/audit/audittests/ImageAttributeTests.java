@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static javax.imageio.metadata.IIOMetadataFormatImpl.standardMetadataFormatName;
@@ -35,6 +36,12 @@ public class ImageAttributeTests extends ImageGroupParents {
 
         @Override
         public void run() throws IOException {
+
+            // Is there anything to do?
+            if (!hasValidTargets(_imageGroupParents)) {
+                PassTest();
+                return;
+            }
 
 // Creating the filter
             DirectoryStream.Filter<Path> filter =
@@ -61,7 +68,7 @@ public class ImageAttributeTests extends ImageGroupParents {
                 if (!visitedAPath)
                 {
                     StringBuilder sb = new StringBuilder();
-                    _imageGroupParents.forEach(x -> sb.append(x + " "));
+                    _imageGroupParents.forEach(x -> sb.append(String.format("%s ",x)));
                     String badPath = String.format("Some folders under root %s : %s", getPath(), sb.toString());
                     throw new NoSuchFileException(badPath);
                 }
@@ -201,6 +208,8 @@ public class ImageAttributeTests extends ImageGroupParents {
                         // we don't care about jpgs
                         if (ra.ImageFileFormat.equals(ReaderAtts.FILE_JPG))
                         {
+                            in.close();
+                            reader.dispose();
                             continue;
                         }
                         try
@@ -242,7 +251,7 @@ public class ImageAttributeTests extends ImageGroupParents {
                         } finally
                         {
                             // jimk asset-manager-73
-                            // in.close();
+                            in.close();
                             reader.dispose();
                         }
 
@@ -373,5 +382,16 @@ im.mode (values. Caredabout: 1)
         }
         TestWrapper(new ImageAttributeTestOperation());
     }
+
+    // region private methods
+
+    /**
+     *
+     * @return if there is any non-empty image group parents
+     */
+    private boolean hasValidTargets(ArrayList<String> possibles) {
+       return possibles.stream().anyMatch(x -> x.length() > 0);
+    }
+    // endregion
 
 }
