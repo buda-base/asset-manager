@@ -9,6 +9,7 @@
         <module name="audit-test-interface" />
         <module name="audit-test-lib" />
         <module name="audit-test-shell" />
+        <module name="AssetManager" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
