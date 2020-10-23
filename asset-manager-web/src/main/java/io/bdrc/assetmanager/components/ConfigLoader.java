@@ -21,10 +21,10 @@ public class ConfigLoader implements CommandLineRunner {
     public void run(String... strings) {
 
         // Maybe you do connects here?
-        this.repository.save(new Config("/Apps/testJar.jar"));
-        this.repository.save(new Config("/Apps/testJar.jar"));
-        this.repository.save(new Config("/Apps/testJar2.jar"));
-        this.repository.save(new Config("/Apps/testJar2.jar"));
-        this.repository.save(new Config("/Apps/testJar3.jar"));
+        this.repository.save(new Config("/Apps/testJar.jar", workTestSet));
+        this.repository.save(new Config("/Apps/testJar.jar", workTestSet));
+        this.repository.save(new Config("/Apps/testJar2.jar", workTestSet));
+        this.repository.save(new Config("/Apps/testJar2.jar", workTestSet));
+        this.repository.save(new Config("/Apps/testJar3.jar", workTestSet));
     }
 }

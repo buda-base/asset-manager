@@ -2,10 +2,14 @@ package io.bdrc.assetmanager.WorkTest;
 
 
 import io.bdrc.assetmanager.InvalidObjectData;
+import io.bdrc.assetmanager.config.Config;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -25,6 +29,8 @@ public class WorkTest {
     @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private final Set<WorkTestParameter> workTestParameters = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    Config config;  //bidirectional
     //endregion
 
     //region constructors
@@ -146,7 +152,6 @@ public class WorkTest {
     // endregion
 
     // region private members
-
 
     /**
      * enforces that all the inputs in a candidate input set
