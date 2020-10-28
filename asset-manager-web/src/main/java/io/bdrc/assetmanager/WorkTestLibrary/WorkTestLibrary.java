@@ -1,8 +1,13 @@
 package io.bdrc.assetmanager.WorkTestLibrary;
 
 
+import io.bdrc.assetmanager.WorkTest.WorkTest;
+import io.bdrc.assetmanager.config.Config;
+
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class WorkTestLibrary {
@@ -14,12 +19,12 @@ public class WorkTestLibrary {
 
     protected WorkTestLibrary() {}
 
-    // Underway: TO DO: Figure out how to do container members
-//    public WorkTestLibrary(String path, final List<WorkTestParameter> workTests){
-//        this._path = path ;
-//        this.workTests = workTests;
-//    }
 
+    @OneToOne(targetEntity = Config.class, cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    private Config _config;
+
+    @OneToMany(mappedBy = "_workTestLibrary", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private Set<WorkTest> _workTests = new HashSet<>();
 
     public WorkTestLibrary(String path){
         this._path = path ;
@@ -32,6 +37,22 @@ public class WorkTestLibrary {
 
     public void setPath(String newValue) {
         _path = newValue;
+    }
+
+    public Set<WorkTest> getWorkTests() {
+        return _workTests;
+    }
+    public void setWorkTests(final Set<WorkTest> workTests) {
+        _workTests = workTests;
+    }
+
+
+    public Config getConfig() {
+        return _config;
+    }
+
+    public void setConfig(final Config config) {
+        _config = config;
     }
 
     // endregion

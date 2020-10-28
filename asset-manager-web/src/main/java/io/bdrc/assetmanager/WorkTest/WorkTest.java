@@ -2,8 +2,8 @@ package io.bdrc.assetmanager.WorkTest;
 
 
 import io.bdrc.assetmanager.InvalidObjectData;
+import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import io.bdrc.assetmanager.config.Config;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -21,8 +21,6 @@ public class WorkTest {
     @GeneratedValue
     Long id;
 
-    // TODO:  Need to map this to a jar + test name combination
-    @NaturalId
     private String testName;
 
     // Persist auto calls the repository to save
@@ -32,6 +30,9 @@ public class WorkTest {
     @ManyToOne(fetch = FetchType.LAZY)
     Config config;  //bidirectional
     //endregion
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    WorkTestLibrary _workTestLibrary;
 
     //region constructors
 
@@ -109,18 +110,20 @@ public class WorkTest {
         }
     }
 
-//    public void setWorkTestParameters(final List<WorkTestParameter> wtpList) throws InvalidObjectData
-//    {
-//        this.setWorkTestParameters(new HashSet<>(wtpList));
-//    }
-
-
     public Long getId() {
         return id;
     }
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public void setConfig(final Config config) {
+        this.config = config;
     }
 
     public String getTestName() {
@@ -131,6 +134,14 @@ public class WorkTest {
         this.testName = testName;
     }
 
+
+    public WorkTestLibrary getWorkTestLibrary() {
+        return _workTestLibrary;
+    }
+
+    public void setWorkTestLibrary(final WorkTestLibrary workTestLibrary) {
+        _workTestLibrary = workTestLibrary;
+    }
     // endregion
 
     // region overrides

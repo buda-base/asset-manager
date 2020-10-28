@@ -1,11 +1,13 @@
 package io.bdrc.assetmanager.config;
 // https://spring.io/guides/tutorials/react-and-spring-data-rest/
 
-import io.bdrc.assetmanager.InvalidObjectData;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
+import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Config entity
@@ -18,7 +20,8 @@ public class Config {
     @GeneratedValue
     Long id;
 
-    private String _workTestLibrary;
+    @OneToOne(targetEntity = WorkTestLibrary.class, mappedBy = "_config", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    private WorkTestLibrary _workTestLibrary;
 
     // Persist auto calls the repository to save
     @OneToMany(mappedBy = "config", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
@@ -27,18 +30,23 @@ public class Config {
     protected Config() {
     }
 
+    // TODO: Use copy constructor pattern to copy subclasses and lists
+    // https://vladmihalcea.com/clone-duplicate-entity-jpa-hibernate/
     /**
      * Copy Constructor
-     * @param source
-     * @return copy
+     * @param source copy operand
      */
-    public Config(Config source) throws InvalidObjectData {
+    public Config(Config source) {
         this.set_workTestLibrary(source.get_workTestLibrary());
         this.setWorkTests(source.getWorkTests());
     }
 
-    public Config(String workTestLibrary, final Set<WorkTest> workTests) {
-       this.setWorkTests(workTests);
+    public Config(WorkTestLibrary workTestLibrary, final Set<WorkTest> workTests) {
+        // bug: have to set workTests config here
+        if (null != workTests) {
+            workTests.forEach(w -> w.setConfig(this));
+            this.setWorkTests(workTests);
+        }
        set_workTestLibrary(workTestLibrary);
     }
 
@@ -47,8 +55,8 @@ public class Config {
     }
     public void setId(Long id) { this.id = id ;}
 
-    public String get_workTestLibrary() { return _workTestLibrary;}
-    public void set_workTestLibrary(String newValue) { _workTestLibrary = newValue ; }
+    public WorkTestLibrary get_workTestLibrary() { return _workTestLibrary;}
+    public void set_workTestLibrary(WorkTestLibrary newValue) { _workTestLibrary = newValue ; }
 
     public Set<WorkTest> getWorkTests()
     {
@@ -65,7 +73,8 @@ public class Config {
         if (o == null || getClass() != o.getClass()) return false;
         Config config = (Config) o;
         return Objects.equals(id, config.id) &&
-                Objects.equals(_workTestLibrary, config._workTestLibrary);
+                Objects.equals(_workTestLibrary, config._workTestLibrary) &&
+                Objects.equals(_workTests, config._workTests);
     }
 
     @Override
