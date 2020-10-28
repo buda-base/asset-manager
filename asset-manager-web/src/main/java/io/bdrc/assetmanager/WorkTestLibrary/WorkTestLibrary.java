@@ -1,6 +1,8 @@
 package io.bdrc.assetmanager.WorkTestLibrary;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
 import io.bdrc.assetmanager.config.Config;
 
@@ -21,14 +23,16 @@ public class WorkTestLibrary {
 
 
     @OneToOne(targetEntity = Config.class, cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
-    private Config _config;
-
-    @OneToMany(mappedBy = "_workTestLibrary", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private Set<WorkTest> _workTests = new HashSet<>();
+    @JsonBackReference
+    private Config config;
 
     public WorkTestLibrary(String path){
         this._path = path ;
     }
+
+    @OneToMany(mappedBy = "_workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    private Set<WorkTest> _workTests = new HashSet<>();
 
     // region property accessors
     public Long getId() { return id ;}
@@ -44,15 +48,16 @@ public class WorkTestLibrary {
     }
     public void setWorkTests(final Set<WorkTest> workTests) {
         _workTests = workTests;
+        // _workTests.forEach(wt -> wt.setWorkTestLibrary(this));
     }
 
 
     public Config getConfig() {
-        return _config;
+        return config;
     }
 
     public void setConfig(final Config config) {
-        _config = config;
+        this.config = config;
     }
 
     // endregion

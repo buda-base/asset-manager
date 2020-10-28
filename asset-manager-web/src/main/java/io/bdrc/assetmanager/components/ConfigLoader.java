@@ -37,12 +37,12 @@ public class ConfigLoader implements CommandLineRunner {
             wtl.setWorkTests(workTests);
             // set the tests you want to run, just the first and the ith
             Set<WorkTest> selectedTests = new HashSet<>();
-            WorkTest[] wta = (WorkTest [])wtl.getWorkTests().toArray();
+            WorkTest[] wta = wtl.getWorkTests().toArray(new WorkTest[workTests.size()]);
             selectedTests.add(wta[0]);
             if (i > 1) {
                 selectedTests.add(wta[wta.length-1]);
             }
-            this.repository.save(new Config(new WorkTestLibrary(jarPath),selectedTests));
+            repository.save(new Config(new WorkTestLibrary(jarPath),selectedTests));
         }
     }
 

@@ -1,6 +1,8 @@
 package io.bdrc.assetmanager.WorkTest;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -13,6 +15,7 @@ public class WorkTestParameter {
     private String paramName;
     private String paramValue;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     WorkTest workTest;  //bidirectional
 

@@ -1,6 +1,8 @@
 package io.bdrc.assetmanager.WorkTest;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.InvalidObjectData;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import io.bdrc.assetmanager.config.Config;
@@ -23,15 +25,20 @@ public class WorkTest {
 
     private String testName;
 
+    // Thanks to SO for de-recursing
+    //https://stackoverflow.com/questions/13785530/serialize-listobject-with-manytoone-onetomany-relational-to-json
     // Persist auto calls the repository to save
     @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private final Set<WorkTestParameter> workTestParameters = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
+    @JsonBackReference
     Config config;  //bidirectional
     //endregion
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonBackReference
     WorkTestLibrary _workTestLibrary;
 
     //region constructors

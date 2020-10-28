@@ -1,6 +1,7 @@
 package io.bdrc.assetmanager.config;
 // https://spring.io/guides/tutorials/react-and-spring-data-rest/
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 
@@ -20,11 +21,13 @@ public class Config {
     @GeneratedValue
     Long id;
 
-    @OneToOne(targetEntity = WorkTestLibrary.class, mappedBy = "_config", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToOne(targetEntity = WorkTestLibrary.class, mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private WorkTestLibrary _workTestLibrary;
 
     // Persist auto calls the repository to save
-    @OneToMany(mappedBy = "config", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<WorkTest> _workTests = new HashSet<>();
 
     protected Config() {
