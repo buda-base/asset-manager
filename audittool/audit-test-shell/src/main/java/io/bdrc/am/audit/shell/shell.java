@@ -239,17 +239,18 @@ public class shell {
 
             String testResultLabel ;
 
-            if (tr.getOutcome().equals(Outcome.SYS_EXC) || tr.getOutcome().equals(Outcome.FAIL))
+            Integer outcome = tr.getOutcome();
+            if (outcome.equals(Outcome.SYS_EXC) || outcome.equals(Outcome.FAIL))
             {
                 testResultLabel = "Failed";
                 sysLogger.error(resultLogFormat, testResultLabel, testDir, testDesc);
             }
-            else if (tr.getOutcome().equals(Outcome.PASS))
+            else if (outcome.equals(Outcome.PASS))
             {
                 testResultLabel =  "Passed";
                 sysLogger.info(resultLogFormat, testResultLabel, testDir, testDesc);
             }
-            else if (tr.getOutcome().equals(Outcome.NOT_RUN))
+            else if (outcome.equals(Outcome.NOT_RUN))
             {
                 testResultLabel = "Not Run";
                 sysLogger.warn(resultLogFormat, testResultLabel, testDir, testDesc);
@@ -265,10 +266,20 @@ public class shell {
             // headings. In CSV format, first arg is ignored.
             //"id,test_name,outcome,detail_path,error_number,error_test"
             testResultLogger.info("ignoredCSV", workName, testDesc, testResultLabel, null, null, testDir);
+            String errorFormat = "{}:{}:{}";
 
             for (TestMessage tm : tr.getErrors())
             {
-                detailLogger.error("{}:{}:{}", tm.getOutcome().toString(), tm.getMessage(), testDir);
+                if (outcome.equals(Outcome.NOT_RUN) ) {
+                    detailLogger.warn(errorFormat, tm.getOutcome().toString(), tm.getMessage(), testDir);
+                }
+                else if (outcome.equals(Outcome.PASS))
+                {
+                    detailLogger.info(errorFormat, tm.getOutcome().toString(), tm.getMessage(), testDir);
+                }
+                else {
+                    detailLogger.error(errorFormat, tm.getOutcome().toString(), tm.getMessage(), testDir);
+                }
 
                 // We don't repeat the first few columns for detailed errors
                 // testResultLogger also has no level.
