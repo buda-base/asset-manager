@@ -62,6 +62,10 @@ public abstract class AuditTestBase implements IAuditTest {
         _testResult.AddError(why, failedElement);
     }
 
+    void MarkTestNotRun(Integer why, String... failedElement) {
+        _testResult.setOutcome(Outcome.NOT_RUN);
+        _testResult.AddError(why, failedElement);
+    }
 
     void PassTest() {
         _testResult.setOutcome(Outcome.PASS);

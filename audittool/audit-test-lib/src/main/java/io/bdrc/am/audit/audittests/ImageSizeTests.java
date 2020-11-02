@@ -8,10 +8,13 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.bdrc.am.audit.audittests.TestArgNames.*;
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
+import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
 
 public class ImageSizeTests extends PathTestBase {
 
@@ -57,13 +60,20 @@ public class ImageSizeTests extends PathTestBase {
                 return;
             }
             // This test only examines derived image image groups
-            Path examineDir = Paths.get(getPath(), keywordArgParams.getOrDefault(DERIVED_GROUP_PARENT,""));
+
+            List<String> igParent = new ArrayList<>();
+            igParent.add(keywordArgParams.getOrDefault(DERIVED_GROUP_PARENT,""));
+            Path examineDir = Paths.get(getPath(),igParent.get(0) );
+            DirectoryStream.Filter<Path> filter =
+                    entry -> (entry.toFile().isDirectory()
+                            && !entry.toFile().isHidden()
+                            && igParent.contains(entry.getFileName().toString()));
 
             // Creating the filter for non-hidden directories
-            DirectoryStream.Filter<Path> filter =
-                    entry -> (entry.toFile().isDirectory() && !(entry.toFile().isHidden()));
+            // See ImageAttributeTests
 
-            try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir, filter)) {
+            ImageGroupParentsVisited igpv = new ImageGroupParentsVisited(igParent);
+            try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir.getParent(), filter)) {
                 for (Path imagegroup : imageGroupDirs) {
                     TestImages(imagegroup, imageLimit);
                 }
@@ -83,6 +93,7 @@ public class ImageSizeTests extends PathTestBase {
                 FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
             }
 
+            ReportUnvisited(igpv, sysLogger, false);
 
         }
 

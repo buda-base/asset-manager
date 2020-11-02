@@ -1,10 +1,14 @@
 package io.bdrc.am.audit.audittests;
 
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 
-import static io.bdrc.am.audit.audittests.TestArgNames.*;
+import static io.bdrc.am.audit.audittests.TestArgNames.ARC_GROUP_PARENT;
+import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 
 
 /**
@@ -53,7 +57,7 @@ abstract public class ImageGroupParents extends PathTestBase {
     /**
      * Load into a private field only the kwargs we need
      *
-     * @param argDict input properties
+     * @param argDict  input properties
      * @param seekList properties to load into this class
      * @return the values of the properties in argDict which were filtered
      */
@@ -68,4 +72,5 @@ abstract public class ImageGroupParents extends PathTestBase {
         });
         return foundValues;
     }
+
 }

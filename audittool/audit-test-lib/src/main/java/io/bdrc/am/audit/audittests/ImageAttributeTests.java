@@ -43,52 +43,40 @@ public class ImageAttributeTests extends ImageGroupParents {
                 return;
             }
 
-// Creating the filter
+            // Mark image group parents as visited
+            ImageGroupParentsVisited igpv = new ImageGroupParentsVisited(_imageGroupParents);
+
+            // We only want directories in the _imageGroupParents entries
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isDirectory()
-                                      && !entry.toFile().isHidden()
-                                      && _imageGroupParents.contains(entry.getFileName().toString()));
+                            && !entry.toFile().isHidden()
+                            && _imageGroupParents.contains(entry.getFileName().toString()));
 
-            try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter))
-            {
-                boolean visitedAPath = false;
-                for (Path anImageGroupParent : imageGroupParents)
-                {
-                    visitedAPath = true;
+            try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter)) {
+                for (Path anImageGroupParent : imageGroupParents) {
+
+                    // Mark the ig parent visited
+                    igpv.MarkVisited(anImageGroupParent.getFileName().toString());
+
                     DirectoryStream.Filter<Path> imageGroupFilter =
                             entry -> (entry.toFile().isDirectory()
-                                              && !entry.toFile().isHidden());
+                                    && !entry.toFile().isHidden());
 
-                    for (Path anImageGroup : Files.newDirectoryStream(anImageGroupParent, imageGroupFilter))
-                    {
+                    for (Path anImageGroup : Files.newDirectoryStream(anImageGroupParent, imageGroupFilter)) {
                         TestImages(anImageGroup);
                     }
                 }
-
-                if (!visitedAPath)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    _imageGroupParents.forEach(x -> sb.append(String.format("%s ",x)));
-                    String badPath = String.format("Some folders under root %s : %s", getPath(), sb.toString());
-                    throw new NoSuchFileException(badPath);
-                }
-
                 // Because we have a "non-set" state
-                if (!IsTestFailed())
-                {
+                if (!IsTestFailed()) {
                     PassTest();
                 }
-            } catch (NoSuchFileException nsfe)
-            {
-
-                sysLogger.error("No such file {}", nsfe.getFile());
-                FailTest(LibOutcome.ROOT_NOT_FOUND, nsfe.getFile());
-            } catch (DirectoryIteratorException die)
-            {
+            } catch (DirectoryIteratorException die) {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
 
             }
+
+            ReportUnvisited(igpv, sysLogger, false);
 
         }
 
@@ -183,9 +171,6 @@ public class ImageAttributeTests extends ImageGroupParents {
                 {
                     File fileObject = imageFile.toAbsolutePath().toFile();
                     String fileObjectPathString = imageFile.toAbsolutePath().toString();
-
-                    // TODO: implement separately
-                    // long imageLength = fileObject.length();
 
                     String fileExt = FilenameUtils.getExtension(fileObjectPathString);
 
