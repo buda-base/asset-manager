@@ -1,6 +1,8 @@
 # Audit Tool Operation
 ## Installation and Configuration
 Please refer to [Installation](Install.md) for details of installation.
+
+Please see the section 
 ## Operation
 On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
@@ -56,6 +58,8 @@ in the installation's `log4j2.propertes` file. This shows the properties:
 ```properties
 property.passPrefix=PASS-
 property.failPrefix=FAIL-
+property.warnPrefix=WARN-
+
 ```
 
 Any unicode text is allowed, but please bear in mind that support staff might not have the fonts
@@ -272,3 +276,10 @@ This code fragment of `audit-test-shell` shows this operation
 
 The `TestResult.Passed()` method contains the overall outcome of the test.
 Test messages are retrieved by the `TestResults.getErrors()` method. It's a good idea to have the first error in the list name the container which failed the test, followed by all the specific failure instances for each file. The caller determines the logging disposition.
+
+# Updates
+Date|Notes
+---|---
+4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run. 
+ &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings. 
+ &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded)  

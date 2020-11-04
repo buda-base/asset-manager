@@ -8,8 +8,13 @@ import java.util.ArrayList;
  * Persistent data about a test result
  */
 public class TestResult {
-    public TestResult(){
-        _errors = new ArrayList<>();
+
+    public TestResult() {
+    }
+
+    public TestResult(Integer outcome, String ... operand) {
+        _outcome = outcome;
+        AddError(outcome, operand);
     }
 
     public void AddError(Integer outcome, String ... operand)
@@ -31,11 +36,20 @@ public class TestResult {
         return getOutcome().equals(Outcome.PASS);
     }
 
+    public Boolean Failed() {
+        Integer outcome = getOutcome();
+        return outcome.equals(Outcome.FAIL) || outcome.equals(Outcome.SYS_EXC);
+    }
+
+    public Boolean Skipped() {
+        return getOutcome().equals(Outcome.NOT_RUN);
+    }
+
     private Integer _outcome;
 
     public ArrayList<TestMessage> getErrors() {
         return _errors;
     }
 
-    final private ArrayList<TestMessage> _errors;
+    final private ArrayList<TestMessage> _errors = new ArrayList<>();
 }

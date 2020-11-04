@@ -182,6 +182,11 @@ class AuditTestLogController {
         RenameFile("failPrefix");
     }
 
+    void RenameLogWarn() throws IOException
+    {
+        RenameFile("warnPrefix");
+    }
+
     // endregion
 
     // region Private Methods
@@ -189,7 +194,7 @@ class AuditTestLogController {
     /**
      * Rename the file using a the value of a log4j2.property
      * as the prefix
-     * @param propertyKey
+     * @param propertyKey name of log4j2 property
      */
     private void RenameFile(String propertyKey) throws IOException
     {
