@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.file.Paths.get;
 
@@ -34,6 +36,7 @@ import static java.nio.file.Paths.get;
  * <p>
  * The tests in the Hashset's values must implement the io.bdrc.am.audit.iaudit.IAudit interface.
  */
+@SuppressWarnings("PlaceholderCountMatchesArgumentCount")
 public class shell {
 
 
@@ -61,14 +64,12 @@ public class shell {
 
     public static void main(String[] args) {
 
-        Boolean anyFailed = false;
-        Boolean onePassed ;
-
+        List<Integer> allResults = new ArrayList<>();
         try
         {
             sysLogger.trace("Entering main");
 
-            Path resourceFile = resolveResourceFile("shell.properties");
+            Path resourceFile = resolveResourceFile();
             FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
 
             Hashtable<String, AuditTestConfig> td;
@@ -85,15 +86,14 @@ public class shell {
 
             assert td != null;
 
-            testLogController = BuildTestLog(argParser, TEST_LOGGER_HEADER);
+            testLogController = BuildTestLog(argParser);
 
             if (argParser.has_Dirlist())
             {
                 for (String aTestDir : ResolvePaths(argParser.getDirs()))
                 {
                     sysLogger.debug("arg =  {} ", aTestDir);
-                    onePassed = RunTestsOnDir(shellProperties, td, aTestDir);
-                    anyFailed |= !onePassed;
+                    allResults.addAll(RunTestsOnDir(shellProperties, td, aTestDir));
                 }
             }
 
@@ -106,8 +106,7 @@ public class shell {
                     while (null != (curLine = f.readLine()))
                     {
                         sysLogger.debug("readLoop got line {} ", curLine);
-                        onePassed = RunTestsOnDir(shellProperties, td, curLine);
-                        anyFailed |= !onePassed;
+                        allResults.addAll(RunTestsOnDir(shellProperties, td, curLine));
                     }
                 }
             }
@@ -119,17 +118,18 @@ public class shell {
             System.exit(SYS_ERR);
         }
 
-
-        sysLogger.trace("Exiting all pass? {}", String.valueOf(!anyFailed));
-        System.exit(anyFailed ? SYS_ERR : SYS_OK);
+        Stream<Integer> rs = allResults.stream();
+        boolean anyFailed = rs.anyMatch(x -> x.equals(Outcome.FAIL));
+        sysLogger.trace("Exiting any failed {}", anyFailed);
+        System.exit(anyFailed ? SYS_ERR : SYS_OK  );
     }
 
-    private static AuditTestLogController BuildTestLog(final ArgParser ap, String csvHeader)
+    private static AuditTestLogController BuildTestLog(final ArgParser ap)
     {
         AuditTestLogController tlc;
         String logDir = ap.getLogDirectory();
         tlc = new AuditTestLogController();
-        tlc.setCsvHeader(csvHeader);
+        tlc.setCsvHeader(shell.TEST_LOGGER_HEADER);
         tlc.setTestResultLogger(shell.testResultLogger.getName());
 
         tlc.setAppenderDirectory(logDir);
@@ -145,7 +145,7 @@ public class shell {
      * @param aTestDir        test subject
      * @return If all the tests passed or not
      */
-    private static Boolean RunTestsOnDir(final FilePropertyManager shellProperties,
+    private static List<Integer> RunTestsOnDir(final FilePropertyManager shellProperties,
                                          final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
             throws IOException
     {
@@ -153,7 +153,7 @@ public class shell {
         // testLogController ctor sets test log folder
         testLogController.ChangeAppender(BuildTestLogFileName(aTestDir));
 
-        Boolean anyFailed = false;
+        List<TestResult> results = new ArrayList<>();
         for (String testName : testSet.keySet())
         {
 
@@ -165,9 +165,9 @@ public class shell {
 
                 // sysLogger goes to a csv and a log file, so add the extra parameters.
                 // log4j wont care.
-                sysLogger.error("No test config found for {}. Contact library provider.",
-                        testName, "No test config found", "Failed");
-                anyFailed = true;
+                String errstr = String.format("No test config found for %s. Contact library provider.", testName);
+                sysLogger.error(errstr, errstr, "Failed");
+                results.add(new TestResult(Outcome.FAIL,errstr));
                 continue;
             }
 
@@ -175,13 +175,13 @@ public class shell {
             Class<?> testClass = testConfig.getTestClass();
             if (!IAuditTest.class.isAssignableFrom(testClass))
             {
-                sysLogger.error("Test found for {} does not implement IAudit", testName, "doesnt implement IAudit",
-                        "Failed");
-                anyFailed = false;
+                String errstr = String.format("Test found for %s does not  implement IAudit", testName);
+                sysLogger.error(errstr,errstr, "Failed");
+                results.add(new TestResult(Outcome.FAIL,errstr));
                 continue;
             }
 
-            // ? getName() always runs logger to console
+            // sysLogger always runs logger to console, this logs it to file
             Logger testLogger = LoggerFactory.getLogger(testClass);
 
             // descriptive
@@ -190,29 +190,28 @@ public class shell {
             // extract the property values the test needs
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
-            @SuppressWarnings("unchecked")
-            Boolean onePassed = TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
-                    aTestDir);
-            anyFailed |= !onePassed;
+
+            results.add(TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
+                    aTestDir));
         }
-        if (anyFailed)
-        {
-            testLogController.RenameLogFail();
-        }
-        else
-        {
-            testLogController.RenameLogPass();
-        }
-        return !anyFailed;
+
+        if (results.stream().allMatch(TestResult::Passed)) testLogController.RenameLogPass();
+        else if (results.stream().anyMatch(TestResult::Failed)) testLogController.RenameLogFail();
+        else if (results.stream().anyMatch(TestResult::Skipped)) testLogController.RenameLogWarn();
+
+        // return the outcomes. Don't distinct, someone may want to do stats
+        return results.stream().map(TestResult::getOutcome)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh.mm
+     * Create the file out of a parameter and the date, formatted yyyy-mm-dd-hh-mm
+     * Date time pattern should match the formats in log4j2.properties
      *
      * @param aTestDir full name of folder
      */
     private static String BuildTestLogFileName(final String aTestDir) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("-yyyy-MM-dd.kk.mm")
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("-yyyy-MM-dd-kk-mm")
                                         .withLocale(Locale.getDefault())
                                         .withZone(ZoneId.systemDefault());
 
@@ -220,13 +219,12 @@ public class shell {
         return get(aTestDir).getFileName().toString() + fileDate + ".csv";
     }
 
-    private static Boolean TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
+    private static TestResult TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
                                            final String testDesc, final Hashtable<String, String> propertyArgs,
                                            final String testDir)
     {
         sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
 
-        @SuppressWarnings("unchecked")
         TestResult tr = null;
         try
         {
@@ -292,9 +290,7 @@ public class shell {
             e.printStackTrace();
         }
 
-        assert tr != null;
-        return tr.Passed();
-
+        return tr;
     }
 
     /**
@@ -329,7 +325,7 @@ public class shell {
     private static List<String> ResolvePaths(List<String> resolveDirs) {
         List<String> outList = new ArrayList<>();
 
-        resolveDirs.stream().forEach(z -> outList.add(Paths.get(z).toAbsolutePath().toString()));
+        resolveDirs.forEach(z -> outList.add(Paths.get(z).toAbsolutePath().toString()));
         return outList;
     }
 
@@ -350,7 +346,7 @@ public class shell {
             Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class);
             IAuditTest inst = ctor.newInstance(testLogger);
 
-            inst.setParams((Object[]) params);
+            inst.setParams( params);
             inst.LaunchTest();
 
             tr = inst.getTestResult();
@@ -371,7 +367,7 @@ public class shell {
      * if -DatHome not given, looks up environment variable ATHOME
      * if that's empty, uses "user.dir"
      */
-    private static Path resolveResourceFile(String resourceFileName) {
+    private static Path resolveResourceFile() {
         String resHome = System.getProperty("atHome");
 
         if ((resHome == null) || resHome.isEmpty())
@@ -386,7 +382,7 @@ public class shell {
             sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return get(resHome, resourceFileName);
+        return get(resHome, "shell.properties");
     }
 
 //    /**
