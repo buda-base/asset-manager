@@ -50,8 +50,8 @@ public class TestImageSizeTest extends AuditTestTestBase {
 
            ImageSizeTests imageSizeTests = runTest("/IDontExist", _testParams);
            TestResult tr =  imageSizeTests.getTestResult();
-           assertFalse("Test failed when should pass",tr.Passed());
-           assertEquals("Should have failed on FileNotFound",2L,(long)tr.getOutcome());
+           assertFalse("ImageSizeTest failed when should pass",tr.Passed());
+           assertEquals("ImageSizeTest Should have warned on FileNotFound",0L,(long)tr.getOutcome());
        }
 
     @Test
