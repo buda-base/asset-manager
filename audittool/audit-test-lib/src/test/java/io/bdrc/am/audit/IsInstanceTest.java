@@ -73,6 +73,10 @@ public class IsInstanceTest extends AuditTestTestBase {
 
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
+        // pre-load for special cases
+        Hashtable<String,Integer> exceptionalOutcomes = new Hashtable<>();
+        exceptionalOutcomes.put("ImageSizeTest", Outcome.NOT_RUN);
+
         for (AuditTestConfig c : libTests.values()) {
             IAuditTest thisTest =
                     (IAuditTest) (c.getTestClass().getDeclaredConstructor(Logger.class).newInstance(logger));
@@ -80,8 +84,11 @@ public class IsInstanceTest extends AuditTestTestBase {
             thisTest.LaunchTest();
             TestResult tr = thisTest.getTestResult();
             Assert.assertNotNull(tr);
+            String testName = thisTest.getTestName();
+            Integer expectOutcome = exceptionalOutcomes.getOrDefault(testName,Outcome.FAIL);
+
             Assert.assertSame(String.format("Test %s not expected", thisTest.getTestName()),
-                    Outcome.FAIL, tr.getOutcome());
+                    expectOutcome, tr.getOutcome());
             Assert.assertEquals(String.format("Test %s not expected", thisTest.getTestName()),LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
         }
     }

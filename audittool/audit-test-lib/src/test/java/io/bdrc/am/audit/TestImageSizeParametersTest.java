@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -125,8 +126,12 @@ public class TestImageSizeParametersTest {
          */
         // endregion
 
+        String cd = System.getProperty("user.dir");
+        String fullPath= Paths.get("src/test/images/WPass").toAbsolutePath().toString();
+
         // must be a directory which would pass a test
-        fileSizeTest.setParams("src/test/images/WPass", properties);
+        // fileSizeTest.setParams("src/test/images/WPass", properties);
+        fileSizeTest.setParams(fullPath, properties);
 
         fileSizeTest.LaunchTest();
         TestResult tr = fileSizeTest.getTestResult();
