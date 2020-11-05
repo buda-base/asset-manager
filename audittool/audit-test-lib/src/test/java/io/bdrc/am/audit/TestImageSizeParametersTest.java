@@ -15,8 +15,8 @@ import org.junit.runners.Parameterized;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 
 import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
@@ -27,8 +27,6 @@ import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
 @RunWith(Parameterized.class)
 public class TestImageSizeParametersTest {
 
-    //region members to save parameter values
-    private final String testSizeExpression;
     private final Boolean expectedToPass;
     private final Hashtable<String, String> properties;
 //endregion
@@ -36,7 +34,7 @@ public class TestImageSizeParametersTest {
 
 
     public TestImageSizeParametersTest(String pTestSizeExpression, Boolean pShouldTestPass) {
-        testSizeExpression = pTestSizeExpression;
+        //region members to save parameter values
         expectedToPass = pShouldTestPass;
 
 
@@ -49,8 +47,10 @@ public class TestImageSizeParametersTest {
         };
     }
 
+//    public static Collection TestParameters()
+
     @Parameterized.Parameters
-    public static Collection TestParameters()
+    public static List<?> TestParameters()
     {
 
         // note that  the expected result is only the result of the parsing. See the test
@@ -126,7 +126,6 @@ public class TestImageSizeParametersTest {
          */
         // endregion
 
-        String cd = System.getProperty("user.dir");
         String fullPath= Paths.get("src/test/images/WPass").toAbsolutePath().toString();
 
         // must be a directory which would pass a test

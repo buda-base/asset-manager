@@ -18,8 +18,6 @@ import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
 
 public class ImageSizeTests extends PathTestBase {
 
-
-
     /**
      * Constructor with builtin logger
      * Useful if you want your slf4j profile to drive logging.
@@ -40,20 +38,11 @@ public class ImageSizeTests extends PathTestBase {
         sysLogger = logger;
     }
 
-    // see parseFileSize()
-    // This one fails 123456789. and 324, because it wants the last character to fill the
-    // second group
-    //private final  String  NUMERIC_PATTERN  = "([\\d.,]+)\\s*(\\w)";
-    // So make the second group optional
-    // But this fails a55, because it doesnt require the string begin with numbers
-//    private final  String  NUMERIC_PATTERN  = "([\\d.,]+)\\s*(\\w?)";
-    private final  String  NUMERIC_PATTERN  = "^([\\d.,]+)\\s*(\\w?)$";
-
     public class ImageSizeTestOperation implements AuditTestBase.ITestOperation {
         @Override
         public void run() throws IOException {
 
-            Long imageLimit = parseFilesize(keywordArgParams.getOrDefault(MAX_IMAGE_FILE_SIZE,"400K"));
+            Long imageLimit = parseFileSize(keywordArgParams.getOrDefault(MAX_IMAGE_FILE_SIZE,"400K"));
 
             if (IsTestFailed())
             {
@@ -66,14 +55,14 @@ public class ImageSizeTests extends PathTestBase {
             Path examineDir = Paths.get(getPath(),igParent.get(0) );
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isDirectory()
-                            && !entry.toFile().isHidden()
-                            && igParent.contains(entry.getFileName().toString()));
+                            && !entry.toFile().isHidden());
 
             // Creating the filter for non-hidden directories
             // See ImageAttributeTests
 
             ImageGroupParentsVisited igpv = new ImageGroupParentsVisited(igParent);
-            try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir.getParent(), filter)) {
+            try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir, filter)) {
+                igpv.MarkVisited(examineDir.getFileName().toString());
                 for (Path imagegroup : imageGroupDirs) {
                     TestImages(imagegroup, imageLimit);
                 }
@@ -105,10 +94,10 @@ public class ImageSizeTests extends PathTestBase {
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroup, filter)) {
                 for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
-                    Long imageLength = fileObject.length();
+                    long imageLength = fileObject.length();
                     if (imageLength > imageLimit) {
                         FailTest(LibOutcome.FILE_SIZE,fileObject.toString(),
-                                imageLength.toString(), imageLimit.toString());
+                                Long.toString(imageLength), imageLimit.toString());
                     }
 
                 }
@@ -131,13 +120,21 @@ public class ImageSizeTests extends PathTestBase {
          * @param in input string, in format numeric, or numeric[KMG][ ]*B{0,1}
          * @return value in readable character, optionally suffixed with KGM, etc.
          */
-         long parseFilesize(String in) {
+         long parseFileSize(String in) {
             in = in.trim().replaceAll(",", "").toUpperCase();
             // One or more digits, followed by an optional decimal point, then more digits
              // optionally followed by some whitespace, and then optionally by one of the
              // characters K,M,G for scale
 
-            final Matcher m = Pattern.compile(NUMERIC_PATTERN).matcher(in);
+             // see parseFileSize()
+             // This one fails 123456789. and 324, because it wants the last character to fill the
+             // second group
+             //private final  String  NUMERIC_PATTERN  = "([\\d.,]+)\\s*(\\w)";
+             // So make the second group optional
+             // But this fails a55, because it doesnt require the string begin with numbers
+             //    private final  String  NUMERIC_PATTERN  = "([\\d.,]+)\\s*(\\w?)";
+             final String NUMERIC_PATTERN = "^([\\d.,]+)\\s*(\\w?)$";
+             final Matcher m = Pattern.compile(NUMERIC_PATTERN).matcher(in);
 
             if (!m.find())
             {
@@ -174,7 +171,7 @@ public class ImageSizeTests extends PathTestBase {
                  // do nothing
              }
 
-             Double maxSize = -1.0 ;
+             double maxSize = -1.0 ;
              try {
                  maxSize = Double.parseDouble(m.group(1));
              }
