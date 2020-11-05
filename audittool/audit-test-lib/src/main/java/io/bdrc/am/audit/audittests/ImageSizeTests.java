@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 import static io.bdrc.am.audit.audittests.TestArgNames.MAX_IMAGE_FILE_SIZE;
 
-public class ImageSizeTests extends PathTestBase {
+
+public class ImageSizeTests extends ImageGroupParents {
 
     /**
      * Constructor with builtin logger
@@ -48,21 +49,20 @@ public class ImageSizeTests extends PathTestBase {
             {
                 return;
             }
-            // This test only examines derived image image groups
-
+            // This test only examines derived image image groups, not even every
+            // type of image group parent
             List<String> igParent = new ArrayList<>();
             igParent.add(keywordArgParams.getOrDefault(DERIVED_GROUP_PARENT,""));
             Path examineDir = Paths.get(getPath(),igParent.get(0) );
+
+            // Creating the filter for non-hidden directories
+            // See ImageAttributeTests
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isDirectory()
                             && !entry.toFile().isHidden());
 
-            // Creating the filter for non-hidden directories
-            // See ImageAttributeTests
-
-            ImageGroupParentsVisited igpv = new ImageGroupParentsVisited(igParent);
             try (DirectoryStream<Path> imageGroupDirs = Files.newDirectoryStream(examineDir, filter)) {
-                igpv.MarkVisited(examineDir.getFileName().toString());
+                MarkVisited(examineDir.getFileName().toString());
                 for (Path imagegroup : imageGroupDirs) {
                     TestImages(imagegroup, imageLimit);
                 }
@@ -82,7 +82,7 @@ public class ImageSizeTests extends PathTestBase {
                 FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
             }
 
-            ReportUnvisited(igpv, sysLogger, false);
+            ReportUnvisited( sysLogger, false);
 
         }
 
