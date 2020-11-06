@@ -1,9 +1,6 @@
 package io.bdrc.am.audit.audittests;
 
-import org.slf4j.Logger;
-
 import java.io.File;
-import java.util.List;
 
 /**
  *
@@ -54,7 +51,7 @@ abstract public class PathTestBase extends AuditTestBase {
      */
     public void setParams(Object... params) throws IllegalArgumentException {
         super.setParams(params);
-        if ((params == null) || (params.length < 1))
+        if ((params.length < 1))
         {
             throw new IllegalArgumentException("Directory to test required, but not given.");
         }
@@ -75,22 +72,5 @@ abstract public class PathTestBase extends AuditTestBase {
     // endregion
 
 
-    public void ReportUnvisited(ImageGroupParentsVisited igpv, Logger logger, boolean isError) {
-
-        // Were some image group parents skipped?
-        List<String> missingParents = igpv.getByVisitState(false);
-        if (missingParents.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            missingParents.forEach(x -> sb.append(String.format("%s ", x)));
-            String badParents = String.format("Image group parent(s) '%s' not found.", sb.toString());
-            if (isError) {
-                logger.error(badParents);
-                FailTest(LibOutcome.ROOT_NOT_FOUND, badParents);
-            } else {
-                logger.warn(badParents);
-                MarkTestNotRun(LibOutcome.ROOT_NOT_FOUND, badParents);
-            }
-        }
-    }
 
 }

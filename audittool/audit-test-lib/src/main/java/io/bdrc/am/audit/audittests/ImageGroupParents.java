@@ -24,7 +24,9 @@ abstract public class ImageGroupParents extends PathTestBase {
 
     // Special case folders, define parents of image groups. Only image group folders have to
     // match some tests
-    ArrayList<String> _imageGroupParents = new ArrayList<>();
+    protected ArrayList<String> _imageGroupParents = new ArrayList<>();
+
+    private ImageGroupParentsVisited _visitedImageGroupParents ;
 
     // Extract only the values for these properties. For example, see audit-test-shell.scripts/shell.properties
     private final ArrayList<String> _propertyKeys = new ArrayList<String>() {{
@@ -51,6 +53,7 @@ abstract public class ImageGroupParents extends PathTestBase {
 
         super.setParams(params);
         _imageGroupParents = (ArrayList<String>) filterProperties(keywordArgParams, _propertyKeys);
+        _visitedImageGroupParents = new ImageGroupParentsVisited(_imageGroupParents);
 
     }
 
@@ -71,6 +74,33 @@ abstract public class ImageGroupParents extends PathTestBase {
             if (seekList.contains(k)) foundValues.add(v);
         });
         return foundValues;
+    }
+
+    /**
+     * Mark an image group parent as visited
+     * @param anImageGroupParent name to tag as visited
+     */
+    protected void  MarkVisited(String anImageGroupParent){
+        _visitedImageGroupParents.MarkVisited(anImageGroupParent);
+
+    }
+
+    public void ReportUnvisited(Logger logger, boolean isError) {
+
+        // Were some image group parents skipped?
+        List<String> missingParents = _visitedImageGroupParents.getByVisitState(false);
+        if (missingParents.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            missingParents.forEach(x -> sb.append(String.format("%s ", x)));
+            String badParents = String.format("Image group parent(s) '%s' not found.", sb.toString());
+            if (isError) {
+                logger.error(badParents);
+                FailTest(LibOutcome.ROOT_NOT_FOUND, badParents);
+            } else {
+                logger.warn(badParents);
+                MarkTestNotRun(LibOutcome.ROOT_NOT_FOUND, badParents);
+            }
+        }
     }
 
 }

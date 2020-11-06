@@ -105,14 +105,46 @@ public class TestFileSequence extends AuditTestTestBase{
         assertEquals(LibOutcome.ROOT_NOT_FOUND, errors.get(0).getOutcome())  ;
     }
 
+    /**
+     * Tests folder without json
+     */
     @Test
     public void TestFilterOutFiles() {
+
         Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
             put(ARC_GROUP_PARENT, "testImages");
+        }};
+        FileSequence st = runTest("src/test/images/WFilterOutJson",_activeSequenceTestParams);
+        assertTrue(st.IsTestPassed());
+    }
+
+
+    /**
+     * Tests ignoring an unused key
+     */
+    @Test
+    public void TestIgnoreUnusedKey() {
+
+        // Test ignoring an unused key
+        Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
             put("IgnoreFileExpressions","*.json,hoopsty");
         }};
         FileSequence st = runTest("src/test/images/WFilterOutJson",_activeSequenceTestParams);
         assertTrue(st.IsTestPassed());
+    }
+
+    /**
+     * Test
+     */
+    @Test
+    public void TestMissingParents() {
+        Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {
+            {
+                put(ARC_GROUP_PARENT, "NonexistentFolder");
+            }};
+        FileSequence st = runTest("src/test/images/WFilterOutJson",_activeSequenceTestParams);
+        assertTrue(st.IsTestPassed());
+
     }
 
 

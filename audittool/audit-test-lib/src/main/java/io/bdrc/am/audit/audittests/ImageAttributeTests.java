@@ -43,9 +43,6 @@ public class ImageAttributeTests extends ImageGroupParents {
                 return;
             }
 
-            // Mark image group parents as visited
-            ImageGroupParentsVisited igpv = new ImageGroupParentsVisited(_imageGroupParents);
-
             // We only want directories in the _imageGroupParents entries
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isDirectory()
@@ -55,8 +52,7 @@ public class ImageAttributeTests extends ImageGroupParents {
             try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter)) {
                 for (Path anImageGroupParent : imageGroupParents) {
 
-                    // Mark the ig parent visited
-                    igpv.MarkVisited(anImageGroupParent.getFileName().toString());
+                   MarkVisited(anImageGroupParent.getFileName().toString());
 
                     DirectoryStream.Filter<Path> imageGroupFilter =
                             entry -> (entry.toFile().isDirectory()
@@ -76,7 +72,7 @@ public class ImageAttributeTests extends ImageGroupParents {
 
             }
 
-            ReportUnvisited(igpv, sysLogger, false);
+            ReportUnvisited( sysLogger, false);
 
         }
 

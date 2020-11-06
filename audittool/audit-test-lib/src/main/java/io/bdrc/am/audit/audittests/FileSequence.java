@@ -49,27 +49,24 @@ public class FileSequence extends ImageGroupParents {
         public void run() throws java.io.IOException {
             Path dir = Paths.get(getPath());
             int sequenceLength = getSequenceSubstringLength();
-
-
 // Creating the filter
 
-            // asset-manager #29 don't count json files in image groups
-            DirectoryStream.Filter<Path> filter =
-                    entry -> !(entry.toFile().isHidden() || entry.toString().endsWith("json")) ;
+            // Create directory filter
+            DirectoryStream.Filter<Path> dirFilter =
+                    entry ->        !entry.toFile().isHidden()
+                              &&    entry.toFile().isDirectory()
+                              &&    _imageGroupParents.contains(entry.getFileName().toString()) ;
 
-            try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, filter)) {
+            try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, dirFilter)) {
 
                 // iterate over directories in path
                 for (Path entry : pathDirectoryStream) {
                     sysLogger.debug(String.format("entry %s", entry.toString()));
+                    MarkVisited(entry.getFileName().toString());
 
                     // reiterate no files in image group parent test
                     if (!failFile(dir, entry)) {
-
-                        // We only want to inspect specific directories
-                        if (_imageGroupParents.contains(entry.getFileName().toString())) {
-                            sequenceImageGroupParent(sequenceLength, filter, entry);
-                        }
+                            sequenceImageGroupParent(sequenceLength, entry);
                     }
                 }
 
@@ -114,21 +111,23 @@ public class FileSequence extends ImageGroupParents {
          * Special handling for a parent of a series of image groups
          *
          * @param sequenceLength   How many characters before the file extension make up the number
-         * @param filter           disregard hidden files
          * @param imageGroupParent the directory we're testing
          * @throws IOException on system failures
          */
-        private void sequenceImageGroupParent(final int sequenceLength, final DirectoryStream.Filter<Path> filter, final Path imageGroupParent) throws IOException
+        private void sequenceImageGroupParent(final int sequenceLength,  final Path imageGroupParent) throws IOException
         {
+            // asset-manager #29 don't count json files in image groups
+            DirectoryStream.Filter<Path> dirFilter =
+                    entry -> !entry.toFile().isHidden() && entry.toFile().isDirectory();
 
             // asset-manager #23 don't count directories in image groups
             // asset-manager #29 don't count json files in image groups
             DirectoryStream.Filter<Path> filesInImageGroupFilter =
-                    entry -> !(entry.toFile().isHidden()
-                            || entry.toFile().isDirectory()
-                            || entry.toString().endsWith("json"));
+                    entry ->    !entry.toFile().isHidden()
+                            &&  !entry.toFile().isDirectory()
+                            &&  !entry.toString().endsWith("json");
 
-            for (Path anImageGroup : Files.newDirectoryStream(imageGroupParent, filter)) {
+            for (Path anImageGroup : Files.newDirectoryStream(imageGroupParent, dirFilter)) {
                 boolean firstFolderFailure = false;
                 if (failFile(imageGroupParent, anImageGroup)) {
                     continue;
@@ -141,7 +140,7 @@ public class FileSequence extends ImageGroupParents {
 
                     String thisFileName = FilenameUtils.getBaseName(imageGroupFile.getFileName().toString());
 
-                    // BUG: Dont parse by sequence length. Requirements call for parsing backeward from last .
+                    // BUG: Dont parse by sequence length. Requirements call for parsing backward from last .
                     // to first non int, up to field length.
                     String fileSequence = trailingDigits(thisFileName,sequenceLength);
 
