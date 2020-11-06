@@ -24,12 +24,23 @@ where:
 ```
 
 The `-d` switch has no functionality as of release 0.9
+### Exit status
+Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis. 
+With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
+The overall result of a batch of tests has new semantics as well. Formerly, a test run passed only if all tests passed. A WARNING result would have been determined to be the same as an ERROR. In this release, the overall run result is calculated:
+- PASS only if every test passed
+- WARN if some tests passed and some tests had WARN status
+- FAIL if any test failed.
+This result is captured in the output file name of the run result: `{PASS|WARN|FAIL}-WorkRID={date}.csv`
 
-## Using input files
+However, the return code of the audittool program is still
+- 0 if no tests failed (some may have passed, some may have warned)
+- 1 if any test failed
+### Using input files
 The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
 most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  
 **may not** create files with the correct encoding. Powershell's pipe operator doesn't behave like
-Linux, so piping a output of a file to
+Linux, so piping a output of a file to audit tool may not behave as expected.
 
 Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation 
 inside the `cmd` environment, or upgrade to PowerShell 6.
@@ -65,7 +76,7 @@ property.warnPrefix=WARN-
 Any unicode text is allowed, but please bear in mind that support staff might not have the fonts
 installed on their machines.
 
-##### Work log contents
+#### Work log contents
 The work log file contains the results for each test in sequence. Tests which are ordinarily found in the detail
 logs are added after the overall test result.
 
@@ -84,7 +95,7 @@ The work run log contains a blend of the summary and the detail loggers below, i
 | | |106|Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test.|/Users/dev/tmp/pub/00/W1KG13765
 | | |105|Sequence File dimensions does not end in an integer: ends with  not found|/Users/dev/tmp/pub/00/W1KG13765
 
-#### Run logs
+### Run logs
 Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
 folder in two ways:
 - edit in the Audit tool's `log4j2.properties` entry `property.logRoot` entry.
@@ -94,7 +105,7 @@ You can configure other logging properties in the `log4j2.properties` file. **NO
 
 Under `audit-tool-logs` are folders containing **csv** and **log**
 
-### Log Contents
+#### Log Contents
 
 ##### Log
 |Level|File name|Details|
