@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.InvalidObjectData;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
-import io.bdrc.assetmanager.config.Config;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -30,14 +29,11 @@ public class WorkTest {
     // Persist auto calls the repository to save
     @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private final Set<WorkTestParameter> workTestParameters = new HashSet<>();
+    private  Set<WorkTestParameter> workTestParameters = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
-    @JsonBackReference
-    Config config;  //bidirectional
     //endregion
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonBackReference
     WorkTestLibrary workTestLibrary;
 
@@ -58,7 +54,7 @@ public class WorkTest {
     @SuppressWarnings("CopyConstructorMissesField")
     public WorkTest(WorkTest source) throws InvalidObjectData {
         this.setTestName(source.getTestName());
-         this.setWorkTestParameters(source.getWorkTestParameters());
+         this.setworkTestParameters(source.getworkTestParameters());
     }
 
     // endregion
@@ -96,7 +92,7 @@ public class WorkTest {
     //endregion
 
     // region field accessors
-    public Set<WorkTestParameter> getWorkTestParameters() {
+    public Set<WorkTestParameter> getworkTestParameters() {
         return workTestParameters;
     }
 
@@ -106,7 +102,7 @@ public class WorkTest {
      * @param workTestParameters new set of workTestParameters
      * @throws InvalidObjectData when the input set has duplicate test names
      */
-    public void setWorkTestParameters(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData {
+    public void setworkTestParameters(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData {
         enforceUniqueConstraint(workTestParameters);
 
         for (WorkTestParameter wtp : workTestParameters)
@@ -125,14 +121,6 @@ public class WorkTest {
         this.id = id;
     }
 
-    public Config getConfig() {
-        return config;
-    }
-
-    public void setConfig(final Config config) {
-        this.config = config;
-    }
-
     public String getTestName() {
         return testName;
     }
@@ -142,11 +130,11 @@ public class WorkTest {
     }
 
 
-    public WorkTestLibrary getWorkTestLibrary() {
+    public WorkTestLibrary getworkTestLibrary() {
         return workTestLibrary;
     }
 
-    public void setWorkTestLibrary(final WorkTestLibrary workTestLibrary) {
+    public void setworkTestLibrary(final WorkTestLibrary workTestLibrary) {
         this.workTestLibrary = workTestLibrary;
     }
     // endregion

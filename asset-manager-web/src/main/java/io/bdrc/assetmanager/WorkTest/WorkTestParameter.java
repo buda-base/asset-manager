@@ -17,7 +17,7 @@ public class WorkTestParameter {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    WorkTest workTest;  //bidirectional
+    WorkTest workTest; 
 
     protected WorkTestParameter() {
     }
@@ -60,7 +60,7 @@ public class WorkTestParameter {
         return id;
     }
 
-    public WorkTest getWorkTest() {
+    public WorkTest getworkTest() {
         return workTest;
     }
 

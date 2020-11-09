@@ -47,14 +47,14 @@ class WorkTestParameterTest extends WorkTestTestBase {
 
     @Test
     void getWorkTest() {
-        long idFirstWork = workTestParameterList.get(0).getWorkTest().getId();
+        long idFirstWork = workTestParameterList.get(0).getworkTest().getId();
         WorkTest workTest = workTestRepository.findById(idFirstWork).orElse(null);
         assertThatObject(workTest).isNotNull();
 
         long idFirstWtp = workTestParameterList.get(0).getId();
         WorkTestParameter workTestParameter = workTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(workTestParameter).isNotNull();
-        assertThat(Objects.requireNonNull(workTestParameter).getWorkTest().equals(workTest));
+        assertThat(Objects.requireNonNull(workTestParameter).getworkTest().equals(workTest));
 
     }
 

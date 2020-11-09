@@ -1,7 +1,6 @@
 package io.bdrc.assetmanager.WorkTestLibrary;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
@@ -18,7 +17,6 @@ public class WorkTestLibrary {
     private @Id @GeneratedValue Long id;
 
     private String _path ;
-   // private List<WorkTestParameter> workTests ;
 
     protected WorkTestLibrary() {}
 
@@ -27,13 +25,14 @@ public class WorkTestLibrary {
     @JsonIgnore
     private Config config;
 
+
     public WorkTestLibrary(String path){
         this._path = path ;
     }
 
-    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<WorkTest> _workTests = new HashSet<>();
+    private Set<WorkTest> workTests = new HashSet<>();
 
     // region property accessors
     public Long getId() { return id ;}
@@ -45,11 +44,11 @@ public class WorkTestLibrary {
     }
 
     public Set<WorkTest> getWorkTests() {
-        return _workTests;
+        return workTests;
     }
-    public void setWorkTests(final Set<WorkTest> workTests) {
-        _workTests = workTests;
-        // _workTests.forEach(wt -> wt.setWorkTestLibrary(this));
+    public void setWorkTests( Set<WorkTest> workTestsValue) {
+        workTests = workTestsValue;
+        workTests.forEach(wt -> wt.setworkTestLibrary(this));
     }
 
 

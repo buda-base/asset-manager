@@ -36,17 +36,17 @@ class WorkTestTest extends WorkTestTestBase {
         //List<WorkTest> workTests = (List<WorkTest>)
         workTestRepository.findAll().forEach((WorkTest x) ->
                 workTestParameterRepository.findByWorkTest(x)
-                        .forEach(wtp -> assertThat(wtp.getWorkTest().equals(x))));
+                        .forEach(wtp -> assertThat(wtp.getworkTest().equals(x))));
     }
 
     @Test
     void addWorkTestParameter() {
         WorkTest wt = workTestList.get(0);
-        Set<WorkTestParameter> w_forWtp = wt.getWorkTestParameters();
+        Set<WorkTestParameter> w_forWtp = wt.getworkTestParameters();
         int preWtps = w_forWtp.size();
         new WorkTestParameter("wtpnew", "wtpnewValue", wt);
-        int postWtps = wt.getWorkTestParameters().size();
-        Set<WorkTestParameter> w_forWtpPost = wt.getWorkTestParameters();
+        int postWtps = wt.getworkTestParameters().size();
+        Set<WorkTestParameter> w_forWtpPost = wt.getworkTestParameters();
         assertThat(w_forWtpPost.size() == postWtps);
         assertThat(postWtps == 1 + preWtps);
     }
@@ -55,7 +55,7 @@ class WorkTestTest extends WorkTestTestBase {
     void getWorkTestParametersCounts() {
         int expectedParamCount = 0;
         for (final WorkTest workTest : workTestList) {
-            assertThat(workTest.getWorkTestParameters().size() == ++expectedParamCount);
+            assertThat(workTest.getworkTestParameters().size() == ++expectedParamCount);
         }
     }
 
@@ -65,11 +65,11 @@ class WorkTestTest extends WorkTestTestBase {
         Set<WorkTestParameter> newWtps = newWorkTestParametersWithoutWorks();
 
         // test that the parent object was added
-        wt.setWorkTestParameters(newWtps);
-        wt.getWorkTestParameters().forEach(x -> assertThat(x.getWorkTest().equals(wt)));
+        wt.setworkTestParameters(newWtps);
+        wt.getworkTestParameters().forEach(x -> assertThat(x.getworkTest().equals(wt)));
 
         // Test that the original was modified in place
-        Set<WorkTestParameter> addedWtps = wt.getWorkTestParameters();
+        Set<WorkTestParameter> addedWtps = wt.getworkTestParameters();
         assertThat(addedWtps.equals(newWtps));
     }
 
@@ -81,7 +81,7 @@ class WorkTestTest extends WorkTestTestBase {
         newWtps.add(new WorkTestParameter("wtp1name", "wtp1value"));
         newWtps.add(new WorkTestParameter("wtp1name", "wtp2value"));
 
-        Exception exception = assertThrows(InvalidObjectData.class, () -> wt.setWorkTestParameters(newWtps));
+        Exception exception = assertThrows(InvalidObjectData.class, () -> wt.setworkTestParameters(newWtps));
 
         // Test the expected exception was thrown
         String expectedMessage = "WorkTestParameter Collection has duplicate elements";
@@ -121,7 +121,7 @@ class WorkTestTest extends WorkTestTestBase {
 
         WorkTest wtOld = new WorkTest(oldName);
         Set<WorkTestParameter> origParams = newWorkTestParametersWithoutWorks();
-        wtOld.setWorkTestParameters(origParams);
+        wtOld.setworkTestParameters(origParams);
 
         WorkTest wtNew = new WorkTest(wtOld);
 
@@ -141,9 +141,9 @@ class WorkTestTest extends WorkTestTestBase {
 
         WorkTest wtOld = new WorkTest(oldName);
         Set<WorkTestParameter> origParams = newWorkTestParametersWithoutWorks();
-        wtOld.setWorkTestParameters(origParams);
+        wtOld.setworkTestParameters(origParams);
 
-        int nParamsPre = wtOld.getWorkTestParameters().size();
+        int nParamsPre = wtOld.getworkTestParameters().size();
 
         WorkTestParameter newWtp = null;
         for (WorkTestParameter wtp : origParams) {
@@ -160,9 +160,9 @@ class WorkTestTest extends WorkTestTestBase {
         wtOld.replaceWorkTestParameter(newWtp);
 
         // Assert
-        assertEquals(nParamsPre, wtOld.getWorkTestParameters().size());
+        assertEquals(nParamsPre, wtOld.getworkTestParameters().size());
 
-        for (WorkTestParameter wtp :  wtOld.getWorkTestParameters()) {
+        for (WorkTestParameter wtp :  wtOld.getworkTestParameters()) {
             if (wtp.getName().equals(newWtp.getName())) {
                 assertEquals(newValue,wtp.getValue());
                 break;
