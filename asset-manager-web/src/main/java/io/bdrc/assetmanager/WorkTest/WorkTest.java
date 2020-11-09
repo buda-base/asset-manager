@@ -39,7 +39,7 @@ public class WorkTest {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JsonBackReference
-    WorkTestLibrary _workTestLibrary;
+    WorkTestLibrary workTestLibrary;
 
     //region constructors
 
@@ -143,11 +143,11 @@ public class WorkTest {
 
 
     public WorkTestLibrary getWorkTestLibrary() {
-        return _workTestLibrary;
+        return workTestLibrary;
     }
 
     public void setWorkTestLibrary(final WorkTestLibrary workTestLibrary) {
-        _workTestLibrary = workTestLibrary;
+        this.workTestLibrary = workTestLibrary;
     }
     // endregion
 

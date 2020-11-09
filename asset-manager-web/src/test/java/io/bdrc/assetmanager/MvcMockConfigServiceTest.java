@@ -51,7 +51,7 @@ public class MvcMockConfigServiceTest {
                         new Config(wtl, new HashSet<>(workTests)),
                         new Config(wtl, new HashSet<>(workTests))
                 ));
-        MvcResult result =
-                this._mockMvc.perform(get("/config/")).andDo(print()).andExpect(status().isFound()).andReturn();
+                this._mockMvc.perform(get("/config/")).andDo(print()).andExpect(status().isFound())
+                        .andExpect(jsonPath("$[0].workTestLibrary.path").value(wtl.getPath()));
     }
 }

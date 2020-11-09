@@ -2,6 +2,7 @@ package io.bdrc.assetmanager.WorkTestLibrary;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
 import io.bdrc.assetmanager.config.Config;
@@ -22,15 +23,15 @@ public class WorkTestLibrary {
     protected WorkTestLibrary() {}
 
 
-    @OneToOne(targetEntity = Config.class, cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
-    @JsonBackReference
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private Config config;
 
     public WorkTestLibrary(String path){
         this._path = path ;
     }
 
-    @OneToMany(mappedBy = "_workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private Set<WorkTest> _workTests = new HashSet<>();
 

@@ -88,7 +88,7 @@ class ConfigJpaTest  {
         Config testConfig = oc.get();
 
         // See Setup for how first test library name is constructed
-        WorkTestLibrary testWtl = testConfig.get_workTestLibrary();
+        WorkTestLibrary testWtl = testConfig.getworkTestLibrary();
         assertThat(testWtl.getPath().equals(String.format("%s%d.jar",workTestLibPrefix,1)));
     }
 
@@ -104,16 +104,16 @@ class ConfigJpaTest  {
         Config testConfig = oc.get();
 
         // See Setup for how first test library name is constructed
-        Set<WorkTest>  saveWorks = testConfig.get_workTestLibrary().getWorkTests();
+        Set<WorkTest>  saveWorks = testConfig.getworkTestLibrary().getWorkTests();
         WorkTestLibrary newWtl = new WorkTestLibrary(expectedJarName);
         newWtl.setWorkTests(saveWorks);
 
         Config newConfig = new Config(new WorkTestLibrary("no-path"),new HashSet<>());
-        newConfig.set_workTestLibrary(newWtl);
+        newConfig.setworkTestLibrary(newWtl);
 
         Config savedConfig = _configRepository.save(newConfig);
 
-        assertThat(savedConfig.get_workTestLibrary().equals(newWtl));
+        assertThat(savedConfig.getworkTestLibrary().equals(newWtl));
     }
 
     @Test

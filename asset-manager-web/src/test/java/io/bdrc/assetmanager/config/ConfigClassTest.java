@@ -100,7 +100,7 @@ class ConfigClassTest  {
         String expectedJarName = "Zuponga.jar";
         WorkTestLibrary wtl = new WorkTestLibrary(expectedJarName);
         Config newConfig = new Config(wtl,new HashSet<>());
-        assertThat(wtl.equals(newConfig.get_workTestLibrary()));
+        assertThat(wtl.equals(newConfig.getworkTestLibrary()));
     }
 
     @Test
@@ -108,8 +108,8 @@ class ConfigClassTest  {
         String expectedJarName = "Zuponga.jar";
         WorkTestLibrary wtl = new WorkTestLibrary(expectedJarName);
         Config newConfig = new Config(wtl, new HashSet<>());
-        newConfig.set_workTestLibrary(wtl);
-        assertThat(wtl.equals(newConfig.get_workTestLibrary()));
+        newConfig.setworkTestLibrary(wtl);
+        assertThat(wtl.equals(newConfig.getworkTestLibrary()));
     }
 
     @Test

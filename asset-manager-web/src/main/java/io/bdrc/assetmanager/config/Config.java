@@ -4,7 +4,6 @@ package io.bdrc.assetmanager.config;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
-import org.hibernate.jdbc.Work;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -24,9 +23,9 @@ public class Config {
     @GeneratedValue
     Long id;
 
-    @JsonIgnore
-    @OneToOne(targetEntity = WorkTestLibrary.class, mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private WorkTestLibrary _workTestLibrary;
+    // @JsonIgnore
+    @OneToOne(cascade = CascadeType.PERSIST) // ( mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private WorkTestLibrary workTestLibrary;
 
     // Persist auto calls the repository to save
     @JsonIgnore
@@ -37,7 +36,7 @@ public class Config {
     }
 
     public Config(WorkTestLibrary workTestLibrary, List<WorkTest> workTests) {
-        this.set_workTestLibrary(workTestLibrary);
+        this.setworkTestLibrary(workTestLibrary);
         this.setWorkTests(workTests);
     }
 
@@ -48,7 +47,7 @@ public class Config {
      * @param source copy operand
      */
     public Config(Config source) {
-        this.set_workTestLibrary(source.get_workTestLibrary());
+        this.setworkTestLibrary(source.getworkTestLibrary());
         this.setWorkTests(source.getWorkTests());
     }
 
@@ -58,7 +57,7 @@ public class Config {
             workTests.forEach(w -> w.setConfig(this));
             this.setWorkTests(workTests);
         }
-       set_workTestLibrary(workTestLibrary);
+       setworkTestLibrary(workTestLibrary);
     }
 
     public Long getId() {
@@ -66,8 +65,8 @@ public class Config {
     }
     public void setId(Long id) { this.id = id ;}
 
-    public WorkTestLibrary get_workTestLibrary() { return _workTestLibrary;}
-    public void set_workTestLibrary(WorkTestLibrary newValue) { _workTestLibrary = newValue ; }
+    public WorkTestLibrary getworkTestLibrary() { return workTestLibrary;}
+    public void setworkTestLibrary(WorkTestLibrary newValue) { workTestLibrary = newValue ; }
 
     public Set<WorkTest> getWorkTests()
     {
@@ -80,7 +79,7 @@ public class Config {
     }
 
     public void setWorkTests(List<WorkTest> workTests) {
-        this.setWorkTests(workTests.stream().collect(Collectors.toSet()));
+        this.setWorkTests(new HashSet<>(workTests));
     }
 
     @Override
@@ -89,13 +88,13 @@ public class Config {
         if (o == null || getClass() != o.getClass()) return false;
         Config config = (Config) o;
         return Objects.equals(id, config.id) &&
-                Objects.equals(_workTestLibrary, config._workTestLibrary) &&
+                Objects.equals(workTestLibrary, config.workTestLibrary) &&
                 Objects.equals(_workTests, config._workTests);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, _workTestLibrary);
+        return Objects.hash(id, workTestLibrary);
     }
 
 
