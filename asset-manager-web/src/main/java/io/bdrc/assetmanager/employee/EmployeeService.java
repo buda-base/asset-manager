@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeService implements IEmployeeService {
 
+    // See http://zetcode.com/springboot/repository/ for using a repository with a service
     private final EmployeeRepository repository;
 
     public EmployeeService( EmployeeRepository repository) {
@@ -26,7 +27,7 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public List<Employee> findByFirstName(final String firstName) {
-        return null;
+        return getbyFirstName(firstName);
     }
 
     public List<Employee> getbyFirstName(String firstName)

@@ -26,7 +26,6 @@ public class ConfigLoader implements CommandLineRunner {
 
     @Override
     public void run(String... strings) {
-
         for (int i = 1 ; i < 4 ; i++) {
             Set<WorkTest> workTests = TestSeries(String.format("series %d",i));
 

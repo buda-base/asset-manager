@@ -99,7 +99,7 @@ class ConfigClassTest  {
         // Get a random config
         String expectedJarName = "Zuponga.jar";
         WorkTestLibrary wtl = new WorkTestLibrary(expectedJarName);
-        Config newConfig = new Config(wtl,null);
+        Config newConfig = new Config(wtl,new HashSet<>());
         assertThat(wtl.equals(newConfig.get_workTestLibrary()));
     }
 
@@ -107,7 +107,7 @@ class ConfigClassTest  {
     void set_workTestLibrary() {
         String expectedJarName = "Zuponga.jar";
         WorkTestLibrary wtl = new WorkTestLibrary(expectedJarName);
-        Config newConfig = new Config(null,null);
+        Config newConfig = new Config(wtl, new HashSet<>());
         newConfig.set_workTestLibrary(wtl);
         assertThat(wtl.equals(newConfig.get_workTestLibrary()));
     }
@@ -126,7 +126,7 @@ class ConfigClassTest  {
     void setWorkTests() {
         WorkTestLibrary wtl = new WorkTestLibrary("Zuponga");
         Set<WorkTest> workTests = TestSeries("Zuponga");
-        Config config = new Config(wtl,null);
+        Config config = new Config(wtl,new HashSet<>());
         config.setWorkTests(workTests);
         assertThat(workTests.containsAll(config.getWorkTests()));
         assertThat(config.getWorkTests().containsAll(workTests));
@@ -134,7 +134,7 @@ class ConfigClassTest  {
 
     @Test
     void testEquals() {
-        Config c1 = new Config(new WorkTestLibrary("Zootrope"),TestSeries("Zoo_tests"));
+        Config c1 = new Config(new WorkTestLibrary("Zuponga"),TestSeries("Zoo_tests"));
         Config c2 = new Config(c1);
 
         assertThat(c1.equals(c2));
@@ -144,8 +144,8 @@ class ConfigClassTest  {
 
     @Test
     void testHashCode() {
-        Config c1 = new Config(new WorkTestLibrary("Zootrope"),TestSeries("Zoo_tests"));
-        Config c2 = new Config(new WorkTestLibrary("Zootrope"),TestSeries("Zoo_tests"));
+        Config c1 = new Config(new WorkTestLibrary("Zuponga"),TestSeries("Zoo_tests"));
+        Config c2 = new Config(new WorkTestLibrary("Zuponga"),TestSeries("Zoo_tests"));
         assertThat(c2.hashCode() == c1.hashCode());
     }
 }

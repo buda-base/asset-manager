@@ -84,7 +84,7 @@ class ConfigJpaTest  {
 
         Optional<Config> oc = Optional.of(_configRepository.findById(expectedTestId)
                 .orElse(new Config(
-                        new WorkTestLibrary("cantfindconfig"), null)));
+                        new WorkTestLibrary("cant-find-config"), new HashSet<>())));
         Config testConfig = oc.get();
 
         // See Setup for how first test library name is constructed
@@ -100,15 +100,15 @@ class ConfigJpaTest  {
 
         Optional<Config> oc = Optional.of(_configRepository.findById(expectedTestId)
                 .orElse(new Config(
-                        new WorkTestLibrary("cantfindconfig"), null)));
+                        new WorkTestLibrary("cant-find-config"), new HashSet<>())));
         Config testConfig = oc.get();
 
         // See Setup for how first test library name is constructed
         Set<WorkTest>  saveWorks = testConfig.get_workTestLibrary().getWorkTests();
-        WorkTestLibrary newWtl = new WorkTestLibrary("Zuponga.jar");
+        WorkTestLibrary newWtl = new WorkTestLibrary(expectedJarName);
         newWtl.setWorkTests(saveWorks);
 
-        Config newConfig = new Config(null,null);
+        Config newConfig = new Config(new WorkTestLibrary("no-path"),new HashSet<>());
         newConfig.set_workTestLibrary(newWtl);
 
         Config savedConfig = _configRepository.save(newConfig);
@@ -132,7 +132,7 @@ class ConfigJpaTest  {
     void setWorkTests() {
         WorkTestLibrary wtl = new WorkTestLibrary("Zuponga");
         Set<WorkTest> workTests = TestSeries("Zuponga");
-        Config newConfig = new Config(wtl,null);
+        Config newConfig = new Config(wtl,new HashSet<>());
 
         Config savedConfig = _configRepository.save(newConfig);
         savedConfig.setWorkTests(workTests);

@@ -4,11 +4,14 @@ package io.bdrc.assetmanager.config;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.bdrc.assetmanager.WorkTest.WorkTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
+import org.hibernate.jdbc.Work;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Config entity
@@ -31,6 +34,11 @@ public class Config {
     private Set<WorkTest> _workTests = new HashSet<>();
 
     protected Config() {
+    }
+
+    public Config(WorkTestLibrary workTestLibrary, List<WorkTest> workTests) {
+        this.set_workTestLibrary(workTestLibrary);
+        this.setWorkTests(workTests);
     }
 
     // TODO: Use copy constructor pattern to copy subclasses and lists
@@ -68,6 +76,11 @@ public class Config {
 
     public void setWorkTests(Set<WorkTest> workTests) {
         this._workTests = workTests;
+        _workTests.forEach(wt -> wt.setConfig(this));
+    }
+
+    public void setWorkTests(List<WorkTest> workTests) {
+        this.setWorkTests(workTests.stream().collect(Collectors.toSet()));
     }
 
     @Override
