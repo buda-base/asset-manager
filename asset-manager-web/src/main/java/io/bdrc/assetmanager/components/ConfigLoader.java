@@ -41,7 +41,10 @@ public class ConfigLoader implements CommandLineRunner {
             if (i > 1) {
                 selectedTests.add(wta[wta.length-1]);
             }
-            repository.save(new Config(new WorkTestLibrary(jarPath),selectedTests));
+
+            // why dd I do this?
+            // repository.save(new Config(new WorkTestLibrary(jarPath),selectedTests));
+            repository.save(new Config(wtl,selectedTests));
         }
     }
 

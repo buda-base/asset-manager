@@ -33,8 +33,8 @@ public class WorkTest {
 
     //endregion
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonBackReference
+    @ManyToOne(targetEntity = WorkTestLibrary.class,  fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+   @JsonBackReference
     WorkTestLibrary workTestLibrary;
 
     //region constructors

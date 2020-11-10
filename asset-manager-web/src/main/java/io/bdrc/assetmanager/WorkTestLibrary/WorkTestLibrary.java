@@ -30,7 +30,7 @@ public class WorkTestLibrary {
         this._path = path ;
     }
 
-    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private Set<WorkTest> workTests = new HashSet<>();
 
