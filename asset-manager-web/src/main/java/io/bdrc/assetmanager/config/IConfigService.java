@@ -9,7 +9,7 @@ public interface IConfigService {
 
     Optional<Config> getConfigById(long id) ;
 
-    void putConfig(Config config) ;
+    Config updateConfig(Config configDetails);
 
-
+    Config addConfig(Config newConfig);
 }

@@ -32,7 +32,7 @@ public class AuditToolController {
     private ConfigRepository _configRepository ;
 
     // @RequestParam(value="id",defaultValue = "1") always sets param as 1
-    @GetMapping("/config/{id}")
+    @GetMapping("/XXXSeeConfigServiceControllerconfig/{id}")
     public Optional<Config> getConfig(@PathVariable Long id) throws JsonProcessingException {
         Optional<Config> look =  _configRepository.findById(id);
         String s ;

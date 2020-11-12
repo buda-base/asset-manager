@@ -17,7 +17,7 @@ import static java.lang.Integer.max;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class ConfigJpaTest  {
+class ConfigRepositoryTest {
 
     @Autowired
     ConfigRepository _configRepository;
