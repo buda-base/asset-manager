@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 @Entity
-public class WorkTest {
+public class RunnableTest {
 
     // region fields
     private @Id
@@ -27,22 +27,23 @@ public class WorkTest {
     // Thanks to SO for de-recursing
     //https://stackoverflow.com/questions/13785530/serialize-listobject-with-manytoone-onetomany-relational-to-json
     // Persist auto calls the repository to save
-    @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    // @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "_runnableTest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private  Set<WorkTestParameter> workTestParameters = new HashSet<>();
+    private  Set<RunnableTestParameter> _runnableTestParameters = new HashSet<>();
 
     //endregion
 
-    @ManyToOne(targetEntity = WorkTestLibrary.class,  fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(targetEntity = WorkTestLibrary.class,  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JsonBackReference
     WorkTestLibrary workTestLibrary;
 
     //region constructors
 
-    protected WorkTest() {
+    protected RunnableTest() {
     }
 
-    public WorkTest(String testName) {
+    public RunnableTest(String testName) {
         setTestName(testName);
     }
 
@@ -52,7 +53,7 @@ public class WorkTest {
      * @param source source workTest
      */
     @SuppressWarnings("CopyConstructorMissesField")
-    public WorkTest(WorkTest source) throws InvalidObjectData {
+    public RunnableTest(RunnableTest source) throws InvalidObjectData {
         this.setTestName(source.getTestName());
          this.setworkTestParameters(source.getworkTestParameters());
     }
@@ -64,12 +65,12 @@ public class WorkTest {
     /**
      * Adds or replaces a workTestParameter
      *
-     * @param workTestParameter new or updated WorkTestParameter
+     * @param workTestParameter new or updated RunnableTestParameter
      */
-    public void replaceWorkTestParameter(WorkTestParameter workTestParameter)
+    public void replaceWorkTestParameter(RunnableTestParameter workTestParameter)
     {
-        List<WorkTestParameter> wtpf =
-        workTestParameters.stream()
+        List<RunnableTestParameter> wtpf =
+        _runnableTestParameters.stream()
                 .filter(x -> x.getName().equals(workTestParameter.getName()))
                 .collect(Collectors.toList());
         wtpf.forEach(this::removeWorkTestParameter);
@@ -77,23 +78,23 @@ public class WorkTest {
         // workTestParameter.setWorkTest(this);
         // Dont add directly.
         // let the child find its parent
-        this.workTestParameters.add(workTestParameter);
+        this._runnableTestParameters.add(workTestParameter);
     }
 
     /**
-     * remove a WorkTestParameter, don't worry if it's not there
+     * remove a RunnableTestParameter, don't worry if it's not there
      *
      * @param workTestParameter to be removed
      */
-    public void removeWorkTestParameter(WorkTestParameter workTestParameter)
+    public void removeWorkTestParameter(RunnableTestParameter workTestParameter)
     {
-        workTestParameters.remove(workTestParameter);
+        _runnableTestParameters.remove(workTestParameter);
     }
     //endregion
 
     // region field accessors
-    public Set<WorkTestParameter> getworkTestParameters() {
-        return workTestParameters;
+    public Set<RunnableTestParameter> getworkTestParameters() {
+        return _runnableTestParameters;
     }
 
     /**
@@ -102,13 +103,13 @@ public class WorkTest {
      * @param workTestParameters new set of workTestParameters
      * @throws InvalidObjectData when the input set has duplicate test names
      */
-    public void setworkTestParameters(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData {
+    public void setworkTestParameters(final Set<RunnableTestParameter> workTestParameters) throws InvalidObjectData {
         enforceUniqueConstraint(workTestParameters);
 
-        for (WorkTestParameter wtp : workTestParameters)
+        for (RunnableTestParameter wtp : workTestParameters)
         {
-            WorkTestParameter newWtp = new WorkTestParameter(wtp);
-            newWtp.setWorkTest(this);
+            RunnableTestParameter newWtp = new RunnableTestParameter(wtp);
+            newWtp.setRunnableTest(this);
 
         }
     }
@@ -144,11 +145,11 @@ public class WorkTest {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WorkTest workTest = (WorkTest) o;
+        RunnableTest runnableTest = (RunnableTest) o;
 
         return
-                Objects.equals(testName, workTest.testName) &&
-                        Objects.equals(workTestParameters, workTest.workTestParameters);
+                Objects.equals(testName, runnableTest.testName) &&
+                        Objects.equals(_runnableTestParameters, runnableTest._runnableTestParameters);
     }
 
     @Override
@@ -163,13 +164,13 @@ public class WorkTest {
      * enforces that all the inputs in a candidate input set
      * must have unique names.
      * This overload tests the internal set for consistency. The
-     * overload (final WorkTestParameter workTestParameter) tests an
-     * individual WorkTestParameter against the existing set
+     * overload (final RunnableTestParameter workTestParameter) tests an
+     * individual RunnableTestParameter against the existing set
      *
      * @param workTestParameters complete set of work test parameters
      * @throws InvalidObjectData when any workTestParameters have a duplicate name
      */
-    private void enforceUniqueConstraint(final Set<WorkTestParameter> workTestParameters) throws InvalidObjectData
+    private void enforceUniqueConstraint(final Set<RunnableTestParameter> workTestParameters) throws InvalidObjectData
     {
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         HashSet<String> setNames = new HashSet<>();
@@ -178,7 +179,7 @@ public class WorkTest {
 
         // did hashtable replace a value?
         if (setNames.size() != workTestParameters.size()) {
-            throw new InvalidObjectData("WorkTestParameter Collection has duplicate elements");
+            throw new InvalidObjectData("RunnableTestParameter Collection has duplicate elements");
         }
     }
     // endregion

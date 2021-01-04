@@ -15,15 +15,15 @@ import static org.assertj.core.api.Assertions.assertThatObject;
 
 
 @DataJpaTest
-class WorkTestParameterTest extends WorkTestTestBase {
+class RunnableTestParameterTest extends WorkTestTestBase {
 
-    List<WorkTestParameter> workTestParameterList = new ArrayList<>();
+    List<RunnableTestParameter> workTestParameterList = new ArrayList<>();
 
     @BeforeEach
-    void setUp() throws InvalidObjectData {
+    void setUp() {
         BaseSetup();
 
-        workTestParameterRepository.findAll().forEach(x -> workTestParameterList.add(x));
+        _runnableTestParameterRepository.findAll().forEach(x -> workTestParameterList.add(x));
         // get all the workTestParameters
     }
 
@@ -48,13 +48,13 @@ class WorkTestParameterTest extends WorkTestTestBase {
     @Test
     void getWorkTest() {
         long idFirstWork = workTestParameterList.get(0).getworkTest().getId();
-        WorkTest workTest = workTestRepository.findById(idFirstWork).orElse(null);
-        assertThatObject(workTest).isNotNull();
+        RunnableTest runnableTest = _runnableTestRepository.findById(idFirstWork).orElse(null);
+        assertThatObject(runnableTest).isNotNull();
 
         long idFirstWtp = workTestParameterList.get(0).getId();
-        WorkTestParameter workTestParameter = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter workTestParameter = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(workTestParameter).isNotNull();
-        assertThat(Objects.requireNonNull(workTestParameter).getworkTest().equals(workTest));
+        assertThat(Objects.requireNonNull(workTestParameter).getworkTest().equals(runnableTest));
 
     }
 
@@ -63,19 +63,19 @@ class WorkTestParameterTest extends WorkTestTestBase {
         final String newName = "Test injected new name";
 
         long idFirstWtp = workTestParameterList.get(0).getId();
-        WorkTestParameter repoWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter repoWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(repoWtp).isNotNull();
         String oldName = Objects.requireNonNull(repoWtp).getName();
         repoWtp.setName(newName);
 
         // Again, test the repo, just for thrills
-        WorkTestParameter oldWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter oldWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(oldWtp).isNotNull();
         assertThat(oldName.equals(Objects.requireNonNull(oldWtp).getName()));
 
         // Update with changed name
-        workTestParameterRepository.save(repoWtp);
-        repoWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        _runnableTestParameterRepository.save(repoWtp);
+        repoWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(repoWtp).isNotNull();
         assertThat(Objects.requireNonNull(repoWtp).getName().equals(newName));
     }
@@ -85,19 +85,19 @@ class WorkTestParameterTest extends WorkTestTestBase {
         final String newValue = "Test injected new value";
 
         long idFirstWtp = workTestParameterList.get(0).getId();
-        WorkTestParameter repoWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter repoWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(repoWtp).isNotNull();
         String oldName = Objects.requireNonNull(repoWtp).getName();
         repoWtp.setName(newValue);
 
         // Again, test the repo, just for thrills
-        WorkTestParameter oldWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter oldWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(oldWtp).isNotNull();
         assertThat(oldName.equals(Objects.requireNonNull(oldWtp).getName()));
 
         // Update with changed value
-        workTestParameterRepository.save(repoWtp);
-        repoWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        _runnableTestParameterRepository.save(repoWtp);
+        repoWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(repoWtp).isNotNull();
         assertThat(Objects.requireNonNull(repoWtp).getName().equals(newValue));
     }
@@ -106,7 +106,7 @@ class WorkTestParameterTest extends WorkTestTestBase {
     void testEquals() {
 
         long idFirstWtp = workTestParameterList.get(0).getId();
-        WorkTestParameter repoWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter repoWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
 
         assertThat(workTestParameterList.get(0).equals(repoWtp));
     }
@@ -114,7 +114,7 @@ class WorkTestParameterTest extends WorkTestTestBase {
     @Test
     void testHashCode() {
         long idFirstWtp = workTestParameterList.get(0).getId();
-        WorkTestParameter repoWtp = workTestParameterRepository.findById(idFirstWtp).orElse(null);
+        RunnableTestParameter repoWtp = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
 
         assertThat(workTestParameterList.get(0).equals(repoWtp));
     }

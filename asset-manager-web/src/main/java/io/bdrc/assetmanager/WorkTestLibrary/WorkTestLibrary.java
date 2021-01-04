@@ -3,7 +3,7 @@ package io.bdrc.assetmanager.WorkTestLibrary;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import io.bdrc.assetmanager.WorkTest.WorkTest;
+import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.config.Config;
 
 import javax.persistence.*;
@@ -30,9 +30,10 @@ public class WorkTestLibrary {
         this._path = path ;
     }
 
-    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    // @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<WorkTest> workTests = new HashSet<>();
+    private Set<RunnableTest> _runnableTests = new HashSet<>();
 
     // region property accessors
     public Long getId() { return id ;}
@@ -43,12 +44,12 @@ public class WorkTestLibrary {
         _path = newValue;
     }
 
-    public Set<WorkTest> getWorkTests() {
-        return workTests;
+    public Set<RunnableTest> getRunnableTests() {
+        return _runnableTests;
     }
-    public void setWorkTests( Set<WorkTest> workTestsValue) {
-        workTests = workTestsValue;
-        workTests.forEach(wt -> wt.setworkTestLibrary(this));
+    public void setRunnableTests(Set<RunnableTest> runnableTestsValue) {
+        _runnableTests = runnableTestsValue;
+        _runnableTests.forEach(wt -> wt.setworkTestLibrary(this));
     }
 
 

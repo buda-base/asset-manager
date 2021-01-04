@@ -1,6 +1,6 @@
 package io.bdrc.assetmanager;
 
-import io.bdrc.assetmanager.WorkTest.WorkTest;
+import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import io.bdrc.assetmanager.config.Config;
 import io.bdrc.assetmanager.config.ConfigService;
@@ -11,12 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.management.modelmbean.ModelMBeanNotificationBroadcaster;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -33,18 +29,18 @@ public class MvcMockConfigServiceTest {
     @MockBean
     private ConfigService _configService;
 
-    private List<WorkTest> _workTests ;
+    private List<RunnableTest> _runnableTests;
     private WorkTestLibrary _workTestLibrary ;
 
     @BeforeEach
     public void setup() {
-        _workTests = Arrays.asList(
-                new WorkTest("TestName1"),
-                new WorkTest("TestName2")
+        _runnableTests = Arrays.asList(
+                new RunnableTest("TestName1"),
+                new RunnableTest("TestName2")
         );
 
         _workTestLibrary = new WorkTestLibrary("TestLibrary1");
-        _workTestLibrary.setWorkTests(new HashSet<>(_workTests));
+        _workTestLibrary.setRunnableTests(new HashSet<>(_runnableTests));
 //        List<Config> mockGet = Arrays.asList(
 //                new Config(wtl, (Set<WorkTest>)null),
 //                new Config(wtl, (Set<WorkTest>)null)
@@ -56,29 +52,29 @@ public class MvcMockConfigServiceTest {
 
         when(_configService.getConfigs())
                 .thenReturn(List.of(
-                        new Config(_workTestLibrary, new HashSet<>(_workTests)),
-                        new Config(_workTestLibrary, new HashSet<>(_workTests))
+                        new Config(_workTestLibrary, new HashSet<>(_runnableTests)),
+                        new Config(_workTestLibrary, new HashSet<>(_runnableTests))
                 ));
                 this._mockMvc.perform(get("/configs/")).andDo(print()).andExpect(status().isFound())
                         .andExpect(jsonPath("$[0].workTestLibrary.path").value(_workTestLibrary.getPath()))
-                        .andExpect(jsonPath("$[0].workTestLibrary.workTests[0].testName").value(_workTests.get(0).getTestName()));
+                        .andExpect(jsonPath("$[0].workTestLibrary.runnableTests[0].testName").value(_runnableTests.get(0).getTestName()));
     }
 
     @Test
     public void webReturnByIdFromService() throws Exception {
         when(_configService.getConfigById(5L))
-                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_workTests))));
+                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_runnableTests))));
 
         this._mockMvc.perform(get("/config/5/")).andDo(print()).andExpect(status().isFound())
                 .andExpect(jsonPath("$.workTestLibrary.path").value(_workTestLibrary.getPath()))
-                .andExpect(jsonPath("$.workTestLibrary.workTests[0].testName").value(_workTests.get(0).getTestName()));
+                .andExpect(jsonPath("$.workTestLibrary.runnableTests[0].testName").value(_runnableTests.get(0).getTestName()));
 
         this._mockMvc.perform(get("/config/999/")).andDo(print()).andExpect(status().isNotFound());
 
     }    @Test
     public void webReturnNullNotfoundByIdFromService() throws Exception {
         when(_configService.getConfigById(5L))
-                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_workTests))));
+                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_runnableTests))));
 
         this._mockMvc.perform(get("/config/999/")).andDo(print()).andExpect(status().isNotFound());
 

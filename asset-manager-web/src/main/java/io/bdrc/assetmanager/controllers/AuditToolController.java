@@ -15,7 +15,7 @@ This code uses Spring @RestController annotation, which marks the class as a con
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.bdrc.assetmanager.WorkTest.WorkTest;
+import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.config.Config;
 import io.bdrc.assetmanager.config.ConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +35,12 @@ public class AuditToolController {
     @GetMapping("/XXXSeeConfigServiceControllerconfig/{id}")
     public Optional<Config> getConfig(@PathVariable Long id) throws JsonProcessingException {
         Optional<Config> look =  _configRepository.findById(id);
-        String s ;
-        String s2 ;
         if (look.isPresent()) {
+            String s ;
+            String s2 ;
             ObjectMapper om = new ObjectMapper();
             Config cfg = look.get();
-            Set<WorkTest> wt = cfg.getWorkTests();
+            Set<RunnableTest> wt = cfg.getRunnableTests();
 
             s  = om.writeValueAsString(cfg);
             s2 = om.writeValueAsString(wt);

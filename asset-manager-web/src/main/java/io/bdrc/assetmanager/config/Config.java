@@ -1,7 +1,7 @@
 package io.bdrc.assetmanager.config;
 // https://spring.io/guides/tutorials/react-and-spring-data-rest/
 
-import io.bdrc.assetmanager.WorkTest.WorkTest;
+import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 
 import javax.persistence.*;
@@ -22,20 +22,23 @@ public class Config {
     Long id;
 
     // @JsonIgnore
-    @OneToOne(cascade = CascadeType.PERSIST) // ( mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL) // ( mappedBy = "config", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //
+    // breaks maven testing persist @OneToOne(cascade = CascadeType.PERSIST) // ( mappedBy = "config", cascade =
+    // CascadeType.ALL, fetch = FetchType.LAZY)
     private WorkTestLibrary workTestLibrary;
 
     // Persist auto calls the repository to save
     // Just use test Ids, not entities, to select tests
     @Transient
-    private Set<WorkTest> workTests = new HashSet<>();
+    private Set<RunnableTest> _runnableTests = new HashSet<>();
 
     protected Config() {
     }
 
-    public Config(WorkTestLibrary workTestLibrary, List<WorkTest> workTests) {
+    public Config(WorkTestLibrary workTestLibrary, List<RunnableTest> runnableTests) {
         this.setworkTestLibrary(workTestLibrary);
-        this.setWorkTests(workTests);
+        this.setWorkTests(runnableTests);
     }
 
     // TODO: Use copy constructor pattern to copy subclasses and lists
@@ -47,12 +50,12 @@ public class Config {
     public Config(Config source) {
         this.setId(source.getId());
         this.setworkTestLibrary(source.getworkTestLibrary());
-        this.setWorkTests(source.getWorkTests());
+        this.setRunnableTests(source.getRunnableTests());
     }
 
-    public Config(WorkTestLibrary workTestLibrary, final Set<WorkTest> workTests) {
+    public Config(WorkTestLibrary workTestLibrary, final Set<RunnableTest> runnableTests) {
         // bug: have to set workTests config here
-        setWorkTests(workTests);
+        setRunnableTests(runnableTests);
        setworkTestLibrary(workTestLibrary);
     }
 
@@ -64,17 +67,17 @@ public class Config {
     public WorkTestLibrary getworkTestLibrary() { return workTestLibrary;}
     public void setworkTestLibrary(WorkTestLibrary newValue) { workTestLibrary = newValue ; }
 
-    public Set<WorkTest> getWorkTests()
+    public Set<RunnableTest> getRunnableTests()
     {
-        return this.workTests;
+        return this._runnableTests;
     }
 
-    public void setWorkTests(Set<WorkTest> workTests) {
-        this.workTests = workTests;
+    public void setRunnableTests(Set<RunnableTest> runnableTests) {
+        this._runnableTests = runnableTests;
     }
 
-    public void setWorkTests(List<WorkTest> workTests) {
-        this.setWorkTests(new HashSet<>(workTests));
+    public void setWorkTests(List<RunnableTest> runnableTests) {
+        this.setRunnableTests(new HashSet<>(runnableTests));
     }
 
     @Override
@@ -84,7 +87,7 @@ public class Config {
         Config config = (Config) o;
         return Objects.equals(id, config.id) &&
                 Objects.equals(workTestLibrary, config.workTestLibrary) &&
-                Objects.equals(workTests, config.workTests);
+                Objects.equals(_runnableTests, config._runnableTests);
     }
 
     @Override

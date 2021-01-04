@@ -1,7 +1,5 @@
 package io.bdrc.assetmanager.config;
 
-import io.bdrc.assetmanager.InvalidObjectData;
-import net.bytebuddy.NamingStrategy;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -29,12 +27,12 @@ public class ConfigService implements IConfigService {
 
     @Override
     public Config updateConfig(final Config config) throws EntityNotFoundException {
-        Config modConfig = null;
+        Config modConfig ;
         if (config.getId() == null || config.getId() == 0) throw new EntityNotFoundException("Config");
         Optional<Config> origConfig = _configRepository.findById(config.getId());
         if (origConfig.isPresent()) {
             modConfig = origConfig.get();
-            modConfig.setWorkTests(config.getWorkTests());
+            modConfig.setRunnableTests(config.getRunnableTests());
             modConfig.setworkTestLibrary(config.getworkTestLibrary());
         }
         else throw new EntityNotFoundException(String.format("Config with id %d not found."

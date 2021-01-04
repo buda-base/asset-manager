@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class WorkTestParameter {
+public class RunnableTestParameter {
 
     private @Id
     @GeneratedValue
@@ -17,31 +17,31 @@ public class WorkTestParameter {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    WorkTest workTest; 
+    RunnableTest _runnableTest;
 
-    protected WorkTestParameter() {
+    protected RunnableTestParameter() {
     }
 
-    public WorkTestParameter(String name, String value) {
+    public RunnableTestParameter(String name, String value) {
         this.paramName = name;
         this.paramValue = value;
 
     }
 
-    public WorkTestParameter(String name, String value, WorkTest workTest) {
+    public RunnableTestParameter(String name, String value, RunnableTest runnableTest) {
         this.paramName = name;
         this.paramValue = value;
-        this.setWorkTest(workTest);
+        this.setRunnableTest(runnableTest);
     }
 
     /**
      * Copy constructor
      *
-     * @param source WorkTestParameter to copy
+     * @param source RunnableTestParameter to copy
      *               Does not copy work test, as that would violate the testName unique constraint
      */
     @SuppressWarnings("CopyConstructorMissesField")
-    public WorkTestParameter(WorkTestParameter source) {
+    public RunnableTestParameter(RunnableTestParameter source) {
         this.paramName = source.paramName;
         this.paramValue = source.paramValue;
         // since this would violate the uniqueness constraint
@@ -60,8 +60,8 @@ public class WorkTestParameter {
         return id;
     }
 
-    public WorkTest getworkTest() {
-        return workTest;
+    public RunnableTest getworkTest() {
+        return _runnableTest;
     }
 
     public void setName(String newValue) {
@@ -80,21 +80,21 @@ public class WorkTestParameter {
      * @param newValue new containing test
      *                 removes test from current parent
      */
-    public void setWorkTest(WorkTest newValue) {
+    public void setRunnableTest(RunnableTest newValue) {
         if (newValue == null) {
             this.deleteWorkTest();
         } else {
-            workTest = newValue;
+            _runnableTest = newValue;
             newValue.replaceWorkTestParameter(this);
         }
     }
 
     public void deleteWorkTest()
     {
-        if (this.workTest != null) {
-            this.workTest.removeWorkTestParameter(this);
+        if (this._runnableTest != null) {
+            this._runnableTest.removeWorkTestParameter(this);
         }
-        this.workTest = null;
+        this._runnableTest = null;
     }
 
     // endregion
@@ -103,9 +103,9 @@ public class WorkTestParameter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WorkTestParameter workTestParameter = (WorkTestParameter) o;
-        WorkTest wt = this.workTest;
-        WorkTest wto = workTestParameter.workTest;
+        RunnableTestParameter workTestParameter = (RunnableTestParameter) o;
+        RunnableTest wt = this._runnableTest;
+        RunnableTest wto = workTestParameter._runnableTest;
 
         // either both null or both not null
         boolean wtHasValue = (!Objects.equals(wt, null) && !Objects.equals(wto, null));
@@ -114,8 +114,8 @@ public class WorkTestParameter {
                 Objects.equals(paramName, workTestParameter.paramName)
                         && Objects.equals(paramValue, workTestParameter.paramValue)
                         && wtHasValue
-                        && Objects.equals(workTest.getTestName(),
-                        workTestParameter.workTest.getTestName());
+                        && Objects.equals(_runnableTest.getTestName(),
+                        workTestParameter._runnableTest.getTestName());
     }
 
     @Override

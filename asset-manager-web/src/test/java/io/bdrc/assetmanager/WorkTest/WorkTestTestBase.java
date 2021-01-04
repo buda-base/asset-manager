@@ -14,31 +14,31 @@ public class WorkTestTestBase {
     // Learned:  making these static so that you can use the @BeforeEach as a @BeforeAll
     // will fail their autoWires
     @Autowired
-    protected WorkTestRepository workTestRepository;
+    protected RunnableTestRepository _runnableTestRepository;
 
     @Autowired
-    protected WorkTestParameterRepository workTestParameterRepository;
+    protected RunnableTestParameterRepository _runnableTestParameterRepository;
 
     protected void BaseSetup() {
-        List<WorkTest> workTests = new ArrayList<>();
+        List<RunnableTest> runnableTests = new ArrayList<>();
 
         for (int i = 1; i < 4; i++) {
-            WorkTest workTest = new WorkTest(String.format("WorkTestName%s", i));
+            RunnableTest runnableTest = new RunnableTest(String.format("WorkTestName%s", i));
             for (int j = 1; j <= i; j++) {
-                new WorkTestParameter(String.format("name t=%s p=%s", i, j),
-                        String.format("value t=%s p=%s", i, j), workTest);
+                new RunnableTestParameter(String.format("name t=%s p=%s", i, j),
+                        String.format("value t=%s p=%s", i, j), runnableTest);
             }
-            workTests.add(workTest);
+            runnableTests.add(runnableTest);
         }
-        workTestRepository.saveAll(workTests);
+        _runnableTestRepository.saveAll(runnableTests);
 
     }
 
-    protected Set<WorkTestParameter> newWorkTestParametersWithoutWorks() {
-        Set<WorkTestParameter> workTestParameterHashSet = new HashSet<>();
-        workTestParameterHashSet.add(new WorkTestParameter("wtp1name", "wtp1value"));
-        workTestParameterHashSet.add(new WorkTestParameter("wtp2name", "wtp2value"));
-        workTestParameterHashSet.add(new WorkTestParameter("wtp3name", "wtp3value"));
+    protected Set<RunnableTestParameter> newWorkTestParametersWithoutWorks() {
+        Set<RunnableTestParameter> workTestParameterHashSet = new HashSet<>();
+        workTestParameterHashSet.add(new RunnableTestParameter("wtp1name", "wtp1value"));
+        workTestParameterHashSet.add(new RunnableTestParameter("wtp2name", "wtp2value"));
+        workTestParameterHashSet.add(new RunnableTestParameter("wtp3name", "wtp3value"));
 
         return workTestParameterHashSet;
 

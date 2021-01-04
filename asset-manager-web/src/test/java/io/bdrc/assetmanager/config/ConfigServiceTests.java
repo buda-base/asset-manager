@@ -1,15 +1,12 @@
 package io.bdrc.assetmanager.config;
 
-import io.bdrc.assetmanager.WorkTest.WorkTest;
-import io.bdrc.assetmanager.WorkTest.WorkTestParameter;
+import io.bdrc.assetmanager.WorkTest.RunnableTest;
+import io.bdrc.assetmanager.WorkTest.RunnableTestParameter;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.*;
@@ -32,18 +29,18 @@ public class ConfigServiceTests {
     @BeforeEach
     void setUp()  {
         for (int i = 1 ; i < 4 ; i++) {
-            Set<WorkTest> workTests = TestSeries(String.format("series %d",i));
+            Set<RunnableTest> runnableTests = TestSeries(String.format("series %d",i));
 
             String jarPath = String.format("%s%d.jar", workTestLibPrefix, i);
             WorkTestLibrary wtl = new WorkTestLibrary(jarPath);
 
             // sets all available tests
-            wtl.setWorkTests(workTests);
+            wtl.setRunnableTests(runnableTests);
             // set the tests you want to run, just the first and the ith
-            Set<WorkTest> selectedTests = new HashSet<>();
+            Set<RunnableTest> selectedTests = new HashSet<>();
 
             // https://stackoverflow.com/questions/5690351/java-stringlist-toarray-gives-classcastexception
-            WorkTest[] wta =  wtl.getWorkTests().toArray(new WorkTest[workTests.size()]);
+            RunnableTest[] wta =  wtl.getRunnableTests().toArray(new RunnableTest[runnableTests.size()]);
             selectedTests.add(wta[0]);
             if (i > 1) {
                 selectedTests.add(wta[wta.length-1]);
@@ -52,18 +49,18 @@ public class ConfigServiceTests {
         }
     }
 
-    Set<WorkTest> TestSeries(String discriminator) {
-        HashSet<WorkTest> workTests = new HashSet<>();
+    Set<RunnableTest> TestSeries(String discriminator) {
+        HashSet<RunnableTest> runnableTests = new HashSet<>();
 
         for (int i = 1; i < 4; i++) {
-            WorkTest workTest = new WorkTest(String.format("WorkTestName%s", i));
+            RunnableTest runnableTest = new RunnableTest(String.format("WorkTestName%s", i));
             for (int j = 1; j <= i; j++) {
-                new WorkTestParameter(String.format("%s t=%s p=%s", discriminator, i, j),
-                        String.format("value t=%s p=%s", i, j), workTest);
+                new RunnableTestParameter(String.format("%s t=%s p=%s", discriminator, i, j),
+                        String.format("value t=%s p=%s", i, j), runnableTest);
             }
-            workTests.add(workTest);
+            runnableTests.add(runnableTest);
         }
-        return workTests;
+        return runnableTests;
     }
 
     @Test
@@ -89,7 +86,7 @@ public class ConfigServiceTests {
     public void add_should_add_repository() {
         Config testReturnConfig =  baseConfigs.get(baseConfigs.size()-1);
 
-        when(_configRepository.findById())
+        when(_configRepository.findById((long) 0)).thenReturn(Optional.of(testReturnConfig));
         when(_configRepository.save(baseConfigs.get(0))).thenReturn(testReturnConfig);
 
         Config serviceConfig = configService.addConfig(baseConfigs.get(0));
