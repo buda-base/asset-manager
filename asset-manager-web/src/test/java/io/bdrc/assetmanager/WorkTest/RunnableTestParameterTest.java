@@ -1,6 +1,5 @@
 package io.bdrc.assetmanager.WorkTest;
 
-import io.bdrc.assetmanager.InvalidObjectData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,14 +46,14 @@ class RunnableTestParameterTest extends WorkTestTestBase {
 
     @Test
     void getWorkTest() {
-        long idFirstWork = workTestParameterList.get(0).getworkTest().getId();
+        long idFirstWork = workTestParameterList.get(0).getRunnableTest().getId();
         RunnableTest runnableTest = _runnableTestRepository.findById(idFirstWork).orElse(null);
         assertThatObject(runnableTest).isNotNull();
 
         long idFirstWtp = workTestParameterList.get(0).getId();
         RunnableTestParameter workTestParameter = _runnableTestParameterRepository.findById(idFirstWtp).orElse(null);
         assertThatObject(workTestParameter).isNotNull();
-        assertThat(Objects.requireNonNull(workTestParameter).getworkTest().equals(runnableTest));
+        assertThat(Objects.requireNonNull(workTestParameter).getRunnableTest().equals(runnableTest));
 
     }
 

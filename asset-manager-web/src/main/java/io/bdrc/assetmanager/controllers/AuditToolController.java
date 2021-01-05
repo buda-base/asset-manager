@@ -40,7 +40,7 @@ public class AuditToolController {
             String s2 ;
             ObjectMapper om = new ObjectMapper();
             Config cfg = look.get();
-            Set<RunnableTest> wt = cfg.getRunnableTests();
+            Set<RunnableTest> wt = cfg.getSelectedTests();
 
             s  = om.writeValueAsString(cfg);
             s2 = om.writeValueAsString(wt);

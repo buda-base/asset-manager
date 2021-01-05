@@ -2,6 +2,7 @@ package io.bdrc.assetmanager.WorkTest;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -15,9 +16,9 @@ public class RunnableTestParameter {
     private String paramName;
     private String paramValue;
 
+    @ManyToOne (targetEntity = RunnableTest.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    RunnableTest _runnableTest;
+    private RunnableTest runnableTest;
 
     protected RunnableTestParameter() {
     }
@@ -60,10 +61,6 @@ public class RunnableTestParameter {
         return id;
     }
 
-    public RunnableTest getworkTest() {
-        return _runnableTest;
-    }
-
     public void setName(String newValue) {
         paramName = newValue;
     }
@@ -72,8 +69,8 @@ public class RunnableTestParameter {
         paramValue = newValue;
     }
 
-    // Done: TO DO : I left off here thinking about cascading throws declarations
 
+    // Done: TO DO : I left off here thinking about cascading throws declarations
     /**
      * Moves this testParameter from its current test to a new test
      *
@@ -84,17 +81,21 @@ public class RunnableTestParameter {
         if (newValue == null) {
             this.deleteWorkTest();
         } else {
-            _runnableTest = newValue;
+            runnableTest = newValue;
             newValue.replaceWorkTestParameter(this);
         }
     }
 
+    public RunnableTest getRunnableTest() {
+        return runnableTest;
+    }
+
     public void deleteWorkTest()
     {
-        if (this._runnableTest != null) {
-            this._runnableTest.removeWorkTestParameter(this);
+        if (this.runnableTest != null) {
+            this.runnableTest.removeWorkTestParameter(this);
         }
-        this._runnableTest = null;
+        this.runnableTest = null;
     }
 
     // endregion
@@ -104,8 +105,8 @@ public class RunnableTestParameter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RunnableTestParameter workTestParameter = (RunnableTestParameter) o;
-        RunnableTest wt = this._runnableTest;
-        RunnableTest wto = workTestParameter._runnableTest;
+        RunnableTest wt = this.runnableTest;
+        RunnableTest wto = workTestParameter.runnableTest;
 
         // either both null or both not null
         boolean wtHasValue = (!Objects.equals(wt, null) && !Objects.equals(wto, null));
@@ -114,8 +115,9 @@ public class RunnableTestParameter {
                 Objects.equals(paramName, workTestParameter.paramName)
                         && Objects.equals(paramValue, workTestParameter.paramValue)
                         && wtHasValue
-                        && Objects.equals(_runnableTest.getTestName(),
-                        workTestParameter._runnableTest.getTestName());
+                        && Objects.equals(runnableTest.getTestName(),
+                        workTestParameter.runnableTest.getTestName())
+                ;
     }
 
     @Override

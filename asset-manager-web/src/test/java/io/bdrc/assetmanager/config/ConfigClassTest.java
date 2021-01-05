@@ -6,7 +6,6 @@ import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.notification.RunNotifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -48,12 +47,12 @@ class ConfigClassTest  {
         HashSet<RunnableTest> workTests = new HashSet<>();
 
         for (int i = 1; i < 4; i++) {
-            RunnableTest workTest = new RunnableTest(String.format("WorkTestName%s", i));
+            RunnableTest runnableTest = new RunnableTest(String.format("WorkTestName%s", i));
             for (int j = 1; j <= i; j++) {
                 new RunnableTestParameter(String.format("%s t=%s p=%s", discriminator, i, j),
-                        String.format("value t=%s p=%s", i, j), workTest);
+                        String.format("value t=%s p=%s", i, j), runnableTest);
             }
-            workTests.add(workTest);
+            workTests.add(runnableTest);
         }
         return workTests;
     }
@@ -108,8 +107,8 @@ class ConfigClassTest  {
         Set<RunnableTest> runnableTests = TestSeries("Zuponga");
         Config config = new Config(wtl, runnableTests);
 
-        assertThat(runnableTests.containsAll(config.getRunnableTests()));
-        assertThat(config.getRunnableTests().containsAll(runnableTests));
+        assertThat(runnableTests.containsAll(config.getSelectedTests()));
+        assertThat(config.getSelectedTests().containsAll(runnableTests));
     }
 
     @Test
@@ -117,9 +116,9 @@ class ConfigClassTest  {
         WorkTestLibrary wtl = new WorkTestLibrary("Zuponga");
         Set<RunnableTest> runnableTests = TestSeries("Zuponga");
         Config config = new Config(wtl,new HashSet<>());
-        config.setRunnableTests(runnableTests);
-        assertThat(runnableTests.containsAll(config.getRunnableTests()));
-        assertThat(config.getRunnableTests().containsAll(runnableTests));
+        config.setSelectedTests(runnableTests);
+        assertThat(runnableTests.containsAll(config.getSelectedTests()));
+        assertThat(config.getSelectedTests().containsAll(runnableTests));
     }
 
     @Test

@@ -124,8 +124,8 @@ class ConfigRepositoryTest {
 
         Config savedConfig = _configRepository.save(newConfig);
 
-        assertThat(runnableTests.containsAll(savedConfig.getRunnableTests()));
-        assertThat(savedConfig.getRunnableTests().containsAll(runnableTests));
+        assertThat(runnableTests.containsAll(savedConfig.getSelectedTests()));
+        assertThat(savedConfig.getSelectedTests().containsAll(runnableTests));
     }
 
     @Test
@@ -135,10 +135,10 @@ class ConfigRepositoryTest {
         Config newConfig = new Config(wtl,new HashSet<>());
 
         Config savedConfig = _configRepository.save(newConfig);
-        savedConfig.setRunnableTests(runnableTests);
+        savedConfig.setSelectedTests(runnableTests);
         savedConfig = _configRepository.save(savedConfig);
-        assertThat(runnableTests.containsAll(savedConfig.getRunnableTests()));
-        assertThat(savedConfig.getRunnableTests().containsAll(runnableTests));
+        assertThat(runnableTests.containsAll(savedConfig.getSelectedTests()));
+        assertThat(savedConfig.getSelectedTests().containsAll(runnableTests));
     }
 
 

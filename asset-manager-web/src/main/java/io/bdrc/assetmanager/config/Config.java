@@ -31,14 +31,14 @@ public class Config {
     // Persist auto calls the repository to save
     // Just use test Ids, not entities, to select tests
     @Transient
-    private Set<RunnableTest> _runnableTests = new HashSet<>();
+    private Set<RunnableTest> _selectedTests = new HashSet<>();
 
     protected Config() {
     }
 
-    public Config(WorkTestLibrary workTestLibrary, List<RunnableTest> runnableTests) {
+    public Config(WorkTestLibrary workTestLibrary, List<RunnableTest> selectedTests) {
         this.setworkTestLibrary(workTestLibrary);
-        this.setWorkTests(runnableTests);
+        this.setWorkTests(selectedTests);
     }
 
     // TODO: Use copy constructor pattern to copy subclasses and lists
@@ -50,12 +50,12 @@ public class Config {
     public Config(Config source) {
         this.setId(source.getId());
         this.setworkTestLibrary(source.getworkTestLibrary());
-        this.setRunnableTests(source.getRunnableTests());
+        this.setSelectedTests(source.getSelectedTests());
     }
 
-    public Config(WorkTestLibrary workTestLibrary, final Set<RunnableTest> runnableTests) {
+    public Config(WorkTestLibrary workTestLibrary, final Set<RunnableTest> selectedTests) {
         // bug: have to set workTests config here
-        setRunnableTests(runnableTests);
+        setSelectedTests(selectedTests);
        setworkTestLibrary(workTestLibrary);
     }
 
@@ -67,17 +67,17 @@ public class Config {
     public WorkTestLibrary getworkTestLibrary() { return workTestLibrary;}
     public void setworkTestLibrary(WorkTestLibrary newValue) { workTestLibrary = newValue ; }
 
-    public Set<RunnableTest> getRunnableTests()
+    public Set<RunnableTest> getSelectedTests()
     {
-        return this._runnableTests;
+        return this._selectedTests;
     }
 
-    public void setRunnableTests(Set<RunnableTest> runnableTests) {
-        this._runnableTests = runnableTests;
+    public void setSelectedTests(Set<RunnableTest> selectedTests) {
+        this._selectedTests = selectedTests;
     }
 
     public void setWorkTests(List<RunnableTest> runnableTests) {
-        this.setRunnableTests(new HashSet<>(runnableTests));
+        this.setSelectedTests(new HashSet<>(runnableTests));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Config {
         Config config = (Config) o;
         return Objects.equals(id, config.id) &&
                 Objects.equals(workTestLibrary, config.workTestLibrary) &&
-                Objects.equals(_runnableTests, config._runnableTests);
+                Objects.equals(_selectedTests, config._selectedTests);
     }
 
     @Override

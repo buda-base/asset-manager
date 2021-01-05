@@ -42,11 +42,11 @@ class RunnableTestTest extends WorkTestTestBase {
     @Test
     void addWorkTestParameter() {
         RunnableTest wt = _runnableTestList.get(0);
-        Set<RunnableTestParameter> w_forWtp = wt.getworkTestParameters();
+        Set<RunnableTestParameter> w_forWtp = wt.getRunnableTestParameters();
         int preWtps = w_forWtp.size();
         new RunnableTestParameter("wtpnew", "wtpnewValue", wt);
-        int postWtps = wt.getworkTestParameters().size();
-        Set<RunnableTestParameter> w_forWtpPost = wt.getworkTestParameters();
+        int postWtps = wt.getRunnableTestParameters().size();
+        Set<RunnableTestParameter> w_forWtpPost = wt.getRunnableTestParameters();
         assertThat(w_forWtpPost.size() == postWtps);
         assertThat(postWtps == 1 + preWtps);
     }
@@ -55,7 +55,7 @@ class RunnableTestTest extends WorkTestTestBase {
     void getWorkTestParametersCounts() {
         int expectedParamCount = 0;
         for (final RunnableTest runnableTest : _runnableTestList) {
-            assertThat(runnableTest.getworkTestParameters().size() == ++expectedParamCount);
+            assertThat(runnableTest.getRunnableTestParameters().size() == ++expectedParamCount);
         }
     }
 
@@ -65,11 +65,11 @@ class RunnableTestTest extends WorkTestTestBase {
         Set<RunnableTestParameter> newWtps = newWorkTestParametersWithoutWorks();
 
         // test that the parent object was added
-        wt.setworkTestParameters(newWtps);
-        wt.getworkTestParameters().forEach(x -> assertThat(x.getworkTest().equals(wt)));
+        wt.setRunnableTestParameters(newWtps);
+        wt.getRunnableTestParameters().forEach(x -> assertThat(x.getRunnableTest().equals(wt)));
 
         // Test that the original was modified in place
-        Set<RunnableTestParameter> addedWtps = wt.getworkTestParameters();
+        Set<RunnableTestParameter> addedWtps = wt.getRunnableTestParameters();
         assertThat(addedWtps.equals(newWtps));
     }
 
@@ -81,7 +81,7 @@ class RunnableTestTest extends WorkTestTestBase {
         newWtps.add(new RunnableTestParameter("wtp1name", "wtp1value"));
         newWtps.add(new RunnableTestParameter("wtp1name", "wtp2value"));
 
-        Exception exception = assertThrows(InvalidObjectData.class, () -> wt.setworkTestParameters(newWtps));
+        Exception exception = assertThrows(InvalidObjectData.class, () -> wt.setRunnableTestParameters(newWtps));
 
         // Test the expected exception was thrown
         String expectedMessage = "RunnableTestParameter Collection has duplicate elements";
@@ -121,7 +121,7 @@ class RunnableTestTest extends WorkTestTestBase {
 
         RunnableTest wtOld = new RunnableTest(oldName);
         Set<RunnableTestParameter> origParams = newWorkTestParametersWithoutWorks();
-        wtOld.setworkTestParameters(origParams);
+        wtOld.setRunnableTestParameters(origParams);
 
         RunnableTest wtNew = new RunnableTest(wtOld);
 
@@ -141,9 +141,9 @@ class RunnableTestTest extends WorkTestTestBase {
 
         RunnableTest wtOld = new RunnableTest(oldName);
         Set<RunnableTestParameter> origParams = newWorkTestParametersWithoutWorks();
-        wtOld.setworkTestParameters(origParams);
+        wtOld.setRunnableTestParameters(origParams);
 
-        int nParamsPre = wtOld.getworkTestParameters().size();
+        int nParamsPre = wtOld.getRunnableTestParameters().size();
 
         RunnableTestParameter newWtp = null;
         for (RunnableTestParameter wtp : origParams) {
@@ -160,9 +160,9 @@ class RunnableTestTest extends WorkTestTestBase {
         wtOld.replaceWorkTestParameter(newWtp);
 
         // Assert
-        assertEquals(nParamsPre, wtOld.getworkTestParameters().size());
+        assertEquals(nParamsPre, wtOld.getRunnableTestParameters().size());
 
-        for (RunnableTestParameter wtp :  wtOld.getworkTestParameters()) {
+        for (RunnableTestParameter wtp :  wtOld.getRunnableTestParameters()) {
             if (wtp.getName().equals(newWtp.getName())) {
                 assertEquals(newValue,wtp.getValue());
                 break;

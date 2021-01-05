@@ -2,6 +2,7 @@ package io.bdrc.assetmanager.WorkTest;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.InvalidObjectData;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
@@ -27,13 +28,14 @@ public class RunnableTest {
     // Thanks to SO for de-recursing
     //https://stackoverflow.com/questions/13785530/serialize-listobject-with-manytoone-onetomany-relational-to-json
     // Persist auto calls the repository to save
-    // @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    @OneToMany(mappedBy = "_runnableTest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    // @OneToMany(mappedBy = "workTest", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = RunnableTestParameter.class, mappedBy = "runnableTest", cascade = CascadeType.PERSIST,
+            fetch = FetchType.LAZY)
     @JsonManagedReference
-    private  Set<RunnableTestParameter> _runnableTestParameters = new HashSet<>();
+    @JsonIgnore
+    private  Set<RunnableTestParameter> runnableTestParameters = new HashSet<>();
 
     //endregion
-
     @ManyToOne(targetEntity = WorkTestLibrary.class,  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JsonBackReference
     WorkTestLibrary workTestLibrary;
@@ -50,12 +52,12 @@ public class RunnableTest {
     /**
      * Copy constructor
      *
-     * @param source source workTest
+     * @param source source runnableTest
      */
     @SuppressWarnings("CopyConstructorMissesField")
     public RunnableTest(RunnableTest source) throws InvalidObjectData {
         this.setTestName(source.getTestName());
-         this.setworkTestParameters(source.getworkTestParameters());
+         this.setRunnableTestParameters(source.getRunnableTestParameters());
     }
 
     // endregion
@@ -65,48 +67,48 @@ public class RunnableTest {
     /**
      * Adds or replaces a workTestParameter
      *
-     * @param workTestParameter new or updated RunnableTestParameter
+     * @param runnableTestParameter new or updated RunnableTestParameter
      */
-    public void replaceWorkTestParameter(RunnableTestParameter workTestParameter)
+    public void replaceWorkTestParameter(RunnableTestParameter runnableTestParameter)
     {
         List<RunnableTestParameter> wtpf =
-        _runnableTestParameters.stream()
-                .filter(x -> x.getName().equals(workTestParameter.getName()))
+        runnableTestParameters.stream()
+                .filter(x -> x.getName().equals(runnableTestParameter.getName()))
                 .collect(Collectors.toList());
         wtpf.forEach(this::removeWorkTestParameter);
 
-        // workTestParameter.setWorkTest(this);
+        // runnableTestParameter.setRunnableTest(this);
         // Dont add directly.
         // let the child find its parent
-        this._runnableTestParameters.add(workTestParameter);
+        this.runnableTestParameters.add(runnableTestParameter);
     }
 
     /**
      * remove a RunnableTestParameter, don't worry if it's not there
      *
-     * @param workTestParameter to be removed
+     * @param testParameter to be removed
      */
-    public void removeWorkTestParameter(RunnableTestParameter workTestParameter)
+    public void removeWorkTestParameter(RunnableTestParameter testParameter)
     {
-        _runnableTestParameters.remove(workTestParameter);
+        runnableTestParameters.remove(testParameter);
     }
     //endregion
 
     // region field accessors
-    public Set<RunnableTestParameter> getworkTestParameters() {
-        return _runnableTestParameters;
+    public Set<RunnableTestParameter> getRunnableTestParameters() {
+        return runnableTestParameters;
     }
 
     /**
      * Replace existing test parameters with new set
      *
-     * @param workTestParameters new set of workTestParameters
+     * @param runnableTestParameters new set of runnableTestParameters
      * @throws InvalidObjectData when the input set has duplicate test names
      */
-    public void setworkTestParameters(final Set<RunnableTestParameter> workTestParameters) throws InvalidObjectData {
-        enforceUniqueConstraint(workTestParameters);
+    public void setRunnableTestParameters(final Set<RunnableTestParameter> runnableTestParameters) throws InvalidObjectData {
+        enforceUniqueConstraint(runnableTestParameters);
 
-        for (RunnableTestParameter wtp : workTestParameters)
+        for (RunnableTestParameter wtp : runnableTestParameters)
         {
             RunnableTestParameter newWtp = new RunnableTestParameter(wtp);
             newWtp.setRunnableTest(this);
@@ -148,8 +150,9 @@ public class RunnableTest {
         RunnableTest runnableTest = (RunnableTest) o;
 
         return
-                Objects.equals(testName, runnableTest.testName) &&
-                        Objects.equals(_runnableTestParameters, runnableTest._runnableTestParameters);
+                Objects.equals(testName, runnableTest.testName)
+                &&           Objects.equals(runnableTestParameters, runnableTest.runnableTestParameters)
+                ;
     }
 
     @Override

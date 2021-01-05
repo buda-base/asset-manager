@@ -30,9 +30,12 @@ public class WorkTestLibrary {
         this._path = path ;
     }
 
-    // @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    // the @JsonIgnore means that the json mapper only maps the @JSonManagedReference entities (
+    // it magically deduces the name), otherwise you see collections under both
+    // "runnableTests" : [...] and "_runnableTests : [ .... ]
+    @OneToMany(mappedBy = "workTestLibrary", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
+    @JsonIgnore
     private Set<RunnableTest> _runnableTests = new HashSet<>();
 
     // region property accessors
