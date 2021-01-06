@@ -37,13 +37,13 @@ public class ConfigServiceTests {
             // sets all available tests
             wtl.setRunnableTests(runnableTests);
             // set the tests you want to run, just the first and the ith
-            Set<RunnableTest> selectedTests = new HashSet<>();
+            Set<SelectedTest> selectedTests = new HashSet<>();
 
             // https://stackoverflow.com/questions/5690351/java-stringlist-toarray-gives-classcastexception
             RunnableTest[] wta =  wtl.getRunnableTests().toArray(new RunnableTest[runnableTests.size()]);
-            selectedTests.add(wta[0]);
+            selectedTests.add(SelectedTest.fromRunnable(wta[0]));
             if (i > 1) {
-                selectedTests.add(wta[wta.length-1]);
+                selectedTests.add(SelectedTest.fromRunnable(wta[wta.length-1]));
             }
             baseConfigs.add(new Config(new WorkTestLibrary(jarPath), selectedTests));
         }
@@ -77,7 +77,7 @@ public class ConfigServiceTests {
         // Assert
         assertTrue(foundConfig.isPresent());
         Config realConfig = foundConfig.get();
-        assertSame(realConfig.getworkTestLibrary().getPath(),testReturnConfig.getworkTestLibrary().getPath());
+        assertSame(realConfig.getWorkTestLibrary().getPath(),testReturnConfig.getWorkTestLibrary().getPath());
         assertEquals(realConfig,testReturnConfig);
 
     }

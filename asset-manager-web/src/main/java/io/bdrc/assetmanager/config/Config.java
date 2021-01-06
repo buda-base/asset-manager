@@ -1,6 +1,7 @@
 package io.bdrc.assetmanager.config;
 // https://spring.io/guides/tutorials/react-and-spring-data-rest/
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 
@@ -28,17 +29,27 @@ public class Config {
     // CascadeType.ALL, fetch = FetchType.LAZY)
     private WorkTestLibrary workTestLibrary;
 
-    // Persist auto calls the repository to save
-    // Just use test Ids, not entities, to select tests
-    @Transient
-    private Set<RunnableTest> _selectedTests = new HashSet<>();
+
+    @OneToMany(mappedBy = "config", targetEntity = SelectedTest.class, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<SelectedTest> selectedTests = new HashSet<>();
 
     protected Config() {
     }
 
     public Config(WorkTestLibrary workTestLibrary, List<RunnableTest> selectedTests) {
-        this.setworkTestLibrary(workTestLibrary);
-        this.setWorkTests(selectedTests);
+        this.setWorkTestLibrary(workTestLibrary);
+        this.setTests(selectedTests);
+    }
+    /**
+     * Ctor. create a config from a library and a selection of its tests
+     * @param workTestLibrary Jar file containing the tests
+     * @param selectedTests subset of RunnableTest objects the library supports
+     */
+    public Config(WorkTestLibrary workTestLibrary, final Set<SelectedTest> selectedTests) {
+        // bug: have to set workTests config here
+        setSelectedTests(selectedTests);
+        setWorkTestLibrary(workTestLibrary);
     }
 
     // TODO: Use copy constructor pattern to copy subclasses and lists
@@ -49,37 +60,43 @@ public class Config {
      */
     public Config(Config source) {
         this.setId(source.getId());
-        this.setworkTestLibrary(source.getworkTestLibrary());
+        this.setWorkTestLibrary(source.getWorkTestLibrary());
         this.setSelectedTests(source.getSelectedTests());
     }
 
-    public Config(WorkTestLibrary workTestLibrary, final Set<RunnableTest> selectedTests) {
-        // bug: have to set workTests config here
-        setSelectedTests(selectedTests);
-       setworkTestLibrary(workTestLibrary);
-    }
+    //region Accessors
 
     public Long getId() {
         return id;
     }
     public void setId(Long id) { this.id = id ;}
 
-    public WorkTestLibrary getworkTestLibrary() { return workTestLibrary;}
-    public void setworkTestLibrary(WorkTestLibrary newValue) { workTestLibrary = newValue ; }
+    public WorkTestLibrary getWorkTestLibrary() { return workTestLibrary;}
+    public void setWorkTestLibrary(WorkTestLibrary newValue) { workTestLibrary = newValue ; }
 
-    public Set<RunnableTest> getSelectedTests()
+    public Set<SelectedTest> getSelectedTests()
     {
-        return this._selectedTests;
+        return this.selectedTests;
     }
 
-    public void setSelectedTests(Set<RunnableTest> selectedTests) {
-        this._selectedTests = selectedTests;
+    public void setSelectedTests(Set<SelectedTest> selectedTests) {
+        this.selectedTests = selectedTests;
     }
 
-    public void setWorkTests(List<RunnableTest> runnableTests) {
-        this.setSelectedTests(new HashSet<>(runnableTests));
+    public void setTests(Set<RunnableTest> runnableTests) {
+        Set<SelectedTest> inTests = new HashSet<>();
+        runnableTests.forEach(x -> {
+            SelectedTest st = SelectedTest.fromRunnable(x);
+            st.setConfig(this);
+            inTests.add(st);
+        });
+        this.setSelectedTests(inTests);
     }
 
+    public void setTests(List<RunnableTest> runnableTestList) {
+        this.setTests(new HashSet<>(runnableTestList));
+    }
+// endregion
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,7 +104,7 @@ public class Config {
         Config config = (Config) o;
         return Objects.equals(id, config.id) &&
                 Objects.equals(workTestLibrary, config.workTestLibrary) &&
-                Objects.equals(_selectedTests, config._selectedTests);
+                Objects.equals(selectedTests, config.selectedTests);
     }
 
     @Override

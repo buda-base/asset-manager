@@ -1,7 +1,6 @@
 package io.bdrc.assetmanager.config;
 
 import io.bdrc.assetmanager.WorkTest.RunnableTest;
-import io.bdrc.assetmanager.WorkTest.RunnableTestParameter;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,49 +12,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
-class ConfigClassTest  {
+class ConfigClassTest extends ConfigTestBase  {
 
     @Autowired
     ConfigRepository _configRepository;
 
     @BeforeEach
     void setUp()  {
-        for (int i = 1 ; i < 4 ; i++) {
-            Set<RunnableTest> workTests = TestSeries(String.format("series %d",i));
-
-            String jarPath = String.format("/Apps/testJar%d.jar",i);
-            WorkTestLibrary wtl = new WorkTestLibrary(jarPath);
-
-            // sets all available tests
-            wtl.setRunnableTests(workTests);
-            // set the tests you want to run, just the first and the ith
-            Set<RunnableTest> selectedTests = new HashSet<>();
-
-            // https://stackoverflow.com/questions/5690351/java-stringlist-toarray-gives-classcastexception
-            RunnableTest[] wta = wtl.getRunnableTests().toArray(new RunnableTest[workTests.size()]);
-            selectedTests.add(wta[0]);
-            if (i > 1) {
-                selectedTests.add(wta[wta.length-1]);
-            }
-            this._configRepository.save(new Config(new WorkTestLibrary(jarPath),selectedTests));
-        }
+        BaseSetup(_configRepository);
     }
 
-    Set<RunnableTest> TestSeries(String discriminator) {
-        HashSet<RunnableTest> workTests = new HashSet<>();
 
-        for (int i = 1; i < 4; i++) {
-            RunnableTest runnableTest = new RunnableTest(String.format("WorkTestName%s", i));
-            for (int j = 1; j <= i; j++) {
-                new RunnableTestParameter(String.format("%s t=%s p=%s", discriminator, i, j),
-                        String.format("value t=%s p=%s", i, j), runnableTest);
-            }
-            workTests.add(runnableTest);
-        }
-        return workTests;
-    }
 
     @AfterEach
     void tearDownTest() {
@@ -89,7 +59,7 @@ class ConfigClassTest  {
         String expectedJarName = "Zuponga.jar";
         WorkTestLibrary wtl = new WorkTestLibrary(expectedJarName);
         Config newConfig = new Config(wtl,new HashSet<>());
-        assertThat(wtl.equals(newConfig.getworkTestLibrary()));
+        assertThat(wtl.equals(newConfig.getWorkTestLibrary()));
     }
 
     @Test
@@ -97,14 +67,14 @@ class ConfigClassTest  {
         String expectedJarName = "Zuponga.jar";
         WorkTestLibrary wtl = new WorkTestLibrary(expectedJarName);
         Config newConfig = new Config(wtl, new HashSet<>());
-        newConfig.setworkTestLibrary(wtl);
-        assertThat(wtl.equals(newConfig.getworkTestLibrary()));
+        newConfig.setWorkTestLibrary(wtl);
+        assertThat(wtl.equals(newConfig.getWorkTestLibrary()));
     }
 
     @Test
-    void getWorkTests() {
-        WorkTestLibrary wtl = new WorkTestLibrary("Zuponga");
-        Set<RunnableTest> runnableTests = TestSeries("Zuponga");
+    void ConstructorBuildsSelectedTests() {
+        WorkTestLibrary wtl = new WorkTestLibrary("ConstructorBuildsSelectedTestsTest");
+        Set<SelectedTest> runnableTests = SelectedTestSeries("ConstructorBuildsSelectedTestsTest");
         Config config = new Config(wtl, runnableTests);
 
         assertThat(runnableTests.containsAll(config.getSelectedTests()));
@@ -113,28 +83,28 @@ class ConfigClassTest  {
 
     @Test
     void setWorkTests() {
-        WorkTestLibrary wtl = new WorkTestLibrary("Zuponga");
-        Set<RunnableTest> runnableTests = TestSeries("Zuponga");
+        WorkTestLibrary wtl = new WorkTestLibrary("setWorkTestsTest");
+        Set<RunnableTest> runnableTests = RunnableTestSeries("setWorkTestsTest");
         Config config = new Config(wtl,new HashSet<>());
-        config.setSelectedTests(runnableTests);
-        assertThat(runnableTests.containsAll(config.getSelectedTests()));
+
+        Set<SelectedTest> selectedTests = SelectedTestSeries("setWorkTestsTest");
+        config.setSelectedTests(selectedTests);
+        assertThat(selectedTests.containsAll(config.getSelectedTests()));
         assertThat(config.getSelectedTests().containsAll(runnableTests));
     }
 
     @Test
     void testEquals() {
-        Config c1 = new Config(new WorkTestLibrary("Zuponga"),TestSeries("Zoo_tests"));
+        Config c1 = new Config(new WorkTestLibrary("Zuponga"),SelectedTestSeries("Zoo_tests"));
         Config c2 = new Config(c1);
 
-        assertThat(c1.equals(c2));
-        assertThat(c2.equals(c1));
-
+        assertEquals(c1,c2);
     }
 
     @Test
     void testHashCode() {
-        Config c1 = new Config(new WorkTestLibrary("Zuponga"),TestSeries("Zoo_tests"));
-        Config c2 = new Config(new WorkTestLibrary("Zuponga"),TestSeries("Zoo_tests"));
+        Config c1 = new Config(new WorkTestLibrary("Zuponga"),SelectedTestSeries("Zoo_tests"));
+        Config c2 = new Config(new WorkTestLibrary("Zuponga"),SelectedTestSeries("Zoo_tests"));
         assertThat(c2.hashCode() == c1.hashCode());
     }
 }

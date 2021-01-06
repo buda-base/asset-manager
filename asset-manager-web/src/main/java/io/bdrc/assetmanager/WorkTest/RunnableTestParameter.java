@@ -120,10 +120,5 @@ public class RunnableTestParameter {
                 ;
     }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, paramName, paramValue);
-    }
     // endregion
 }

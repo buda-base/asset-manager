@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.config.Config;
 import io.bdrc.assetmanager.config.ConfigRepository;
+import io.bdrc.assetmanager.config.SelectedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +41,7 @@ public class AuditToolController {
             String s2 ;
             ObjectMapper om = new ObjectMapper();
             Config cfg = look.get();
-            Set<RunnableTest> wt = cfg.getSelectedTests();
+            Set<SelectedTest> wt = cfg.getSelectedTests();
 
             s  = om.writeValueAsString(cfg);
             s2 = om.writeValueAsString(wt);

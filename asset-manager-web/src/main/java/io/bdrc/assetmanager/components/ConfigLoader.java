@@ -2,10 +2,10 @@ package io.bdrc.assetmanager.components;
 
 import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.WorkTest.RunnableTestParameter;
-import io.bdrc.assetmanager.WorkTest.RunnableTestRepository;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import io.bdrc.assetmanager.config.Config;
 import io.bdrc.assetmanager.config.ConfigRepository;
+import io.bdrc.assetmanager.config.SelectedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,8 +19,9 @@ public class ConfigLoader implements CommandLineRunner {
 
     private final ConfigRepository repository;
 
+    // Used to have , final RunnableTestRepository _runnableTestRepository) at end of config loader
     @Autowired
-    public ConfigLoader(ConfigRepository repository, final RunnableTestRepository _runnableTestRepository) {
+    public ConfigLoader(ConfigRepository repository) {
         this.repository = repository;
     }
 
@@ -34,16 +35,13 @@ public class ConfigLoader implements CommandLineRunner {
 
             // sets all available tests
             wtl.setRunnableTests(runnableTests);
-            // set the tests you want to run, just the first and the ith
-            Set<RunnableTest> selectedTests = new HashSet<>();
+            // Create a couple of selected tests from the runnableTests
             RunnableTest[] wta = wtl.getRunnableTests().toArray(new RunnableTest[runnableTests.size()]);
-            selectedTests.add(wta[0]);
+            Set<SelectedTest> selectedTests = new HashSet<>();
+            selectedTests.add(SelectedTest.fromRunnable(wta[0]));
             if (i > 1) {
-                selectedTests.add(wta[wta.length-1]);
+                selectedTests.add(SelectedTest.fromRunnable(wta[wta.length-1]));
             }
-
-            // why dd I do this?
-            // repository.save(new Config(new WorkTestLibrary(jarPath),selectedTests));
             repository.save(new Config(wtl,selectedTests));
         }
     }

@@ -5,6 +5,7 @@ import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import io.bdrc.assetmanager.config.Config;
 import io.bdrc.assetmanager.config.ConfigService;
 import io.bdrc.assetmanager.config.ConfigServiceController;
+import io.bdrc.assetmanager.config.SelectedTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class MvcMockConfigServiceTest {
     private ConfigService _configService;
 
     private List<RunnableTest> _runnableTests;
+    private final List<SelectedTest> _selectedTests = new ArrayList<>();
     private WorkTestLibrary _workTestLibrary ;
 
     @BeforeEach
@@ -39,21 +41,18 @@ public class MvcMockConfigServiceTest {
                 new RunnableTest("TestName2")
         );
 
+        _runnableTests.forEach(x -> _selectedTests.add(SelectedTest.fromRunnable(x)));
+
         _workTestLibrary = new WorkTestLibrary("TestLibrary1");
         _workTestLibrary.setRunnableTests(new HashSet<>(_runnableTests));
-//        List<Config> mockGet = Arrays.asList(
-//                new Config(wtl, (Set<WorkTest>)null),
-//                new Config(wtl, (Set<WorkTest>)null)
-//                );
-
     }
     @Test
     public void webReturnAllFromService() throws Exception {
 
         when(_configService.getConfigs())
                 .thenReturn(List.of(
-                        new Config(_workTestLibrary, new HashSet<>(_runnableTests)),
-                        new Config(_workTestLibrary, new HashSet<>(_runnableTests))
+                        new Config(_workTestLibrary, new HashSet<>(_selectedTests)),
+                        new Config(_workTestLibrary, new HashSet<>(_selectedTests))
                 ));
                 this._mockMvc.perform(get("/configs/")).andDo(print()).andExpect(status().isFound())
                         .andExpect(jsonPath("$[0].workTestLibrary.path").value(_workTestLibrary.getPath()))
@@ -63,7 +62,7 @@ public class MvcMockConfigServiceTest {
     @Test
     public void webReturnByIdFromService() throws Exception {
         when(_configService.getConfigById(5L))
-                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_runnableTests))));
+                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_selectedTests))));
 
         this._mockMvc.perform(get("/config/5/")).andDo(print()).andExpect(status().isFound())
                 .andExpect(jsonPath("$.workTestLibrary.path").value(_workTestLibrary.getPath()))
@@ -74,7 +73,7 @@ public class MvcMockConfigServiceTest {
     }    @Test
     public void webReturnNullNotfoundByIdFromService() throws Exception {
         when(_configService.getConfigById(5L))
-                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_runnableTests))));
+                .thenReturn(Optional.of(new Config(_workTestLibrary, new HashSet<>(_selectedTests))));
 
         this._mockMvc.perform(get("/config/999/")).andDo(print()).andExpect(status().isNotFound());
 

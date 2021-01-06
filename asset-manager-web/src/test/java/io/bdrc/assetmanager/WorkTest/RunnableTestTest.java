@@ -125,7 +125,7 @@ class RunnableTestTest extends WorkTestTestBase {
 
         RunnableTest wtNew = new RunnableTest(wtOld);
 
-        assertEquals(wtNew, wtOld);
+        assertThat(wtNew.equals(wtOld));
     }
 
     @Test
