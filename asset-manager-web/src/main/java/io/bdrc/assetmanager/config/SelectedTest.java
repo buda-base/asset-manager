@@ -48,7 +48,18 @@ public class SelectedTest {
         return retMe;
     }
 
-    public SelectedTest() {}
+    protected SelectedTest() {}
+
+    /**
+     * Copy constructor
+     * @param source original
+     * @return deep copy of source
+     */
+    public SelectedTest(SelectedTest source) {
+        this.id = source.id;
+        this.config = new Config(source.config);
+        this.setSelectedTestParameterSet(source.selectedTestParameters);
+    }
 
     //region Accessors
     public Set<SelectedTestParameter> getSelectedTestParameterSet() {

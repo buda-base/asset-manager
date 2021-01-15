@@ -41,6 +41,7 @@ public class Config {
         this.setWorkTestLibrary(workTestLibrary);
         this.setTests(selectedTests);
     }
+
     /**
      * Ctor. create a config from a library and a selection of its tests
      * @param workTestLibrary Jar file containing the tests

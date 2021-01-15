@@ -4,7 +4,7 @@ import io.bdrc.assetmanager.WorkTest.RunnableTest;
 import io.bdrc.assetmanager.WorkTestLibrary.WorkTestLibrary;
 import io.bdrc.assetmanager.config.Config;
 import io.bdrc.assetmanager.config.ConfigService;
-import io.bdrc.assetmanager.config.ConfigServiceController;
+import io.bdrc.assetmanager.controllers.ConfigServiceController;
 import io.bdrc.assetmanager.config.SelectedTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

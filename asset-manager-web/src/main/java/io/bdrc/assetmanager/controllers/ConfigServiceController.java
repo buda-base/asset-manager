@@ -1,5 +1,10 @@
-package io.bdrc.assetmanager.config;
+package io.bdrc.assetmanager.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.bdrc.assetmanager.config.Config;
+import io.bdrc.assetmanager.config.ConfigService;
+import io.bdrc.assetmanager.config.SelectedTest;
 import net.bytebuddy.asm.Advice;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 public class ConfigServiceController {
@@ -48,6 +54,26 @@ public class ConfigServiceController {
     public ResponseEntity<Config> newConfig(@Valid @RequestBody Config configDetails) throws ResourceNotFoundException {
         Config updatedConfig = configService.addConfig(configDetails);
         return new ResponseEntity<>(updatedConfig,HttpStatus.OK);
+    }
+    @GetMapping("/testconfig/{id}")
+    public ResponseEntity<Config> getConfig(@PathVariable Long id) throws JsonProcessingException {
+        Optional<Config> look =  configService.getConfigById(id);
+        String s ;
+        String s2 ;
+        if (look.isPresent()) {
+            ObjectMapper om = new ObjectMapper();
+            Config cfg = look.get();
+            Set<SelectedTest> wt = cfg.getSelectedTests();
+
+            s  = om.writeValueAsString(cfg);
+            s2 = om.writeValueAsString(wt);
+        }
+        if (look.isPresent()) {
+            return new ResponseEntity<>(look.get(),  HttpStatus.FOUND );
+        }
+        else {
+            return  new ResponseEntity<>((Config)null,  HttpStatus.NOT_FOUND);
+        }
     }
 
 }

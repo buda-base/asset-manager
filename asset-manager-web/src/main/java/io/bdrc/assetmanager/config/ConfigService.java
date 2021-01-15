@@ -31,9 +31,7 @@ public class ConfigService implements IConfigService {
         if (config.getId() == null || config.getId() == 0) throw new EntityNotFoundException("Config");
         Optional<Config> origConfig = _configRepository.findById(config.getId());
         if (origConfig.isPresent()) {
-            modConfig = origConfig.get();
-            modConfig.setSelectedTests(config.getSelectedTests());
-            modConfig.setWorkTestLibrary(config.getWorkTestLibrary());
+            modConfig = new Config(config);
         }
         else throw new EntityNotFoundException(String.format("Config with id %d not found."
                 ,config.getId()));

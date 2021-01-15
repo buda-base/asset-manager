@@ -33,19 +33,5 @@ public class AuditToolController {
     private ConfigRepository _configRepository ;
 
     // @RequestParam(value="id",defaultValue = "1") always sets param as 1
-    @GetMapping("/XXXSeeConfigServiceControllerconfig/{id}")
-    public Optional<Config> getConfig(@PathVariable Long id) throws JsonProcessingException {
-        Optional<Config> look =  _configRepository.findById(id);
-        if (look.isPresent()) {
-            String s ;
-            String s2 ;
-            ObjectMapper om = new ObjectMapper();
-            Config cfg = look.get();
-            Set<SelectedTest> wt = cfg.getSelectedTests();
 
-            s  = om.writeValueAsString(cfg);
-            s2 = om.writeValueAsString(wt);
-        }
-        return look ;
-    }
 }
