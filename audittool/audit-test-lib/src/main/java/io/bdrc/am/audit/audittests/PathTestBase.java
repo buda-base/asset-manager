@@ -1,5 +1,7 @@
 package io.bdrc.am.audit.audittests;
 
+import io.bdrc.am.audit.iaudit.LibOutcome;
+
 import java.io.File;
 
 /**

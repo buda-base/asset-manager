@@ -1,5 +1,6 @@
 package io.bdrc.am.audit.audittests;
 
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;

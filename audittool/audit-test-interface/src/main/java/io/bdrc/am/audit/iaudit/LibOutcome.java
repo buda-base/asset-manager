@@ -1,8 +1,8 @@
-package io.bdrc.am.audit.audittests;
+package io.bdrc.am.audit.iaudit;
 
 /**
  * Outcomes specific to this test library. Namespace > 100,
- *  to dismbiguate between  io.bdrc.am.audit.iaudit.TestMessages values
+ *  to disambiguate between  io.bdrc.am.audit.iaudit.TestMessages values
  */
 public class LibOutcome {
     public static final Integer ROOT_NOT_FOUND                  = 101 ;

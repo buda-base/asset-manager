@@ -1,5 +1,6 @@
 package io.bdrc.am.audit.audittests;
 
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
