@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>audit-test-lib</artifactId>
-    <groupId>audit-test-lib</groupId>
+    <groupId>io.bdrc.am</groupId>
     <version>0.9-SNAPSHOT-1</version>
     <build>
         <plugins>
