@@ -1,4 +1,4 @@
-package io.bdrc.am.audit.audittests;
+package io.bdrc.am.audit.iaudit;
 
 /**
  * Outcomes specific to this test library. Namespace > 100,

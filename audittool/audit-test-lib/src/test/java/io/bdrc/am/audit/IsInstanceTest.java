@@ -1,7 +1,7 @@
 package io.bdrc.am.audit;
 
 
-import io.bdrc.am.audit.audittests.LibOutcome;
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.AuditTestConfig;
 import io.bdrc.am.audit.iaudit.Outcome;

@@ -1,7 +1,7 @@
 package io.bdrc.am.audit;
 
 
-import io.bdrc.am.audit.audittests.LibOutcome;
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFoldersInImageGroups;
 import io.bdrc.am.audit.iaudit.TestResult;
 import io.bdrc.am.audit.iaudit.message.TestMessage;

@@ -1,6 +1,6 @@
 package io.bdrc.am.audit;
 
-import io.bdrc.am.audit.audittests.LibOutcome;
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFilesInRoot;
 import io.bdrc.am.audit.iaudit.message.TestMessage;
 import io.bdrc.am.audit.iaudit.TestResult;

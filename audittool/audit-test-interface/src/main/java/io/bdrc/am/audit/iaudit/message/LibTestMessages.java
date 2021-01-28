@@ -5,11 +5,11 @@ import io.bdrc.am.audit.iaudit.Outcome;
 import java.util.Hashtable;
 
 /**
- * Singelton message dictionary
+ * Singleton message dictionary
  */
 public class LibTestMessages {
 
-    private static Hashtable<Integer, TestMessageFormat> _messageDictionary = new Hashtable<Integer,
+    private static final Hashtable<Integer, TestMessageFormat> _messageDictionary = new Hashtable<Integer,
             TestMessageFormat> () {
         {
             put(Outcome.NOT_RUN,  new TestMessageFormat(1, "Test %s awaiting execution"));
@@ -28,8 +28,12 @@ public class LibTestMessages {
 
     }
 
+    /**
+     * Load this class dictionary into an external dictionary
+     * @param messageDict gets this class' message options
+     */
     public void setMessages(Hashtable<Integer, TestMessageFormat> messageDict) {
-        _messageDictionary.putAll(messageDict);
+      messageDict.forEach(_messageDictionary::put);
     }
 
     // caller handles null return

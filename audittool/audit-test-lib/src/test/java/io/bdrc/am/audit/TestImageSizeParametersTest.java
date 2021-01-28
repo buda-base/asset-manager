@@ -1,7 +1,7 @@
 package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.ImageSizeTests;
-import io.bdrc.am.audit.audittests.LibOutcome;
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestResult;
