@@ -52,7 +52,7 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param why           enum of outcome
      * @param failedElement element which failed test
      */
-    void FailTest(Integer why, String... failedElement) {
+    protected void FailTest(Integer why, String... failedElement) {
 
         // filter out some errors.
         // For filtered errors, leave the state as is
@@ -137,18 +137,18 @@ public abstract class AuditTestBase implements IAuditTest {
             // Unchecked /
             keywordArgParams = (Hashtable<String, String>) params[1];
         }
-        parseLoad(_errorsWarningsPropertyKey, _passableErrors);
+        // See shell.properties
+        // name of the property which holds the list of errors which are not considered
+        // fatal.
+        final String errorsWarningsPropertyKey = "ErrorsAsWarning";
+        parseLoad(errorsWarningsPropertyKey, _passableErrors);
     }
 
     // region fields
     private final TestResult _testResult;
     private final String _testName;
 
-    // See shell.properties
-    // name of the property which holds the list of errors which are not considered
-    // fatal.
-    private final String _errorsWarningsPropertyKey = "ErrorsAsWarning";
-    private LinkedList<Integer> _passableErrors = new LinkedList<>();
+    private final LinkedList<Integer> _passableErrors = new LinkedList<>();
 
     // package private implies most of protected
     Logger sysLogger;
@@ -180,7 +180,8 @@ public abstract class AuditTestBase implements IAuditTest {
      */
     private static final Hashtable<Integer, TestMessageFormat> libTestMessages =
             new Hashtable<Integer, TestMessageFormat>() {{
-                put(LibOutcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not exist."));
+                put(LibOutcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not" +
+                        " exist."));
                 put(LibOutcome.FILES_IN_MAIN_FOLDER, new TestMessageFormat(2, "Root folder %s contains file %s"));
                 put(LibOutcome.DIR_IN_IMAGES_FOLDER, new TestMessageFormat(2, "Image group folder %s  contains " +
                                                                                       "directory %s"));

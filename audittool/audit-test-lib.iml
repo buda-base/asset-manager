@@ -11,7 +11,7 @@
       <sourceFolder url="file://$MODULE_DIR$/audit-test-lib/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/audit-test-lib/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.0.1" level="project" />

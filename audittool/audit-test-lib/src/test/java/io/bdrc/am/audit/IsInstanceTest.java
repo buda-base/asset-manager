@@ -2,8 +2,9 @@ package io.bdrc.am.audit;
 
 
 import io.bdrc.am.audit.iaudit.LibOutcome;
-import io.bdrc.am.audit.iaudit.AuditTestConfig;
+
 import io.bdrc.am.audit.iaudit.IAuditTest;
+import io.bdrc.am.audit.iaudit.AuditTestConfig;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -77,7 +78,6 @@ public class IsInstanceTest extends AuditTestTestBase {
             thisTest.LaunchTest();
             TestResult tr = thisTest.getTestResult();
             Assert.assertNotNull(tr);
-            String testName = thisTest.getTestName();
 
             Assert.assertEquals(String.format("Test %s not expected", thisTest.getTestName()),LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
         }
