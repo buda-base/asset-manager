@@ -1,57 +1,50 @@
 package io.bdrc.assetmanager.testrun;
 
+
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
 
-import java.util.EnumMap;
+
+import java.util.Map;
 
 /**
  * Maps audit tool Outcome to AssetManager TestRunOutcome
  */
 public class OutcomeMapper {
-    private static EnumMap<Outcome, TestRunOutcome> auditToolToAssetManagerMap = new EnumMap<>(Outcome.class);
-    private static EnumMap<TestRunOutcome, Outcome> assetmanagerToAuditToolMap = new EnumMap<>(TestRunOutcome.class);
 
-    private OutcomeMapper() {
+    private static final Map<Integer, Integer> auditToolToAssetManagerMap = Map.ofEntries(
+        Map.entry(Outcome.NOT_RUN, TestRunOutcome.NOT_RUN),
+        Map.entry(Outcome.PASS, TestRunOutcome.PASS),
+        Map.entry(Outcome.FAIL, TestRunOutcome.FAIL),
+        Map.entry(Outcome.SYS_EXC, TestRunOutcome.SYS_EXC),
+        Map.entry(LibOutcome.ROOT_NOT_FOUND, TestRunOutcome.ROOT_NOT_FOUND),
+        Map.entry(LibOutcome.FILE_SEQUENCE, TestRunOutcome.FILE_SEQUENCE),
+        Map.entry(LibOutcome.DIR_FAILS_SEQUENCE, TestRunOutcome.DIR_FAILS_SEQUENCE),
+        Map.entry(LibOutcome.FILES_IN_MAIN_FOLDER, TestRunOutcome.FILES_IN_MAIN_FOLDER),
+        Map.entry(LibOutcome.DIR_IN_IMAGES_FOLDER, TestRunOutcome.DIR_IN_IMAGES_FOLDER),
+        Map.entry(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, TestRunOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER),
+        Map.entry(LibOutcome.FILE_COUNT, TestRunOutcome.FILE_COUNT),
+        Map.entry(LibOutcome.DUP_SEQUENCE, TestRunOutcome.DUP_SEQUENCE),
+        Map.entry(LibOutcome.DUP_SEQUENCE_FOLDER, TestRunOutcome.DUP_SEQUENCE_FOLDER)
+    );
 
-        auditToolToAssetManagerMap.put(Outcome.NOT_RUN, TestRunOutcome.NOT_RUN);
-        auditToolToAssetManagerMap.put(Outcome.PASS, TestRunOutcome.PASS);
-        auditToolToAssetManagerMap.put(Outcome.FAIL, TestRunOutcome.FAIL);
-        auditToolToAssetManagerMap.put(Outcome.SYS_EXC, TestRunOutcome.SYS_EXC);
-        auditToolToAssetManagerMap.put(Outcome.ROOT_NOT_FOUND, TestRunOutcome.ROOT_NOT_FOUND);
-        auditToolToAssetManagerMap.put(Outcome.FILE_SEQUENCE, TestRunOutcome.FILE_SEQUENCE);
-        auditToolToAssetManagerMap.put(Outcome.DIR_FAILS_SEQUENCE, TestRunOutcome.DIR_FAILS_SEQUENCE);
-        auditToolToAssetManagerMap.put(Outcome.FILES_IN_MAIN_FOLDER, TestRunOutcome.FILES_IN_MAIN_FOLDER);
-        auditToolToAssetManagerMap.put(Outcome.DIR_IN_IMAGES_FOLDER, TestRunOutcome.DIR_IN_IMAGES_FOLDER);
-        auditToolToAssetManagerMap.put(Outcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, TestRunOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER);
-        auditToolToAssetManagerMap.put(Outcome.FILE_COUNT, TestRunOutcome.FILE_COUNT);
-        auditToolToAssetManagerMap.put(Outcome.DUP_SEQUENCE, TestRunOutcome.DUP_SEQUENCE);
-        auditToolToAssetManagerMap.put(Outcome.DUP_SEQUENCE_FOLDER, TestRunOutcome.DUP_SEQUENCE_FOLDER);
+    private static final Map<Integer, Integer> assetmanagerToAuditToolMap = Map.ofEntries(
+            Map.entry(TestRunOutcome.NOT_RUN, Outcome.NOT_RUN),
+            Map.entry(TestRunOutcome.PASS, Outcome.PASS),
+            Map.entry(TestRunOutcome.FAIL, Outcome.FAIL),
+            Map.entry(TestRunOutcome.SYS_EXC, Outcome.SYS_EXC),
+            Map.entry(TestRunOutcome.ROOT_NOT_FOUND, LibOutcome.ROOT_NOT_FOUND),
+            Map.entry(TestRunOutcome.FILE_SEQUENCE, LibOutcome.FILE_SEQUENCE),
+            Map.entry(TestRunOutcome.DIR_FAILS_SEQUENCE, LibOutcome.DIR_FAILS_SEQUENCE),
+            Map.entry(TestRunOutcome.FILES_IN_MAIN_FOLDER, LibOutcome.FILES_IN_MAIN_FOLDER),
+            Map.entry(TestRunOutcome.DIR_IN_IMAGES_FOLDER, LibOutcome.DIR_IN_IMAGES_FOLDER),
+            Map.entry(TestRunOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER),
+            Map.entry(TestRunOutcome.FILE_COUNT, LibOutcome.FILE_COUNT),
+            Map.entry(TestRunOutcome.DUP_SEQUENCE, LibOutcome.DUP_SEQUENCE),
+            Map.entry(TestRunOutcome.DUP_SEQUENCE_FOLDER, LibOutcome.DUP_SEQUENCE_FOLDER)
+    );
 
-        assetmanagerToAuditToolMap.put(TestRunOutcome.NOT_RUN, Outcome.NOT_RUN);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.PASS, Outcome.PASS);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.FAIL, Outcome.FAIL);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.SYS_EXC, Outcome.SYS_EXC);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.ROOT_NOT_FOUND, Outcome.ROOT_NOT_FOUND);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.FILE_SEQUENCE, Outcome.FILE_SEQUENCE);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.DIR_FAILS_SEQUENCE, Outcome.DIR_FAILS_SEQUENCE);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.FILES_IN_MAIN_FOLDER, Outcome.FILES_IN_MAIN_FOLDER);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.DIR_IN_IMAGES_FOLDER, Outcome.DIR_IN_IMAGES_FOLDER);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, Outcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.FILE_COUNT, Outcome.FILE_COUNT);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.DUP_SEQUENCE, Outcome.DUP_SEQUENCE);
-        assetmanagerToAuditToolMap.put(TestRunOutcome.DUP_SEQUENCE_FOLDER, Outcome.DUP_SEQUENCE_FOLDER);
-    }
-
-    private static OutcomeMapper _instance = null;
-
-    public static OutcomeMapper getInstance() {
-        if (_instance == null) {
-            _instance = new OutcomeMapper();
-        }
-        return _instance;
-    }
-
-    public static TestRunOutcome fromOutcome(Outcome outcome)
+    public static Integer AssetManagerOutcomeFromLibTestOutcome(Integer outcome)
     {
         if (auditToolToAssetManagerMap.containsKey(outcome)) {
             return auditToolToAssetManagerMap.get(outcome);
@@ -59,7 +52,10 @@ public class OutcomeMapper {
         return TestRunOutcome.UNKNOWN;
     }
 
-    public static Outcome fromTestRunOutcome(TestRunOutcome testRunOutcome) {
-        return assetmanagerToAuditToolMap.get(testRunOutcome);
+    public static Integer LibTestOutcomeFromAssetManagerOutcome(Integer testRunOutcome) {
+        if (assetmanagerToAuditToolMap.containsKey(testRunOutcome)) {
+            return assetmanagerToAuditToolMap.get(testRunOutcome);
+        }
+        return LibOutcome.UNKNOWN;
     }
 }

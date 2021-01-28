@@ -3,7 +3,6 @@ package io.bdrc.assetmanager.testrun;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.bdrc.am.audit.iaudit.*;
 
 @Entity
@@ -29,20 +28,19 @@ public class TestRunResult {
 
     /**
      * Construct from audit tool
-     * @param auditTestResult
+     * @param auditTestResult audit tool Test Library test outcome
      */
     public TestRunResult(TestResult auditTestResult) {
-        setTestRunOutcome(OutcomeMapper.fromOutcome(auditTestResult.getOutcome()));
-
+        setTestRunOutcome(OutcomeMapper.AssetManagerOutcomeFromLibTestOutcome(auditTestResult.getOutcome()));
     }
 
-    public TestRunOutcome getTestRunOutcome() {
+    public Integer getTestRunOutcome() {
         return _testRunOutcome;
     }
 
-    public void setTestRunOutcome(final TestRunOutcome testRunOutcome) {
+    public void setTestRunOutcome(final Integer testRunOutcome) {
         _testRunOutcome = testRunOutcome;
     }
 
-    private TestRunOutcome _testRunOutcome ;
+    private Integer _testRunOutcome ;
 }
