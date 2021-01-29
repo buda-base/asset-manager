@@ -1,15 +1,12 @@
 package io.bdrc.am.audit.audittests;
 
-import com.google.common.collect.Streams;
 import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
@@ -18,8 +15,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import static javax.imageio.metadata.IIOMetadataFormatImpl.standardMetadataFormatName;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 public class ImageAttributeTests extends ImageGroupParents {
     /**
@@ -53,7 +51,7 @@ public class ImageAttributeTests extends ImageGroupParents {
             try (DirectoryStream<Path> imageGroupParents = Files.newDirectoryStream(Paths.get(getPath()), filter)) {
                 for (Path anImageGroupParent : imageGroupParents) {
 
-                   MarkVisited(anImageGroupParent.getFileName().toString());
+                    MarkVisited(anImageGroupParent.getFileName().toString());
 
                     DirectoryStream.Filter<Path> imageGroupFilter =
                             entry -> (entry.toFile().isDirectory()
@@ -73,7 +71,7 @@ public class ImageAttributeTests extends ImageGroupParents {
 
             }
 
-            ReportUnvisited( sysLogger, false);
+            ReportUnvisited(sysLogger, false);
 
         }
 
@@ -98,10 +96,10 @@ public class ImageAttributeTests extends ImageGroupParents {
          * <p>
          * The Java analogues of this are:
          * Pil Image.format = ImageIo.Reader type reader instanceof TIFFImageReader orJPEGImageReader
-         * (see ReaderAtts ctor)
+         * (see ImageAttributes ctor)
          * <p>
          * .info["compression"] = IIOMetadata node "CompressionTypeName"
-         * .mode = ImageTypeSpecifier.getBuffereImageType (see BufferImage.java for constants)
+         * .mode = ImageTypeSpecifier.getBufferedImageType (see BufferImage.java for constants)
          *
          * @param imageGroupParent folder containing imageGroups
          * @throws IOException If io error
@@ -128,12 +126,10 @@ public class ImageAttributeTests extends ImageGroupParents {
             sysLogger.debug("Classpath {}", classpathStr);
             sysLogger.debug("Pre scan for plugins - by suffix ");
 
-            if (sysLogger.isDebugEnabled())
-            {
+            if (sysLogger.isDebugEnabled()) {
                 Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
 
-                while (ir.hasNext())
-                {
+                while (ir.hasNext()) {
                     ImageReader r = ir.next();
                     sysLogger.debug("reader obj: {}, class: {}", r, r.getClass().getCanonicalName());
                 }
@@ -143,8 +139,7 @@ public class ImageAttributeTests extends ImageGroupParents {
                 ImageIO.scanForPlugins();
                 IIORegistry.getDefaultInstance().registerApplicationClasspathSpis();
                 ir = ImageIO.getImageReadersByFormatName("TIFF");
-                while (ir.hasNext())
-                {
+                while (ir.hasNext()) {
                     ImageReader r = ir.next();
                     sysLogger.debug("reader obj: {}, class: {}", r, r.getClass().getCanonicalName());
                 }
@@ -152,111 +147,91 @@ public class ImageAttributeTests extends ImageGroupParents {
                 sysLogger.debug("----------------------------------------");
                 sysLogger.debug("Scan for reader file suffixes");
                 String[] a = ImageIO.getReaderFileSuffixes();
-                for (int i = 0; i < a.length; i++)
-                {
+                for (int i = 0; i < a.length; i++) {
                     sysLogger.debug("reader file suffix {}: {}", i, a[i]);
                 }
             }
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile()
-                                      && !(entry.toFile().isHidden()
-                                                   || entry.toString().endsWith("json")));
+                            && !(entry.toFile().isHidden()
+                            || entry.toString().endsWith("json")));
 
-            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter))
-            {
-                for (Path imageFile : imageFiles)
-                {
+            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter)) {
+                for (Path imageFile : imageFiles) {
                     File fileObject = imageFile.toAbsolutePath().toFile();
                     String fileObjectPathString = imageFile.toAbsolutePath().toString();
 
-                    String fileExt = FilenameUtils.getExtension(fileObjectPathString);
+                    // String fileExt = FilenameUtils.getExtension(fileObjectPathString);
 
-                    ImageReader reader;
+                    boolean validatedFile = false;
 
-                    try
-                    {
+
+                    try {
 
                         // Thanks marc Agate
-                        reader = Streams.stream(ImageIO.getImageReadersBySuffix(fileExt))
-                                         .findFirst()
-                                         .orElseThrow
-                                                  (UnsupportedFormatException::new);
+//                        reader = Streams.stream(ImageIO.getImageReadersBySuffix(fileExt))
+//                                         .findFirst()
+//                                         .orElseThrow
+//                                                  (UnsupportedFormatException::new);
 
                         // sysLogger.debug("Got reader from ImageReadersBySuffix");
-                        ImageInputStream in = ImageIO.createImageInputStream(fileObject);
+                        ImageInputStream imageInputStream = ImageIO.createImageInputStream(fileObject);
+                        // this ide from https://github.com/haraldk/TwelveMonkeys/issues/428
+                        Iterator<ImageReader> readers = ImageIO.getImageReaders(imageInputStream);
 
-                        ReaderAtts ra = new ReaderAtts(reader);
+                        while (!validatedFile && readers.hasNext()) {
+                            ImageReader reader = readers.next();
 
-                        // we don't care about jpgs
-                        if (ra.ImageFileFormat.equals(ReaderAtts.FILE_JPG))
-                        {
-                            in.close();
-                            reader.dispose();
-                            continue;
-                        }
-                        try
-                        {
-                            reader.setInput(in);
+                            // We need a certain reader. Try the next one in the list if
+                            // this reader doesnt work
+                            try {
+                                ImageAttributes readerAttribs = new ImageAttributes(reader);
 
-                            for (int i = 0; i < reader.getNumImages(true); i++)
-                            {
-                                InternalImageAtts iias = new InternalImageAtts();
-                                ra.InternalImageAtts = iias;
-                                ImageTypeSpecifier its = Streams.stream(reader.getImageTypes(0))
-                                                                 .findFirst().orElseThrow(UnsupportedFormatException::new);
+                                try {
 
-                                // sysLogger.debug("Got imageTypeSpecifier from getImageTypes");
-                                ImageTypeAtts itas = new ImageTypeAtts();
-                                iias.ImageTypeAtts = itas;
+                                    reader.setInput(imageInputStream);
 
-                                itas.BitDepth = its.getColorModel().getPixelSize();
+                                    // Slow - take out of loop
+                                    if (reader.getNumImages(true) < 1) {
+                                        continue;
+                                    }
+                                    // Later - do multiple images
+                                        readerAttribs.LoadInternalImageAttribs(reader,0);
+                                        // Extract EXIF data, to validate rotation
 
-                                // See java.awt.image.BufferedImage
-                                itas.ImageTypeNum = its.getBufferedImageType();
-
-
-                                try
-                                {
-                                    iias.iioMetadata = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree
-                                                                                                            (standardMetadataFormatName);
-
-                                    // dont care if fails
-                                    iias.Compression = ((IIOMetadataNode) (iias.iioMetadata.getElementsByTagName
-                                                                                                    ("CompressionTypeName")).item(0)).getAttribute("value");
-                                } catch (Exception eek)
-                                {
-                                    iias.iioMetadata = null;
-                                    iias.Compression = "EXC_READ";
-                                    sysLogger.error(eek.getMessage());
+                                } finally {
+                                    // jimk asset-manager-73
+                                    imageInputStream.close();
+                                    reader.dispose();
                                 }
-                            }
-                        } finally
-                        {
-                            // jimk asset-manager-73
-                            in.close();
-                            reader.dispose();
-                        }
 
-                        // Phew. We got image data!!!!
-                        String validationErrors = validate(ra);
-                        if (validationErrors.length() > 0)
-                        {
-                            FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
-                        }
-                    } catch (UnsupportedFormatException usfx)
-                    {
-//                        usfx.printStackTrace(System.out);
-                        FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
-                    } catch (NoSuchFileException nsfe)
-                    {
+
+                            // Phew. We got image data!!!!
+                            String validationErrors = validate(readerAttribs);
+                            if (validationErrors.length() > 0) {
+                                FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
+                            }
+                            validatedFile = true;
+
+                            } catch (UnsupportedFormatException usfx) {
+
+                                // All this means is that the reader is not one of the ones we care
+                                // about. Try another reader
+                            }
+                        }    // for each reader
+                    } catch (NoSuchFileException nsfe) {
                         String badPath = nsfe.getFile();
                         sysLogger.error("No such file {}", badPath);
                         FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
-                    } catch (Exception eek)
-                    {
+                    } catch (Exception eek) {
                         FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
-                                                                                                                      .getMessage
-                                                                                                                               ());
+                                .getMessage
+                                        ());
+                    }
+
+                    // None of the available readers could read this file
+                    if (!validatedFile) {
+                        FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
                     }
 
 
@@ -292,12 +267,12 @@ im.mode (values. Caredabout: 1)
             sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
                     getTestResult()
                             .getErrors().size());
-            if (!IsTestFailed())
-            {
+            if (!IsTestFailed()) {
                 PassTest();
             }
 
         }
+
 
         /**
          * Validate normalized image statistics
@@ -307,42 +282,37 @@ im.mode (values. Caredabout: 1)
          * <p>
          * If TIFF, image must be Group4 compression and "binary"
          *
-         * @param readerAtts collected image statistics from reader
+         * @param imageAttributes collected image statistics from reader
          */
-        private String validate(final ReaderAtts readerAtts) {
+        private String validate(final ImageAttributes imageAttributes) {
             boolean failed = false;
             StringBuilder failedReasons = new StringBuilder();
 
-            if (readerAtts.ImageFileFormat.equals(ReaderAtts.FILE_TIFF))
-            {
+            if (imageAttributes.ImageFileFormat.equals(ImageAttributes.FILE_TIFF)) {
 
                 // Test mode: 1 bit/pixel, image type num one of the
                 // BufferedImage.ImageType enums
-                ImageTypeAtts itas = readerAtts.InternalImageAtts.ImageTypeAtts;
+                InternalImageAtts itas = imageAttributes.InternalImageAtts;
 
                 // We only care about non-monochrome files
-                if (itas.BitDepth == 1)
-                {
+                if (itas.BitDepth == 1) {
                     if (!(itas.ImageTypeNum == BufferedImage.TYPE_BYTE_GRAY ||
-                                  itas.ImageTypeNum == BufferedImage.TYPE_BYTE_BINARY ||
-                                  itas.ImageTypeNum == BufferedImage.TYPE_USHORT_GRAY))
-                    {
+                            itas.ImageTypeNum == BufferedImage.TYPE_BYTE_BINARY ||
+                            itas.ImageTypeNum == BufferedImage.TYPE_USHORT_GRAY)) {
                         failed = true;
                         failedReasons.append("binarytif");
                     }
 
-                    if (!(readerAtts.InternalImageAtts.IsGroup4Compression()))
-                    {
+                    if (!(imageAttributes.InternalImageAtts.IsGroup4Compression())) {
                         String pluralString = "";
-                        if (failed)
-                        {
+                        if (failed) {
                             pluralString = "-";
                         }
                         failedReasons.append(String.format("%stiffnotgroup4 :%s", pluralString,
                                 String.format("bd:%d:\titn :%d:\tcomp :%s:",
                                         itas.BitDepth,
                                         itas.ImageTypeNum,
-                                        readerAtts.InternalImageAtts
+                                        imageAttributes.InternalImageAtts
                                                 .Compression)));
                     }
                 }
@@ -358,8 +328,7 @@ im.mode (values. Caredabout: 1)
         // have base class tests here?
         // Yes, under the doctrine of One responsibility
         RunBaseTests();
-        if (IsTestFailed())
-        {
+        if (IsTestFailed()) {
             return;
         }
         TestWrapper(new ImageAttributeTestOperation());
@@ -368,11 +337,10 @@ im.mode (values. Caredabout: 1)
     // region private methods
 
     /**
-     *
      * @return if there is any non-empty image group parents
      */
     private boolean hasValidTargets(ArrayList<String> possibles) {
-       return possibles.stream().anyMatch(x -> x.length() > 0);
+        return possibles.stream().anyMatch(x -> x.length() > 0);
     }
     // endregion
 
