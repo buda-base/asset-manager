@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class FileSequence extends ImageGroupParents {
 

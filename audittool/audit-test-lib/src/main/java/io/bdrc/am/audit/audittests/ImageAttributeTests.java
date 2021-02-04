@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
@@ -15,8 +14,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class ImageAttributeTests extends ImageGroupParents {
@@ -69,6 +67,8 @@ public class ImageAttributeTests extends ImageGroupParents {
                 sysLogger.error("Directory iteration error", die);
                 FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
 
+            } catch (UnsupportedFormatException e) {
+                e.printStackTrace();
             }
 
             ReportUnvisited(sysLogger, false);
@@ -104,29 +104,113 @@ public class ImageAttributeTests extends ImageGroupParents {
          * @param imageGroupParent folder containing imageGroups
          * @throws IOException If io error
          */
-        private void TestImages(final Path imageGroupParent) throws IOException {
+        private void TestImages(final Path imageGroupParent) throws IOException, UnsupportedFormatException {
 
-            /*
-            Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
-            ImageReader aReader;
-            while (readers.hasNext()) {
-                aReader = readers.next();
-                System.out.println("reader: " + aReader);
+            debugImageReaders();
+            DirectoryStream.Filter<Path> filter =
+                    entry -> (entry.toFile().isFile()
+                            && !(entry.toFile().isHidden()
+                            || entry.toString().endsWith("json")));
+
+            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter)) {
+                for (Path imageFile : imageFiles) {
+                    File fileObject = imageFile.toAbsolutePath().toFile();
+                    java.lang.String fileObjectPathString = imageFile.toAbsolutePath().toString();
+
+                    boolean validatedFile = false;
+
+                    try {
+                        
+                        // sysLogger.debug("Got reader from ImageReadersBySuffix");
+                        ImageInputStream imageInputStream = ImageIO.createImageInputStream(fileObject);
+                        // this idea from https://github.com/haraldk/TwelveMonkeys/issues/428
+                        Iterator<ImageReader> readers = ImageIO.getImageReaders(imageInputStream);
+
+                        while (!validatedFile && readers.hasNext()) {
+                            ImageReader reader = readers.next();
+
+                            // We need a certain reader. Try the next one in the list if
+                            // this reader doesnt work
+                            try {
+                                ImageAttributes readerAttribs = new ImageAttributes(reader);
+                                try {
+                                    reader.setInput(imageInputStream);
+
+                                    // Slow - take out of loop
+                                    if (reader.getNumImages(true) < 1) {
+                                        continue;
+                                    }
+                                    // Later - do multiple images
+                                    readerAttribs.InternalImageAtts = new InternalImageAtts(reader, 0);
+                                } finally {
+                                    // jimk asset-manager-73
+                                    imageInputStream.close();
+                                    reader.dispose();
+                                }
+
+                                // Phew. We got image data!!!!
+
+                                String validationErrors = validate(readerAttribs);
+                                if (validationErrors.length() > 0) {
+                                    FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
+                                }
+                                validatedFile = true;  // break out of readers loop - we validated this file
+
+                            } catch (UnsupportedFormatException usfx) {
+
+                                // All this means is that the reader is not one of the ones we care
+                                // about. Try another reader
+                            }
+                        }    // for each reader
+                    } catch (NoSuchFileException nsfe) {
+                        String badPath = nsfe.getFile();
+                        sysLogger.error("No such file {}", badPath);
+                        FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
+                    } catch (Exception eek) {
+                        FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
+                                .getMessage
+                                        ());
+                    }
+
+                    // None of the available readers could read this file
+                    if (!validatedFile) {
+                        FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
+                    }
+
+                    try {
+                        ImageEXIFAttributes exifAttrs = new ImageEXIFAttributes(fileObject);
+                        List<ImageEXIFBead> invalidExifAttrs = validateEXIF(exifAttrs);
+                        if (invalidExifAttrs.size() > 0) {
+                            StringBuilder badTags = new StringBuilder();
+                            invalidExifAttrs.forEach(x -> {
+                                badTags.append(x.toString());
+                                badTags.append(System.getProperty("line.separator"));
+                            });
+                            FailTest(LibOutcome.INVALID_EXIF, fileObjectPathString, badTags.toString());
+                        }
+                    }
+                    catch (UnsupportedFormatException ufe) {
+                        FailTest(LibOutcome.INVALID_EXIF, fileObjectPathString);
+                    }
+
+                    // TODO:  1 image / file !!!!
+                 }
             }
 
-            readers = ImageIO.getImageReadersByFormatName("TIFF");
-            while (readers.hasNext()) {
-                aReader = readers.next();
-                System.out.println("reader: " + aReader);
-
+            sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
+                    getTestResult()
+                            .getErrors().size());
+            if (!IsTestFailed()) {
+                PassTest();
             }
-            */
-            // before you scan for plugins
-            String classpathStr = System.getProperty("java.class.path");
-            sysLogger.debug("Classpath {}", classpathStr);
-            sysLogger.debug("Pre scan for plugins - by suffix ");
 
+        }
+
+        private void debugImageReaders() {
             if (sysLogger.isDebugEnabled()) {
+                String classpathStr = System.getProperty("java.class.path");
+                sysLogger.debug("Classpath {}", classpathStr);
+                sysLogger.debug("Pre scan for plugins - by suffix ");
                 Iterator<ImageReader> ir = ImageIO.getImageReadersBySuffix("tif");
 
                 while (ir.hasNext()) {
@@ -151,134 +235,16 @@ public class ImageAttributeTests extends ImageGroupParents {
                     sysLogger.debug("reader file suffix {}: {}", i, a[i]);
                 }
             }
-            DirectoryStream.Filter<Path> filter =
-                    entry -> (entry.toFile().isFile()
-                            && !(entry.toFile().isHidden()
-                            || entry.toString().endsWith("json")));
-
-            try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter)) {
-                for (Path imageFile : imageFiles) {
-                    File fileObject = imageFile.toAbsolutePath().toFile();
-                    String fileObjectPathString = imageFile.toAbsolutePath().toString();
-
-                    // String fileExt = FilenameUtils.getExtension(fileObjectPathString);
-
-                    boolean validatedFile = false;
-
-
-                    try {
-
-                        // Thanks marc Agate
-//                        reader = Streams.stream(ImageIO.getImageReadersBySuffix(fileExt))
-//                                         .findFirst()
-//                                         .orElseThrow
-//                                                  (UnsupportedFormatException::new);
-
-                        // sysLogger.debug("Got reader from ImageReadersBySuffix");
-                        ImageInputStream imageInputStream = ImageIO.createImageInputStream(fileObject);
-                        // this ide from https://github.com/haraldk/TwelveMonkeys/issues/428
-                        Iterator<ImageReader> readers = ImageIO.getImageReaders(imageInputStream);
-
-                        while (!validatedFile && readers.hasNext()) {
-                            ImageReader reader = readers.next();
-
-                            // We need a certain reader. Try the next one in the list if
-                            // this reader doesnt work
-                            try {
-                                ImageAttributes readerAttribs = new ImageAttributes(reader);
-
-                                try {
-
-                                    reader.setInput(imageInputStream);
-
-                                    // Slow - take out of loop
-                                    if (reader.getNumImages(true) < 1) {
-                                        continue;
-                                    }
-                                    // Later - do multiple images
-                                        readerAttribs.LoadInternalImageAttribs(reader,0);
-                                        // Extract EXIF data, to validate rotation
-
-                                } finally {
-                                    // jimk asset-manager-73
-                                    imageInputStream.close();
-                                    reader.dispose();
-                                }
-
-
-                            // Phew. We got image data!!!!
-                            String validationErrors = validate(readerAttribs);
-                            if (validationErrors.length() > 0) {
-                                FailTest(LibOutcome.INVALID_TIFF, fileObjectPathString, validationErrors);
-                            }
-                            validatedFile = true;
-
-                            } catch (UnsupportedFormatException usfx) {
-
-                                // All this means is that the reader is not one of the ones we care
-                                // about. Try another reader
-                            }
-                        }    // for each reader
-                    } catch (NoSuchFileException nsfe) {
-                        String badPath = nsfe.getFile();
-                        sysLogger.error("No such file {}", badPath);
-                        FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
-                    } catch (Exception eek) {
-                        FailTest(Outcome.SYS_EXC, "ImageAttributeTest", " in " + fileObjectPathString + ":" + eek
-                                .getMessage
-                                        ());
-                    }
-
-                    // None of the available readers could read this file
-                    if (!validatedFile) {
-                        FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
-                    }
-
-
-                    // TODO:  1 image / file !!!!
-                    /*
-                    *  fields: im: Image.open
-im.width
-im.height
-im.info["compression"] "group4"  " G4 is defined in the ITU-T T.6 fax standard for transmitting black and white images."
-"CCITT T6" (T.6?) (per Java Imaging IO  is the name of Group 4 encoding
-im.mode (values. Caredabout: 1)
-
-                    *
-                     */
-
-                    /*
-                    int iiwidth = reader.getWidth(0);
-                    int iiHeight = reader.getHeight(0);
-                    ImageTypeSpecifier imgType = reader.getImageTypes(0).next();
-                    int iibitDepth = imgType.getColorModel().getPixelSize();
-                    int imgTypeNum = imgType.getBufferedImageType();
-
-                    // Can use image metadata,
-                            IIOMetadata imageMeta = reader.getImageMetadata(0);
-                    // or image stream metadata
-                    //      https://www.silverbaytech.com/2014/05/29/iiometadata-tutorial-part-2-retrieving-image-metadata/
-                    //      IIOMetadata imageMeta = reader.getStreamMetadata(0);
-                            sysLogger.info(imageMeta.getNativeMetadataFormatName());
-                            */
-                }
-            }
-
-            sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
-                    getTestResult()
-                            .getErrors().size());
-            if (!IsTestFailed()) {
-                PassTest();
-            }
-
         }
-
 
         /**
          * Validate normalized image statistics
          * if format is "TIFF"
          * - Compression must be "CCITT T6" ( group 4) or "CCITT T.6" (libraries are inconsistent)
          * - ImageTypeNum must be BufferedImage.TYPE_BYTE_BINARY
+         * for all files:
+         * - validate either there's no rotation data, or the rotation is
+         * bit is '1' (for straight up)
          * <p>
          * If TIFF, image must be Group4 compression and "binary"
          *
@@ -317,12 +283,48 @@ im.mode (values. Caredabout: 1)
                     }
                 }
             }
-
             return failedReasons.toString();
         }
+
+        /**
+         * Validates an image EXIF data is acceptable.
+         * @param imageExif Captured EXIF data
+         * @return the list of EXIF attributes which failed.
+         * Tests:
+         * - Orientation, if present, must be "up" (0x1)
+         */
+        private List<ImageEXIFBead> validateEXIF(ImageEXIFAttributes imageExif) {
+            List<ImageEXIFBead> failedEXIFs = new ArrayList<>();
+
+            // Test for orientation. This is the only test so far
+            imageExif.getExifAttributes().forEach( b -> {
+                if (b.getTagNumber() == ImageEXIFAttributes.ORIENTATION_TAG) {
+                    validOrientation(b,failedEXIFs);
+                }
+
+                // Add other tests here
+            });
+
+            return failedEXIFs;
+
+        }
+
+        /**
+         * Test an EXIF attribute for validity
+         * @param bead bead to test for rotation
+         * @param outList existing list. Adds a failed rotation node to the output list.
+         *
+         */
+        private void validOrientation(ImageEXIFBead bead, List<ImageEXIFBead> outList) {
+
+            if (bead.getTagNumber() == ImageEXIFAttributes.ORIENTATION_TAG
+                && bead.getTagValue() != ImageEXIFAttributes.NO_EXIF_ROTATION_TAG
+                && bead.getTagValue() != ImageEXIFAttributes.EXIF_ROTATION_TAG_UP) {
+                outList.add(bead);
+            }
+        }
     }
-
-
+    
     @Override
     public void LaunchTest() {
         // have base class tests here?
@@ -335,7 +337,6 @@ im.mode (values. Caredabout: 1)
     }
 
     // region private methods
-
     /**
      * @return if there is any non-empty image group parents
      */
@@ -345,3 +346,32 @@ im.mode (values. Caredabout: 1)
     // endregion
 
 }
+
+/* * Old test code **/
+                   /*
+                    *  fields: im: Image.open
+im.width
+im.height
+im.info["compression"] "group4"  " G4 is defined in the ITU-T T.6 fax standard for transmitting black and white images."
+"CCITT T6" (T.6?) (per Java Imaging IO  is the name of Group 4 encoding
+im.mode (values. Caredabout: 1)
+
+                    *
+                     */
+
+                    /*
+                    int iiwidth = reader.getWidth(0);
+                    int iiHeight = reader.getHeight(0);
+                    ImageTypeSpecifier imgType = reader.getImageTypes(0).next();
+                    int iibitDepth = imgType.getColorModel().getPixelSize();
+                    int imgTypeNum = imgType.getBufferedImageType();
+
+                    // Can use image metadata,
+                            IIOMetadata imageMeta = reader.getImageMetadata(0);
+                    // or image stream metadata
+                    //      https://www.silverbaytech.com/2014/05/29/iiometadata-tutorial-part-2-retrieving-image-metadata/
+                    //      IIOMetadata imageMeta = reader.getStreamMetadata(0);
+                            sysLogger.info(imageMeta.getNativeMetadataFormatName());
+                            */
+
+
