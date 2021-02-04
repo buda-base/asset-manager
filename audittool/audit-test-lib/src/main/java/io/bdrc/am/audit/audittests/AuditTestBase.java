@@ -56,8 +56,7 @@ public abstract class AuditTestBase implements IAuditTest {
 
         // filter out some errors.
         // For filtered errors, leave the state as is
-        if (!_passableErrors.contains(why))
-        {
+        if (!_passableErrors.contains(why)) {
             _testResult.setOutcome(Outcome.FAIL);
         }
         _testResult.AddError(why, failedElement);
@@ -96,13 +95,11 @@ public abstract class AuditTestBase implements IAuditTest {
      * @param testOperation: the method which implements the test
      */
     void TestWrapper(ITestOperation testOperation) {
-        try
-        {
+        try {
             // TODO: Create get logger name
             sysLogger.info(String.format("invoking test operation %s", testOperation.getName()));
             testOperation.run();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
 
             // Records a special case: where the test did not run to completion,
             // so it neither passed nor failed.
@@ -132,8 +129,7 @@ public abstract class AuditTestBase implements IAuditTest {
     public void setParams(Object... params)
     {
         // All tests may need some parameters. They can extract parameters from this dictionary
-        if (params.length > 1)
-        {
+        if (params.length > 1) {
             // Unchecked /
             keywordArgParams = (Hashtable<String, String>) params[1];
         }
@@ -184,9 +180,9 @@ public abstract class AuditTestBase implements IAuditTest {
                         " exist."));
                 put(LibOutcome.FILES_IN_MAIN_FOLDER, new TestMessageFormat(2, "Root folder %s contains file %s"));
                 put(LibOutcome.DIR_IN_IMAGES_FOLDER, new TestMessageFormat(2, "Image group folder %s  contains " +
-                                                                                      "directory %s"));
+                        "directory %s"));
                 put(LibOutcome.DIR_FAILS_DIR_IN_IMAGES_FOLDER, new TestMessageFormat(1, "Image group folder %s  fails " +
-                                                                                                "files only test."));
+                        "files only test."));
                 put(LibOutcome.FILE_SEQUENCE, new TestMessageFormat(1, "Sequence %s not found"));
                 put(LibOutcome.DIR_FAILS_SEQUENCE, new TestMessageFormat(1, "Folder %s fails sequence test."));
                 put(LibOutcome.DUP_SEQUENCE, new TestMessageFormat(2, "Duplicate Sequence %s and %s found"));
@@ -194,9 +190,11 @@ public abstract class AuditTestBase implements IAuditTest {
                 put(LibOutcome.FILE_COUNT, new TestMessageFormat(3, "Folder %s expected %s files in folder , found %s"));
                 put(LibOutcome.NO_IMAGE_READER, new TestMessageFormat(1, "Image file %s has no suitable reader."));
                 put(LibOutcome.INVALID_TIFF, new TestMessageFormat(2, "Image file %s is invalid TIFF. Reasons: %s "));
-                put(LibOutcome.FILE_SIZE, new TestMessageFormat(3, "Image file %s size %s exceeds maximum of %s" ));
+                put(LibOutcome.FILE_SIZE, new TestMessageFormat(3, "Image file %s size %s exceeds maximum of %s"));
                 put(LibOutcome.BAD_FILE_SIZE_ARG, new TestMessageFormat(1, "Invalid file size argument %s. Requires " +
-                                                                                   "n[K|M|G]" ));
+                        "n[K|M|G]"));
+                put(LibOutcome.INVALID_EXIF, new TestMessageFormat(2,
+                        "Image file %s contains invalid EXIF tags: %s"));
 
             }};
 
@@ -210,23 +208,17 @@ public abstract class AuditTestBase implements IAuditTest {
 
 
         String kwname = keywordArgParams.getOrDefault(name, "");
-        try
-        {
+        try {
             // Special case parameter
             String[] pEArray = kwname.split(",");
-            Arrays.stream(pEArray).filter( x -> !x.isEmpty()).forEach(
+            Arrays.stream(pEArray).filter(x -> !x.isEmpty()).forEach(
 
-                            x -> dest.add(Integer.parseInt(x))
-                    );
-        }
-        catch (NumberFormatException nfe)
-        {
-            throw  new NumberFormatException(String.format("Property %s, value %s is not a list of Integers.",name,
+                    x -> dest.add(Integer.parseInt(x))
+            );
+        } catch (NumberFormatException nfe) {
+            throw new NumberFormatException(String.format("Property %s, value %s is not a list of Integers.", name,
                     kwname));
-        }
-
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

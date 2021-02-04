@@ -11,9 +11,9 @@
     <packaging>pom</packaging>
     <version>0.9-SNAPSHOT-1</version>
     <modules>
-        <module>audit-test-shell</module>
-        <module>audit-test-interface</module>
         <module>audit-test-lib</module>
+        <module>audit-test-interface</module>
+        <module>audit-test-shell</module>
     </modules>
     <build>
         <pluginManagement>
@@ -58,6 +58,12 @@
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>audit-test-interface</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>${project.packaging}</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>audit-test-lib</artifactId>
                                     <version>${project.version}</version>
                                     <type>${project.packaging}</type>
                                 </artifactItem>
