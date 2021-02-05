@@ -3,6 +3,7 @@ package io.bdrc.am.audit.audittests;
 import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.*;
 
@@ -21,9 +22,17 @@ public class NoFilesInRoot extends PathTestBase  {
      * Tests for no files in root directory.
      *
      */
+
+    public NoFilesInRoot() {
+        this(LoggerFactory.getLogger(NoFilesInRoot.class));
+    }
     public NoFilesInRoot(Logger logger)
     {
-        super("NoFilesInRoot");
+        this(logger,TestDictionary.NO_FILES_IN_FOLDER_TEST_NAME);
+    }
+
+    public NoFilesInRoot(Logger logger, final String testName) {
+        super(testName);
         sysLogger = logger;
     }
     //endregion

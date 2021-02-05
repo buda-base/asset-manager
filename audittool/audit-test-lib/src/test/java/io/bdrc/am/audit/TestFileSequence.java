@@ -2,6 +2,7 @@ package io.bdrc.am.audit;
 
 
 import io.bdrc.am.audit.audittests.*;
+import io.bdrc.am.audit.audittests.TestDictionary;
 import io.bdrc.am.audit.iaudit.*;
 import io.bdrc.am.audit.iaudit.message.TestMessage;
 import org.junit.*;
@@ -29,7 +30,7 @@ public class TestFileSequence extends AuditTestTestBase{
 
     private final Hashtable<String, String> _emptySequenceTestParams = new Hashtable<>();
     private final Hashtable<String,String> _activeSequenceTestParams = new Hashtable<String,String>() {{
-            put(ARC_GROUP_PARENT, "harkeBeepar0lYn");
+            put(ARC_GROUP_PARENT, "harkaBeepar0lYn");
             put(DERIVED_GROUP_PARENT, "SchmengUndDreck");
         }};
 
@@ -151,13 +152,13 @@ public class TestFileSequence extends AuditTestTestBase{
     @Test
     public void setPath() {
         final String whanThatAprille = "WhanThatAprille";
-        FileSequence st = new FileSequence(logger);
+        FileSequence st = new FileSequence();
         st.setParams(whanThatAprille,_emptySequenceTestParams);
         assertEquals(st.getPath(),whanThatAprille);
     }
 
     private FileSequence runTest(String path,Hashtable<String,String> igParents ) {
-        FileSequence st = new FileSequence(logger);
+        FileSequence st = new FileSequence();
         st.setParams(path, igParents);
         st.LaunchTest();
 

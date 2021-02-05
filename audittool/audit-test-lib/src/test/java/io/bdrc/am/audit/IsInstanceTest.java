@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Hashtable;
 
 /**
@@ -43,7 +44,7 @@ public class IsInstanceTest extends AuditTestTestBase {
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         Assert.assertNotNull(libTests);
-        Assert.assertEquals("Number of tests doesnt match", 5, libTests.size());
+        Assert.assertEquals("Number of tests doesnt match", 7, libTests.size());
     }
 
     @Test
@@ -72,14 +73,17 @@ public class IsInstanceTest extends AuditTestTestBase {
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         for (AuditTestConfig c : libTests.values()) {
+            // debug System.out.println(MessageFormat.format("testing {0}",c.getKey()));
             IAuditTest thisTest =
-                    (IAuditTest) (c.getTestClass().getDeclaredConstructor(Logger.class).newInstance(logger));
+                    (IAuditTest) (c.getTestClass().getDeclaredConstructor(Logger.class, String.class).newInstance(logger,
+                            c.getKey()));
             thisTest.setParams("/ImNotHere", emptySequenceTestParams);
             thisTest.LaunchTest();
             TestResult tr = thisTest.getTestResult();
             Assert.assertNotNull(tr);
 
-            Assert.assertEquals(String.format("Test %s not expected", thisTest.getTestName()),LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
+            Assert.assertEquals(String.format("Test %s unexpected rc", thisTest.getTestName()),
+                    LibOutcome.ROOT_NOT_FOUND, tr.getErrors().get(0).getOutcome());
         }
     }
 }

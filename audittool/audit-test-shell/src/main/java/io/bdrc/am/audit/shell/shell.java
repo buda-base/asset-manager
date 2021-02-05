@@ -191,7 +191,7 @@ public class shell {
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
 
-            results.add(TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testDesc, propertyArgs,
+            results.add(TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testName, testDesc, propertyArgs,
                     aTestDir));
         }
 
@@ -219,16 +219,19 @@ public class shell {
         return get(aTestDir).getFileName().toString() + fileDate + ".csv";
     }
 
-    private static TestResult TestOnDirPassed(final Class<IAuditTest> testClass, final Logger testLogger,
-                                           final String testDesc, final Hashtable<String, String> propertyArgs,
-                                           final String testDir)
+    private static TestResult TestOnDirPassed(final Class<IAuditTest> testClass,
+                                              final Logger testLogger,
+                                              final String testName,
+                                              final String testDesc,
+                                              final Hashtable<String, String> propertyArgs,
+                                              final String testDir)
     {
         sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
 
         TestResult tr = null;
         try
         {
-            tr = RunTest(testLogger, testClass, testDir, propertyArgs);
+            tr = RunTest(testLogger, testName, testClass, testDir, propertyArgs);
 
             // String resultLogFormat = "Result:%10s\tFolder:%20s\tTest:%30s";
             String resultLogFormat = "{}\t{}\t\t{}";
@@ -336,15 +339,18 @@ public class shell {
      * @param testLogger Logger for the test. Not the same as the shell logger
      * @param params     array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
      */
-    private static TestResult RunTest(Logger testLogger, Class<IAuditTest> testClass, Object... params) {
+    private static TestResult RunTest(Logger testLogger, final String testName,
+                                      Class<IAuditTest> testClass, Object... params) {
 
         String className = testClass.getCanonicalName();
 
         TestResult tr = new TestResult();
         try
         {
-            Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class);
-            IAuditTest inst = ctor.newInstance(testLogger);
+            // All instances are required to have a Logger, String constructor for the shell
+            // Unit tests don't always use it.
+            Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class, String.class);
+            IAuditTest inst = ctor.newInstance(testLogger,testName);
 
             inst.setParams( params);
             inst.LaunchTest();

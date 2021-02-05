@@ -193,7 +193,9 @@ public abstract class AuditTestBase implements IAuditTest {
                 put(LibOutcome.FILE_SIZE, new TestMessageFormat(3, "Image file %s size %s exceeds maximum of %s"));
                 put(LibOutcome.BAD_FILE_SIZE_ARG, new TestMessageFormat(1, "Invalid file size argument %s. Requires " +
                         "n[K|M|G]"));
-                put(LibOutcome.INVALID_EXIF, new TestMessageFormat(2,
+                put(LibOutcome.INVALID_ARCHIVE_EXIF, new TestMessageFormat(2,
+                        "Image file %s contains invalid EXIF tags: %s"));
+                put(LibOutcome.INVALID_IMAGE_EXIF, new TestMessageFormat(2,
                         "Image file %s contains invalid EXIF tags: %s"));
 
             }};

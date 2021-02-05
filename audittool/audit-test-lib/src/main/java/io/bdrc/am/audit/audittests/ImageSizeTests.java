@@ -27,16 +27,21 @@ public class ImageSizeTests extends ImageGroupParents {
      * IDC about https://stackoverflow.com/questions/285177/how-do-i-call-one-constructor-from-another-in-java
      * The factory method is not the simplest way to write an external library.
      */
-    public ImageSizeTests() {
+     public ImageSizeTests() {
         this(LoggerFactory.getLogger(ImageSizeTests.class));
-    }
+      }
     /**
      * new AuditTestBase
      *
      * @param logger internal test only logger
      */
+
     public ImageSizeTests(Logger logger) {
-        super("ImageSizeTest");
+        this(logger,TestDictionary.FILE_SIZE_TESTS_NAME);
+    }
+
+    public ImageSizeTests(Logger logger, final String testName) {
+        super(testName);
         sysLogger = logger;
     }
 

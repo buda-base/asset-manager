@@ -3,20 +3,32 @@ package io.bdrc.am.audit.audittests;
 import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.soap.Node;
 import java.io.IOException;
 import java.nio.file.*;
 
 
 public class NoFoldersInImageGroups extends ImageGroupParents {
 
+
+    public NoFoldersInImageGroups() {
+        this(LoggerFactory.getLogger(NoFoldersInImageGroups.class));
+    }
+
+    public NoFoldersInImageGroups(final Logger logger) {
+        this(logger,TestDictionary.NO_FILES_IN_FOLDER_TEST_NAME);
+    }
+
     /**
      * create test with external logger
      *
      * @param logger internal logger
+     * @param testName externally defined test name
      */
-    public NoFoldersInImageGroups(Logger logger) {
-        super("NoFoldersInImageGroups");
+    public NoFoldersInImageGroups(Logger logger, final String testName) {
+        super(testName);
         sysLogger = logger;
     }
 

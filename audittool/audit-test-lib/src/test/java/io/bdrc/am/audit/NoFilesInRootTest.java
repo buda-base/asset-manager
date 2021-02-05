@@ -1,5 +1,6 @@
 package io.bdrc.am.audit;
 
+import io.bdrc.am.audit.audittests.TestDictionary;
 import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.audittests.NoFilesInRoot;
 import io.bdrc.am.audit.iaudit.message.TestMessage;
@@ -72,7 +73,7 @@ public class NoFilesInRootTest extends AuditTestTestBase {
         NoFilesInRoot dontcare = new NoFilesInRoot(logger);
         dontcare.setParams("Dontcare");
         String dcTestName = dontcare.getTestName();
-        assertEquals("NoFilesInRoot",dcTestName);
+        assertEquals(TestDictionary.NO_FILES_IN_FOLDER_TEST_NAME,dcTestName);
 
     }
 }

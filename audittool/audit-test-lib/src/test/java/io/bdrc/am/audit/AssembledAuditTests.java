@@ -2,6 +2,7 @@ package io.bdrc.am.audit;
 
 
 import io.bdrc.am.audit.audittests.FileSequence;
+import io.bdrc.am.audit.audittests.TestDictionary;
 import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.Outcome;
 import io.bdrc.am.audit.iaudit.TestResult;
@@ -28,7 +29,7 @@ import static io.bdrc.am.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 @Ignore
 @RunWith(Parameterized.class)
 
-public class AssembledAuditTests {
+public class AssembledAuditTests extends AuditTestTestBase {
 
 
     //  Make these public to work with a parameterless constructor  @Parameterized.Parameter(0)
@@ -87,12 +88,12 @@ public class AssembledAuditTests {
         System.out.println(String.format("files: %d dirs: %d sec %s", tc.nFiles, tc.nDirs, sw.toString()));
         System.out.println(String.format("outcome %s number of failures %d", tr.getOutcome(), tr.getErrors().size()));
 
-        Boolean actualResult = tr.getOutcome() == Outcome.PASS ;
+        Boolean actualResult = tr.getOutcome().equals(Outcome.PASS);
         Assert.assertEquals(expectedResult,actualResult);
     }
 
 
-    class treeCount {
+    static class treeCount {
         Integer nFiles = 0;
         Integer nDirs = 0;
     }

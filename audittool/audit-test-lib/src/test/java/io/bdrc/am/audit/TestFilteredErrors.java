@@ -1,6 +1,7 @@
 package io.bdrc.am.audit;
 
 import io.bdrc.am.audit.audittests.ImageAttributeTests;
+import io.bdrc.am.audit.audittests.TestDictionary;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,7 +60,7 @@ public class TestFilteredErrors extends AuditTestTestBase {
     }
 
     private ImageAttributeTests runTest(String path, Hashtable<String,String> testParams ) {
-        ImageAttributeTests st = new ImageAttributeTests(logger);
+        ImageAttributeTests st = new ImageAttributeTests();
 
         // Hmm TODO: Needs to consume properties differently
         st.setParams(path, testParams);

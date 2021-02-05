@@ -19,6 +19,7 @@ public class LibOutcome {
     public static final Integer FILE_SIZE                       = 112 ;
     public static final Integer BAD_FILE_SIZE_ARG               = 113;
     public static final Integer UNKNOWN                         = 114;
-    public static final Integer INVALID_EXIF                    = 115 ;
+    public static final Integer INVALID_ARCHIVE_EXIF            = 115 ;
+    public static final Integer INVALID_IMAGE_EXIF              = 116 ;
 }
 

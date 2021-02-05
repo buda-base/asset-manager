@@ -104,4 +104,11 @@ abstract public class ImageGroupParents extends PathTestBase {
         }
     }
 
+    /**
+     * @return if there is any non-empty image group parents
+     */
+    protected boolean hasValidTargets(ArrayList<String> possibles) {
+        return possibles.stream().anyMatch(x -> x.length() > 0);
+    }
+
 }
