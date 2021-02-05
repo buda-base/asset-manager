@@ -3,6 +3,7 @@ package io.bdrc.am.audit.audittests;
 import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -18,14 +19,17 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class ImageAttributeTests extends ImageGroupParents {
-    /**
-     * new AuditTestBase
-     *
-     * @param logger internal logger
-     */
-    public ImageAttributeTests(Logger logger)
+
+    public ImageAttributeTests() {
+        this(LoggerFactory.getLogger(ImageAttributeTests.class));
+    }
+
+    public ImageAttributeTests(Logger logger) {
+        this(logger,TestDictionary.WEB_IMAGE_ATTRIBUTES_TEST_NAME);
+    }
+    public ImageAttributeTests(Logger logger, String testName)
     {
-        super("ImageAttributeTests");
+        super(testName);
         sysLogger = logger;
     }
 
@@ -177,22 +181,6 @@ public class ImageAttributeTests extends ImageGroupParents {
                         FailTest(LibOutcome.NO_IMAGE_READER, fileObjectPathString);
                     }
 
-                    try {
-                        ImageEXIFAttributes exifAttrs = new ImageEXIFAttributes(fileObject);
-                        List<ImageEXIFBead> invalidExifAttrs = validateEXIF(exifAttrs);
-                        if (invalidExifAttrs.size() > 0) {
-                            StringBuilder badTags = new StringBuilder();
-                            invalidExifAttrs.forEach(x -> {
-                                badTags.append(x.toString());
-                                badTags.append(System.getProperty("line.separator"));
-                            });
-                            FailTest(LibOutcome.INVALID_EXIF, fileObjectPathString, badTags.toString());
-                        }
-                    }
-                    catch (UnsupportedFormatException ufe) {
-                        FailTest(LibOutcome.INVALID_EXIF, fileObjectPathString);
-                    }
-
                     // TODO:  1 image / file !!!!
                  }
             }
@@ -335,16 +323,6 @@ public class ImageAttributeTests extends ImageGroupParents {
         }
         TestWrapper(new ImageAttributeTestOperation());
     }
-
-    // region private methods
-    /**
-     * @return if there is any non-empty image group parents
-     */
-    private boolean hasValidTargets(ArrayList<String> possibles) {
-        return possibles.stream().anyMatch(x -> x.length() > 0);
-    }
-    // endregion
-
 }
 
 /* * Old test code **/

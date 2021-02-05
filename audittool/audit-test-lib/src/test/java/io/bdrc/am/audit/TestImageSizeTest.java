@@ -84,7 +84,7 @@ public class TestImageSizeTest extends AuditTestTestBase {
     }
 
     private ImageSizeTests runTest(String path, Hashtable<String,String> testParams ) {
-        ImageSizeTests st = new ImageSizeTests(logger);
+        ImageSizeTests st = new ImageSizeTests();
         st.setParams(path, testParams);
         st.LaunchTest();
 

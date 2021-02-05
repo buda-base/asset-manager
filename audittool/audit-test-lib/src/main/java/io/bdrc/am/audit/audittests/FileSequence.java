@@ -15,20 +15,6 @@ import java.util.TreeMap;
 public class FileSequence extends ImageGroupParents {
 
     /**
-     * Create test with external logger
-     *
-     * @param logger diagnostic logger, not for results
-     */
-    public FileSequence(Logger logger) {
-        super("FileSequence");
-        sysLogger = logger;
-        _pm = new ClassPropertyManager("/auditTool.properties", getClass());
-        _sequenceLength = getSequenceSubstringLength();
-
-    }
-
-
-    /**
      * Constructor with builtin logger
      * Useful if you want your slf4j profile to drive logging.
      * note base class must pass its test (such as directory exists)
@@ -38,6 +24,30 @@ public class FileSequence extends ImageGroupParents {
     public FileSequence() {
         this(LoggerFactory.getLogger(FileSequence.class));
     }
+
+    /**
+     * Create test with external logger
+     *
+     * @param logger diagnostic logger, not for results
+     */
+    public FileSequence(Logger logger) {
+        this(logger, TestDictionary.FILE_SEQUENCE_TEST_NAME);
+    }
+
+    /**
+     * Constructor for variant test name
+     * @param logger
+     * @param testName
+     */
+    public FileSequence(Logger logger, String testName) {
+        super(testName);
+        sysLogger = logger;
+        _pm = new ClassPropertyManager("/auditTool.properties", getClass());
+        _sequenceLength = getSequenceSubstringLength();
+
+    }
+
+
 
     /**
      * Internal class to pass to TestWrapper.
