@@ -92,3 +92,9 @@ folder names of parents of image groups.
 `log4j2.properties`
 
 Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.
+
+## Warnings as errors
+The user can override any error they wish (while still remaining mindful that some errors 
+must be fixed when submitting works to BDRC or its partners). You do this by adding 
+numeric values to `shell.properties ErrorsAsWarning` property.
+Please refer to the installation's `shell.properties` for the appropriate values.
