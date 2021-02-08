@@ -63,7 +63,6 @@ public class shell {
     private static AuditTestLogController testLogController;
 
     public static void main(String[] args) {
-
         List<Integer> allResults = new ArrayList<>();
         try
         {

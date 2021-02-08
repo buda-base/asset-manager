@@ -215,7 +215,7 @@ public abstract class AuditTestBase implements IAuditTest {
             String[] pEArray = kwname.split(",");
             Arrays.stream(pEArray).filter(x -> !x.isEmpty()).forEach(
 
-                    x -> dest.add(Integer.parseInt(x))
+                    x -> dest.add(Integer.parseInt(x.trim()))
             );
         } catch (NumberFormatException nfe) {
             throw new NumberFormatException(String.format("Property %s, value %s is not a list of Integers.", name,

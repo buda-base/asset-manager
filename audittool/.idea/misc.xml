@@ -33,6 +33,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/audit-test-shell/pom.xml" />
       </list>
     </option>
   </component>
