@@ -12,6 +12,8 @@
 ** Note ** A shell script ending in `.sh` has the same name on windows, but the suffix `.ps1` 
 
 ## Download
+Releases are available on [asset-manager-code Releases](https://github.com/buda-base/asset-manager/releases)
+
 Download:
 - `audit-test-shell-VER-REL-Install.zip`
 
