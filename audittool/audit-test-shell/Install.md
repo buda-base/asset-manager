@@ -32,14 +32,13 @@ Configuration is performed by running `$AT_INSTALL_HOME/audit-tool-config.sh`
 A sample run is shown below:
 
  ```bash
-nobody@Nowhere:audit-test-shell-0.8-SNAPSHOT-2$ ./audit-tool-config.sh
-This script prompts you for two files and saves the answers in '/Users/nobody/.config/bdrc/auditTool/config\'.
+❯ audit-tool-config.sh
+This script prompts you for a file path and saves the answers in '.../.config/bdrc/auditTool/config'.
 
 It asks for the jar file which runs the whole process.
 You press [Enter] to accept the defaults.
 Press [Enter] when you are ready to continue.
-Enter the path to the jar file which launches the process [ default "/Users/djt/bin/am/at/audit-test-shell-0.8-SNAPSHOT-2/audit-test-shell-0.8-SNAPSHOT-2.jar" ]?
-nobody@Nowhere:audit-test-shell-0.8-SNAPSHOT-2$
+Enter the path to the jar file which launches the process [ default ".../xxx/audit-test-shell-0.9-SNAPSHOT-1.jar" ]?
 ```
 
 ### Walkthrough
@@ -60,4 +59,5 @@ The configuration will fail:
 It also warns if the files you enter don't exist, but writes the values anyway, expecting you'll get around to it later.
 
 ## Guidelines for Updating an existing installation
+Installation overwrites any prior installations.
 It is advisable to unzip an update into a scratch directory and merge any site customizations into it before making it available on a server. 
