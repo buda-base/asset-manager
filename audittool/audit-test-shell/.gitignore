@@ -2,3 +2,11 @@
 /.classpath
 /.factorypath
 /.project
+**/export/
+**/export
+**/.DS_Store
+**/*~
+**/#*#
+#
+# test artifact
+bldlog.txt

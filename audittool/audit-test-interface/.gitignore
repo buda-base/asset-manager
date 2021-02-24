@@ -1,3 +1,10 @@
 /.classpath
 /.project
 /.settings/
+export/
+target/
+**/export/
+**/export
+**/.DS_Store
+**/*~
+**/#*#
