@@ -184,11 +184,15 @@ public class FileSequence extends ImageGroupParents {
                 // If filenames contains entries for every number of files, the test passes.
                 // The last element must be the same as the size, or there are files missing
                 Integer lastKey, size;
-                lastKey = filenames.lastKey();
                 size = filenames.size();
-                if (lastKey > size) {
-                    FailTest(LibOutcome.FILE_COUNT, anImageGroup.toString(), lastKey.toString(), size.toString() );
-                    GenerateFileMissingMessages(filenames);
+
+                // No files at all is not a fail
+                if (size > 0) {
+                    lastKey = filenames.lastKey();
+                    if (lastKey > size) {
+                        FailTest(LibOutcome.FILE_COUNT, anImageGroup.toString(), lastKey.toString(), size.toString());
+                        GenerateFileMissingMessages(filenames);
+                    }
                 }
 
             }
