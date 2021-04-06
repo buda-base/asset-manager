@@ -1,19 +1,13 @@
 package io.bdrc.am.audit.iaudit;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 
 public class FilePropertyManager extends PropertyManager {
 
-    @Override
-    public InputStream LoadStream() throws IOException {
-        FileInputStream fileInputStream;
-        File external = new File(_resourcePath);
-        if (!external.exists()) {
-            throw new FileNotFoundException(_resourcePath);
-        }
-            fileInputStream = new FileInputStream(external);
-        return fileInputStream;
-    }
 
     public FilePropertyManager(String resourcePath) {
         super(resourcePath);

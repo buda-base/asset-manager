@@ -8,13 +8,12 @@
         <outputRelativeToContentRoot value="true" />
         <module name="audit-test-interface" />
         <module name="audit-test-lib" />
-        <module name="AssetManager" />
         <module name="audit-test-shell" />
         <module name="AssetManager" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="AssetManager" target="1.8" />
+      <module name="AssetManager" target="9" />
       <module name="audit-test-interface" target="8" />
       <module name="audit-test-lib" target="8" />
       <module name="audit-test-shell" target="8" />

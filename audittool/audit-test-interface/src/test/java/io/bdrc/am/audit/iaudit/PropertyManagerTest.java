@@ -1,6 +1,7 @@
 package io.bdrc.am.audit.iaudit;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -16,7 +17,7 @@ public class PropertyManagerTest  {
     }
 
     @Test
-    public void getPropertyInt() {
+    public void getClassPropertyInt() {
         final String testProperty = "hibbidy.hobbidy.ima.freemstalizer";
         int actualValue = new ClassPropertyManager(propertyPath, getClass()).getPropertyInt(testProperty);
         // region private fields
@@ -24,21 +25,13 @@ public class PropertyManagerTest  {
         assertEquals(expectedSequenceLength, actualValue);
     }
 
+    @BeforeClass
+    public void WriteResource() {
+
+
+    }
 
     final private String propertyPath;
     // end region
 
-    @Test
-    public void TestFilePropertyManager() throws IOException {
-        // Get current directory
-        File testPropFile = File.createTempFile("Iaudit", "property");
-        FileWriter fw = new FileWriter(testPropFile, false);
-        final String propKey = "propKey";
-        final String propValue = "propValue";
-        fw.write(propKey + " = " + propValue);
-        fw.close();
-        FilePropertyManager fpm = new FilePropertyManager(testPropFile.getAbsolutePath());
-        String resultPropValue = fpm.getPropertyString(propKey);
-        Assert.assertEquals(propValue, resultPropValue);
-    }
 }

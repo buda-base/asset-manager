@@ -61,27 +61,40 @@ public class shell {
     private final static int SYS_ERR = 1;
 
     private static AuditTestLogController testLogController;
+    private final static String defaultPropertyFileName = "shell.properties";
 
     public static void main(String[] args) {
         List<Integer> allResults = new ArrayList<>();
         try
         {
             sysLogger.trace("Entering main");
-
-            Path resourceFile = resolveResourceFile();
-            FilePropertyManager shellProperties = new FilePropertyManager(resourceFile.toAbsolutePath().toString());
-
-            Hashtable<String, AuditTestConfig> td;
-
             sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
+
+            sysLogger.trace("Resolving properties");
+            Path resourceFile = resolveResourceFile(defaultPropertyFileName);
+            PropertyManager shellProperties =
+                    PropertyManager.PropertyManagerBuilder(resourceFile.toAbsolutePath().toString())
+                    .MergeInternal()
+                    .LoadExternalProperties(argParser.getUserConfigDir());
+
+            // Before loading either the default user properties, check to see if it has been overridden by the
+            // command line
+
+            shellProperties.MergeUserProperties();
+
+            // Add user configuration here
+
+
+
+
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
 
             String tdClassName = shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
             sysLogger.debug("{} value of property :{}:", TEST_DICT_PROPERTY_NAME, tdClassName);
-            td = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
+            Hashtable<String, AuditTestConfig> td = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
 
             assert td != null;
 
@@ -372,7 +385,10 @@ public class shell {
      * if -DatHome not given, looks up environment variable ATHOME
      * if that's empty, uses "user.dir"
      */
-    private static Path resolveResourceFile() {
+    private static Path resolveResourceFile(String defaultFileName) {
+
+        // TODO: Will resource file "/shell.properties" resolve to path of main class? Or does it need
+        // pathmainclass/resources
         String resHome = System.getProperty("atHome");
 
         if ((resHome == null) || resHome.isEmpty())
@@ -387,7 +403,7 @@ public class shell {
             sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return get(resHome, "shell.properties");
+        return get(resHome, defaultFileName);
     }
 
 //    /**
