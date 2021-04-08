@@ -21,8 +21,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.nio.file.Paths.get;
-
 
 /**
  * main class for shell. See usage. Must have a -DtestJar='path to jar containing tests'
@@ -73,15 +71,19 @@ public class shell {
 
             sysLogger.trace("Resolving properties");
             Path resourceFile = resolveResourceFile(defaultPropertyFileName);
+
+            // TODO: try /shell.properties class
+
+            // Property loading:
+            // First, /shell.properties
+            // Second, the user properties (defined in the /shell.properties property UserConfigPath)
+            // Third, the command line properties (defined by the -Dprop=value.
+            // If the command line properties contains the UserConfigPath, such as
+            // -DUserConfigPath=someother/path the properties in that path are reloaded.
             PropertyManager shellProperties =
-                    PropertyManager.PropertyManagerBuilder(resourceFile.toAbsolutePath().toString())
-                    .MergeInternal()
-                    .LoadExternalProperties(argParser.getUserConfigDir());
-
-            // Before loading either the default user properties, check to see if it has been overridden by the
-            // command line
-
-            shellProperties.MergeUserProperties();
+                    PropertyManager.PropertyManagerBuilder().MergeResourceFile(resourceFile.toAbsolutePath().toString())
+                    .MergeUserConfig()
+                    .MergeProperties(System.getProperties());
 
             // Add user configuration here
 
@@ -157,7 +159,7 @@ public class shell {
      * @param aTestDir        test subject
      * @return If all the tests passed or not
      */
-    private static List<Integer> RunTestsOnDir(final FilePropertyManager shellProperties,
+    private static List<Integer> RunTestsOnDir(final PropertyManager shellProperties,
                                          final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
             throws IOException
     {
@@ -228,7 +230,7 @@ public class shell {
                                         .withZone(ZoneId.systemDefault());
 
         String fileDate = dtf.format(Instant.now());
-        return get(aTestDir).getFileName().toString() + fileDate + ".csv";
+        return Paths.get(aTestDir).getFileName().toString() + fileDate + ".csv";
     }
 
     private static TestResult TestOnDirPassed(final Class<IAuditTest> testClass,
@@ -248,7 +250,7 @@ public class shell {
             // String resultLogFormat = "Result:%10s\tFolder:%20s\tTest:%30s";
             String resultLogFormat = "{}\t{}\t\t{}";
 
-            String workName = get(testDir).getFileName().toString();
+            String workName = Paths.get(testDir).getFileName().toString();
 
             String testResultLabel ;
 
@@ -387,8 +389,6 @@ public class shell {
      */
     private static Path resolveResourceFile(String defaultFileName) {
 
-        // TODO: Will resource file "/shell.properties" resolve to path of main class? Or does it need
-        // pathmainclass/resources
         String resHome = System.getProperty("atHome");
 
         if ((resHome == null) || resHome.isEmpty())
@@ -403,7 +403,7 @@ public class shell {
             sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
         }
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return get(resHome, defaultFileName);
+        return Paths.get(resHome, defaultFileName);
     }
 
 //    /**

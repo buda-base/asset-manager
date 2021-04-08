@@ -45,7 +45,7 @@ public class PropertyManager {
         return _instance;
     }
 
-    public InputStream InputFileResource(String filePath) {
+    private InputStream InputFileResource(String filePath) {
         FileInputStream fileInputStream = null;
         try {
             String cr = new File(filePath).getCanonicalPath();
@@ -60,16 +60,18 @@ public class PropertyManager {
         return fileInputStream;
     }
 
-    public InputStream InputJarResource(String path, Class clazz) {
+    private InputStream InputJarResource(String path, Class clazz) {
         return clazz.getResourceAsStream(path);
     }
 
     /**
-     * Merges properties from the file specified in the default UserProperties(if any)
-     *
+     * Merges properties from the file specified in the default UserConfigPath (if any)
+     * @param userConfigPathKey key to user path config. If the property value of this key
+     *                          is an absolute path, use it, otherwise the path is relative to
+     *                          system user.home (NOT user.dir)
      * @return this
      */
-    public PropertyManager LoadDefaultProperties() {
+    public PropertyManager MergeUserConfig() {
 
         String configPathValue = _Properties.getProperty(UserConfigPathKey);
         if (StringUtils.isBlank(configPathValue)) return this;
@@ -85,13 +87,32 @@ public class PropertyManager {
     }
 
     /**
+     * Load an arbitrary set of properties. Most often used to load
+     * the java system properties. See shell.java
+     * @return
+     */
+    public PropertyManager MergeProperties(Properties externalProperties) {
+        StringWriter sw = new StringWriter();
+        try {
+            externalProperties.store(sw,"system properties");
+            StringReader sr = new StringReader(sw.toString());
+            _Properties.load(sr);
+            sw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return this;
+    }
+
+    /**
      * Add a specific key to the properties
      *
      * @param key   resource id
      * @param value resource
      * @return instance
      */
-    public PropertyManager MergeProperty(final String key, final String value) {
+    private PropertyManager MergeProperty(final String key, final String value) {
         if (logger.isDebugEnabled()) DumpProperties();
         _Properties.setProperty(key, value);
         if (logger.isDebugEnabled()) DumpProperties();
@@ -104,7 +125,7 @@ public class PropertyManager {
      * @param resourcePath Path on file stream
      * @return modified instance
      */
-    public PropertyManager MergeJarResourceFile(String resourcePath) {
+    public PropertyManager MergeResourceFile(String resourcePath) {
         InputStream inputStream = InputFileResource(resourcePath);
         LoadProperties(inputStream);
         return this;
@@ -175,6 +196,8 @@ public class PropertyManager {
         try {
             rc = Integer.parseInt(resourceValue);
         } catch (NumberFormatException e) {
+
+            // asset-manager-106 - read from VM Args
             logger.error(String.format("Could not parse resource %s string value %s", key, resourceValue));
             throw e;
         }
