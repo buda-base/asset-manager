@@ -29,8 +29,8 @@ public class PropertyManager {
 
     /**
      * Load Properties from a stream
-     *
-     * @throws
+     * @param resourceStream any kind of input stream - string, file, etc
+     * @return self, with state change
      */
     public PropertyManager LoadProperties(InputStream resourceStream) {
 
@@ -45,33 +45,32 @@ public class PropertyManager {
         return _instance;
     }
 
-    private InputStream InputFileResource(String filePath) {
-        FileInputStream fileInputStream = null;
+    private InputStream InputFileResource(String filePath) throws IOException {
         try {
             String cr = new File(filePath).getCanonicalPath();
             File external = new File(cr);
-            if (external.exists()) {
-                fileInputStream = new FileInputStream(external);
-            }
+            return new FileInputStream(external);
         } catch (IOException e) {
-            logger.error("Couldn't open resource {} error {}", filePath, e.getMessage());
+            logger.error("Couldn't open Input File Resource {} error {}", filePath, e.getMessage());
             e.printStackTrace();
+            throw e;
         }
-        return fileInputStream;
     }
 
-    private InputStream InputJarResource(String path, Class clazz) {
+    private InputStream InputJarResource(String path, Class<?> clazz) {
         return clazz.getResourceAsStream(path);
     }
 
     /**
      * Merges properties from the file specified in the default UserConfigPath (if any)
-     * @param userConfigPathKey key to user path config. If the property value of this key
-     *                          is an absolute path, use it, otherwise the path is relative to
-     *                          system user.home (NOT user.dir)
-     * @return this
+     * The user config file path is ALWAYS the value of the property stored in the field
+     * UserConfigPathKey
+     * If the property value of this key is an absolute path, use it,
+     * otherwise the path is relative to system user.home (NOT user.dir)
+     *
+     * @return this same object, with state changed
      */
-    public PropertyManager MergeUserConfig() {
+    public PropertyManager MergeUserConfig()  {
 
         String configPathValue = _Properties.getProperty(UserConfigPathKey);
         if (StringUtils.isBlank(configPathValue)) return this;
@@ -82,19 +81,24 @@ public class PropertyManager {
             String userHome = Paths.get(System.getProperty("user.home")).toAbsolutePath().toString();
             configPath = Paths.get(userHome, configPathValue);
         }
-        LoadProperties(InputFileResource(configPath.toString()));
+        try {
+            LoadProperties(InputFileResource(configPath.toString()));
+        } catch (IOException e) {
+            logger.error(String.format("Couldn't open %s ",configPathValue),e);
+        }
         return this;
     }
 
     /**
      * Load an arbitrary set of properties. Most often used to load
      * the java system properties. See shell.java
-     * @return
+     *
+     * @return same object, with state changed
      */
     public PropertyManager MergeProperties(Properties externalProperties) {
         StringWriter sw = new StringWriter();
         try {
-            externalProperties.store(sw,"system properties");
+            externalProperties.store(sw, "system properties");
             StringReader sr = new StringReader(sw.toString());
             _Properties.load(sr);
             sw.close();
@@ -125,7 +129,7 @@ public class PropertyManager {
      * @param resourcePath Path on file stream
      * @return modified instance
      */
-    public PropertyManager MergeResourceFile(String resourcePath) {
+    public PropertyManager MergeResourceFile(String resourcePath) throws IOException {
         InputStream inputStream = InputFileResource(resourcePath);
         LoadProperties(inputStream);
         return this;
@@ -138,7 +142,7 @@ public class PropertyManager {
      * @param clazz        host class
      * @return modified this
      */
-    public PropertyManager MergeClassResource(String resourcePath, Class clazz) {
+    public PropertyManager MergeClassResource(String resourcePath, Class<?> clazz) {
         InputStream ins = InputJarResource(resourcePath, clazz);
         LoadProperties(ins);
         return this;
