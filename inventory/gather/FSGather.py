@@ -104,7 +104,7 @@ class StateWriter(DbApp):
         project_path: Path = Path(project_root_folder).resolve()
         host_name = platform.node()
 
-        self.start_connect()
+        # self.start_connect()
 
         if process_state.upper() == "PUBLISHED":
             self.do_published(process_state, project_path, obs_date, host_name)
