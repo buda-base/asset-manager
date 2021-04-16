@@ -7,10 +7,27 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
+/**
+ * Test property manager.
+ *
+ * Property manager allows definition of properties at three file locations, which are
+ * read in sequence - a property given later in this stream, overrides one given
+ *  shell.properties, in classpath of main module (either this test module or the
+ *  shell
+ *
+ *  user properties, at a location given in shell.properties "UserConfigPath"
+ *
+ *  On the command line, by using JVM arguments -Dsome.property=some.value
+ *
+ *  There is a special command line property -DEnvConfigPath=somefilevalue which loads the properties in the given file
+ *  (relative path name resolved with respect to "user.dir", the current dir where invoked from.)
+ *
+ *
+ */
 public class PropertyManagerTest {
 
     public PropertyManagerTest() {
@@ -22,38 +39,64 @@ public class PropertyManagerTest {
     // These properties should be in the core resource file, see "propertyPath
     private final String defaultTestProperty = "hibbidy.hobbidy.ima.freemstalizer";
     private final String UserConfigPathKey = "UserConfigPath";
+    private String loadedUserConfigPath ;
     private final HashMap<String, String> userPropertyMap = new HashMap<String, String>() {{
         put("user.property.1", "u.p.2value");
         put("user.property.2", "u.p.2value");
     }};
 
-    private final HashMap<String, String> systemPropertyMap = new HashMap<String, String>() {{
+    private final HashMap<String, String> commandLinePropertySourceMap = new HashMap<String, String>() {{
         put("sys.property.1", "s.p.2value");
         put("sys.property.2", "s.p.2value");
     }};
     private final String propertyFilePath;
 
+    private static Properties savedEnvironmentProperties = new Properties();
+    @BeforeClass
+    public static void SaveEnvironment()
+    {
+        // call by reference, so need to copy
+        savedEnvironmentProperties.clear();
+        System.getProperties().forEach(savedEnvironmentProperties::put);
+    }
 
+    @AfterClass
+    public static void RestoreEnvironment() {
+        System.setProperties(new Properties());
+        savedEnvironmentProperties.forEach((key, value) -> {
+            System.setProperty(key.toString(), value.toString());
+        });
+    }
+
+    @Before
+    public void SetupResources() throws IOException {
+
+        RestoreEnvironment();
+        // Set up a string for properties
+        StringReader sr = new StringReader("HardWired.prop1 = value 1\nHardwired.prop2 = value 2");
+        inStream = IOUtils.toInputStream(IOUtils.toString(sr));
+
+        String loadedUserConfigPath =
+                PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass()).getPropertyString(UserConfigPathKey);
+        BuildUserProperties(Paths.get(loadedUserConfigPath),userPropertyMap);
+
+    }
+
+    @After
+    public void closeup() {
+        try {
+            if (inStream != null) inStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     @Test
     public void PropertyManagerClassResourceTest() {
 
         PropertyManager pm = PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
-        testBuiltDefaultPM(defaultTestProperty, pm);
-    }
-
-    @Test
-    public void PropertyManagerDefaultResourceTest() {
-
-        PropertyManager pm =
-                PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
-        testBuiltDefaultPM(defaultTestProperty, pm);
-    }
-
-    private void testBuiltDefaultPM(final String testProperty, final PropertyManager pm) {
-        // region private fields
-        final int expectedSequenceLength = 1234;
-        int actualValue = pm.getPropertyInt(testProperty);
-        assertEquals(expectedSequenceLength, actualValue);
+        confirmBuiltDefaultPM(defaultTestProperty, pm);
     }
 
     @Test
@@ -70,8 +113,8 @@ public class PropertyManagerTest {
         pm.MergeUserConfig();
 
         // but still have the default
-        testBuiltDefaultPM(defaultTestProperty, pm);
-        testEmptyProperties(pm, userPropertyMap);
+        confirmBuiltDefaultPM(defaultTestProperty, pm);
+        confirmEmptyProperties(pm, userPropertyMap);
 
     }
 
@@ -81,55 +124,109 @@ public class PropertyManagerTest {
                 PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
 
         Path userPropertiesFilePath = Paths.get(pm.getPropertyString(UserConfigPathKey));
-        RebuildUserProperties(userPropertiesFilePath);
+        RebuildUserProperties(userPropertiesFilePath, userPropertyMap);
 
         pm.MergeUserConfig();
 
         // but still have the default
-        testBuiltDefaultPM(defaultTestProperty, pm);
+        confirmBuiltDefaultPM(defaultTestProperty, pm);
 
         // and has the user properties
-        testLoadedProperties(pm, userPropertyMap);
+        confirmLoadedProperties(pm, userPropertyMap);
     }
 
     @Test
     public void PMCommandLineTest() throws IOException {
 
         PropertyManager pm =
-                PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
-        Path userPropertiesFilePath = Paths.get(pm.getPropertyString(UserConfigPathKey));
-        RebuildUserProperties(userPropertiesFilePath);
-
-        pm.MergeUserConfig();
+                PropertyManager.PropertyManagerBuilder()
+                        .MergeClassResource(propertyFilePath, getClass())
+                        .MergeUserConfig();
 
         // but still have the default
-        testBuiltDefaultPM(defaultTestProperty, pm);
+        confirmBuiltDefaultPM(defaultTestProperty, pm);
 
         // and has the user properties
-        testLoadedProperties(pm,userPropertyMap);
+        confirmLoadedProperties(pm,userPropertyMap);
 
-        testEmptyProperties(pm, systemPropertyMap);
+        confirmEmptyProperties(pm, commandLinePropertySourceMap);
+
+        LoadTestSystemProperties();
 
         pm.MergeProperties(System.getProperties());
 
-        testLoadedProperties(pm, systemPropertyMap);
+        // confirm properties we care about, should already be in System properties
+        confirmLoadedProperties(pm, commandLinePropertySourceMap);
 
     }
+
+    // region test overwriting properties
+
+    @Test
+    public void PMUserPropertyOverwritesDefault() throws IOException {
+        PropertyManager pm =
+                PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
+
+        String expectedDefaultPropertyValue = "UserOverrideDefault";
+        Path userPropertiesFilePath = Paths.get(pm.getPropertyString(UserConfigPathKey));
+
+        // shouldnt already be here
+        assertNotEquals(pm.getPropertyString(defaultTestProperty),expectedDefaultPropertyValue);
+
+        // Rebuild with a changed property
+        userPropertyMap.put(defaultTestProperty,expectedDefaultPropertyValue);
+        RebuildUserProperties(userPropertiesFilePath,userPropertyMap);
+
+        pm.MergeUserConfig();
+
+        // should be there now
+        assertEquals(pm.getPropertyString(defaultTestProperty),expectedDefaultPropertyValue);
+        userPropertyMap.remove(defaultTestProperty);
+
+        // but the rest should be unaffected
+        confirmLoadedProperties(pm,userPropertyMap);
+    }
+
+    @Test
+    public void PMCommandPropertyOverwritesDefault() throws IOException {
+
+        PropertyManager pm =
+                PropertyManager.PropertyManagerBuilder()
+                        .MergeClassResource(propertyFilePath, getClass())
+                        .MergeUserConfig();
+
+        String expectedDefaultPropertyValue = "CommandOverrideDefault";
+
+        // shouldnt already be here
+        assertNotEquals(pm.getPropertyString(defaultTestProperty),expectedDefaultPropertyValue);
+
+        // Add the override
+        System.setProperty( defaultTestProperty,expectedDefaultPropertyValue);
+        pm.MergeProperties(System.getProperties());
+
+        // should be there now
+        assertEquals(pm.getPropertyString(defaultTestProperty),expectedDefaultPropertyValue);
+
+        // but the rest should be unaffected
+        confirmLoadedProperties(pm,userPropertyMap);
+
+        confirmEmptyProperties(pm, commandLinePropertySourceMap);
+
+        LoadTestSystemProperties();
+        pm.MergeProperties(System.getProperties());
+        confirmLoadedProperties(pm, commandLinePropertySourceMap);
+    }
+
+    // endregion
 
     // region test helpers methods
-
-    /**
-     * Recreates the user properties file
-     *
-     * @param userPropertiesFilePath Path to properties file to rebuild with hardwired hashmap
-     * @throws IOException if no readwrite access to file at path
-     */
-    private void RebuildUserProperties(final Path userPropertiesFilePath) throws IOException {
-        if (userPropertiesFilePath.toFile().exists()) {
-            DeleteUserProperties(userPropertiesFilePath);
-        }
-        BuildUserProperties(userPropertiesFilePath, userPropertyMap);
+    private void confirmBuiltDefaultPM(final String testProperty, final PropertyManager pm) {
+        // region private fields
+        final int expectedSequenceLength = 1234;
+        int actualValue = pm.getPropertyInt(testProperty);
+        assertEquals(expectedSequenceLength, actualValue);
     }
+
 
 
     /**
@@ -138,45 +235,35 @@ public class PropertyManagerTest {
      * @param pm property manager under test
      * @param sourceMap properties which should not be present
      */
-    private void testLoadedProperties(final PropertyManager pm, HashMap<String,String>sourceMap) {
+    private void confirmLoadedProperties(final PropertyManager pm, HashMap<String,String>sourceMap) {
         // and not have the property we build in BuildUserConfig
-        sourceMap.forEach((key, value) -> assertEquals(pm.getPropertyString(key), value));
+        sourceMap.forEach((key, value) -> assertEquals(value, pm.getPropertyString(key)));
     }
 
     /**
      * Validates the  properties are  loaded
      *
      * @param pm property manager under test
-     * @param sourceMap properties which are expected to be present
+     * @param sourceMap properties which are expected to NOT be present
      */
-    private void testEmptyProperties(final PropertyManager pm, HashMap<String,String>sourceMap) {
-        sourceMap.forEach((key, value) -> assertEquals(pm.getPropertyString(key), ""));
+    private void confirmEmptyProperties(final PropertyManager pm, HashMap<String,String>sourceMap) {
+        sourceMap.forEach((key, value) -> assertEquals("",pm.getPropertyString(key) ));
     }
-
-
+    // endregion
     // endregion
 
-    @Before
-    public void StringResource() throws IOException {
-
-        // Set up a string for properties
-        StringReader sr = new StringReader("HardWired.prop1 = value 1\nHardwired.prop2 = value 2");
-        inStream = IOUtils.toInputStream(IOUtils.toString(sr));
-
-        systemPropertyMap.forEach(System::setProperty);
-    }
-
-    @After
-    public void closeup() {
-        try {
-            if (inStream != null) inStream.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    /**
+     * Recreates the user properties file
+     *
+     * @param userPropertiesFilePath Path to properties file to rebuild with hardwired hashmap
+     * @throws IOException if no readwrite access to file at path
+     */
+    private void RebuildUserProperties(final Path userPropertiesFilePath, HashMap<String,String> propertyMap) throws IOException {
+        if (userPropertiesFilePath.toFile().exists()) {
+            DeleteUserProperties(userPropertiesFilePath);
         }
+        BuildUserProperties(userPropertiesFilePath, propertyMap);
     }
-
-    // end region
 
     private void BuildUserProperties(Path propertiesPath, HashMap<String, String> initialProperties) throws IOException {
         FileWriter myWriter = new FileWriter(propertiesPath.toAbsolutePath().toString());
@@ -198,5 +285,8 @@ public class PropertyManagerTest {
         assertEquals(true, didD);
     }
 
-
+    private void LoadTestSystemProperties() {
+        // Set up properties for command line load
+        commandLinePropertySourceMap.forEach(System::setProperty);
+    }
 }

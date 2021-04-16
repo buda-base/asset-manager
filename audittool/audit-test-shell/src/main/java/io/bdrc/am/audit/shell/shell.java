@@ -80,16 +80,16 @@ public class shell {
             // Third, the command line properties (defined by the -Dprop=value.
             // If the command line properties contains the UserConfigPath, such as
             // -DUserConfigPath=someother/path the properties in that path are reloaded.
+            //    PropertyManager.PropertyManagerBuilder().
+            //    .toString())
+//            PropertyManager shellProperties =
+//                    PropertyManager.PropertyManagerBuilder().MergeClassResource(defaultPropertyFileName,
+//                            shell.class.getClass())
+//
             PropertyManager shellProperties =
                     PropertyManager.PropertyManagerBuilder().MergeResourceFile(resourceFile.toAbsolutePath().toString())
                     .MergeUserConfig()
                     .MergeProperties(System.getProperties());
-
-            // Add user configuration here
-
-
-
-
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();

@@ -62,24 +62,33 @@ public class PropertyManager {
     }
 
     /**
-     * Merges properties from the file specified in the default UserConfigPath (if any)
-     * The user config file path is ALWAYS the value of the property stored in the field
-     * UserConfigPathKey
+     * Merges properties from the file specified in the property given by
+     * the parameter 'configKey
      * If the property value of this key is an absolute path, use it,
      * otherwise the path is relative to system user.home (NOT user.dir)
-     *
      * @return this same object, with state changed
      */
-    public PropertyManager MergeUserConfig()  {
 
-        String configPathValue = _Properties.getProperty(UserConfigPathKey);
+    public PropertyManager MergeUserConfig()
+    {
+        return MergeConfigGivenInProperty(UserConfigPathKey, "user.home");
+    }
+
+    /**
+     * Merges properties from a file whose path is given in a property key
+     * @param configKey key to lookup
+     * @param pathRootEnvVar environment variable - a file path which contains configKey
+     * @return
+     */
+    public PropertyManager MergeConfigGivenInProperty(String configKey, String pathRootEnvVar)  {
+
+        String configPathValue = _Properties.getProperty(configKey);
         if (StringUtils.isBlank(configPathValue)) return this;
 
         Path configPath = Paths.get(configPathValue);
         if (!configPath.isAbsolute()) {
-            // resolve with respect to user home
-            String userHome = Paths.get(System.getProperty("user.home")).toAbsolutePath().toString();
-            configPath = Paths.get(userHome, configPathValue);
+            String pathHome = Paths.get(System.getProperty(pathRootEnvVar)).toAbsolutePath().toString();
+            configPath = Paths.get(pathHome, configPathValue);
         }
         try {
             LoadProperties(InputFileResource(configPath.toString()));
@@ -249,9 +258,7 @@ public class PropertyManager {
      * @return a PropertyManager instance with internal defaults loaded
      */
     public static PropertyManager PropertyManagerBuilder() {
-        if (_instance == null) {
-            _instance = new PropertyManager();
-        }
+        _instance = new PropertyManager();
         return _instance;
     }
 
