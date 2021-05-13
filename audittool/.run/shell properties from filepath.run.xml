@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="shell properties from filepath" type="Application" factoryName="Application">
+    <envs>
+      <env name="ATHOME" value="$PROJECT_DIR$/audit-test-shell/target/output/" />
+    </envs>
+    <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
+    <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.shell.shell" />
+    <module name="audit-test-shell" />
+    <option name="PROGRAM_PARAMETERS" value="-l . Archive/W8LS68226" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../tmp" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="io.bdrc.am.audit.shell.*" />
+        <option name="ENABLED" value="false" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
