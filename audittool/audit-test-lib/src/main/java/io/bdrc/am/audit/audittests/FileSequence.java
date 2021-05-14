@@ -1,8 +1,8 @@
 package io.bdrc.am.audit.audittests;
 
-import io.bdrc.am.audit.iaudit.ClassPropertyManager;
 import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.Outcome;
+import io.bdrc.am.audit.iaudit.PropertyManager;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class FileSequence extends ImageGroupParents {
     public FileSequence(Logger logger, String testName) {
         super(testName);
         sysLogger = logger;
-        _pm = new ClassPropertyManager("/auditTool.properties", getClass());
+        _pm = PropertyManager.PropertyManagerBuilder().MergeClassResource("/auditTool.properties", getClass());
         _sequenceLength = getSequenceSubstringLength();
 
     }
@@ -261,7 +261,7 @@ public class FileSequence extends ImageGroupParents {
     //endregion
     // region fields
     private int _sequenceLength;
-    private final ClassPropertyManager _pm;
+    private final PropertyManager _pm;
 
 
     // endregion

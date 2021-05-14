@@ -1,47 +1,197 @@
 package io.bdrc.am.audit.iaudit;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
-public abstract class PropertyManager {
+/**
+ * Property Manager Reads properties from a file, and allows merging
+ * properties from other files. The values in any later merged file
+ * will override the same values provided in an earlier file.
+ * <p>
+ * Caller is responsible for ordering the calls
+ */
+public class PropertyManager {
 
-    protected abstract InputStream LoadStream() throws IOException;
+    // region constants
 
-    //  region property resources
+
+    // Same as in shell.properties UserConfigPath key
+    private final String UserConfigPathKey = "UserConfigPath";
+
+    // as in the config file, this is relative to user's home directory, if not an absolute path
+    private final String UserConfigPathValue = Paths.get(".config", "bdrc", "auditTool", "config").toString();
 
     /**
-     * Load all properties
+     * Load Properties from a stream
+     *
+     * @param resourceStream any kind of input stream - string, file, etc
+     * @return self, with state change
      */
-    private void LoadProperties() {
-        if (_Properties != null) {
-            logger.debug(String.format("Existing properties with length %d", _Properties.size()));
-            _Properties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
-            return;
-        }
-        logger.debug("Load Properties");
+    public PropertyManager LoadProperties(InputStream resourceStream) {
+
+        if (resourceStream == null) return _instance;
         try {
-            // hard-wired name of system property resource file
-
-            _Properties = new Properties(BuildDefaultProperties());
-
-            InputStream props = LoadStream();
-            if (props == null) {
-                logger.error("Cant open resource {}", _resourcePath);
-            } else {
-                _Properties.load(props);
-                props.close();
+            _Properties.load(resourceStream);
+            if (logger.isDebugEnabled()) {
+                DumpProperties();
             }
-
-        } catch (Exception e) {
-            logger.error("Caught exception, setting properties to defaults", e);
-            //  _Properties = BuildDefaultProperties();
+        } catch (IOException e) {
+            logger.error("Could not load resource stream {}.", e.getMessage());
         }
+        return _instance;
+    }
+
+    private InputStream InputFileResource(String filePath) throws IOException {
+        try {
+            String cr = new File(filePath).getCanonicalPath();
+            File external = new File(cr);
+            return new FileInputStream(external);
+        } catch (IOException e) {
+            logger.warn("Couldn't open Input File Resource {} error {}", filePath, e.getMessage());
+        }
+        return null;
+    }
+
+    private InputStream InputJarResource(String path, Class<?> clazz) {
+        return clazz.getResourceAsStream(path);
+    }
+
+    /**
+     * Merges properties from the file specified in the property given by
+     * the parameter 'configKey
+     * If the property value of this key is an absolute path, use it,
+     * otherwise the path is relative to system user.home (NOT user.dir)
+     *
+     * @return this same object, with state changed
+     */
+
+    public PropertyManager MergeUserConfig()
+    {
+        Path configPath = PathObjectFromProperty(UserConfigPathKey, "user.home");
+        if (configPath == null) {
+            return this;
+        }
+        return MergeConfigGivenInProperty(configPath);
+    }
+
+    /**
+     * Merges properties from a file
+     *
+     * @param configPath  existing file containing properties
+     * @return self
+     */
+    public PropertyManager MergeConfigGivenInProperty(Path configPath) {
+
+        try {
+            LoadProperties(InputFileResource(configPath.toString()));
+        } catch (IOException e) {
+            logger.warn(String.format("Couldn't open %s ", configPath.toString()), e);
+        }
+        return this;
+    }
+
+    /**
+     * Read the in-core properties to derive a path
+     * @param configKey property key
+     * @param pathRootEnvVar environment variable giving parent of configKey value
+     * @return resulting Path if it exists, null otherwise
+     */
+    private Path PathObjectFromProperty(String configKey, String pathRootEnvVar)
+    {
+        String configPathValue = _Properties.getProperty(configKey);
+        if (StringUtils.isBlank(configPathValue)) return null;
+
+        Path configPath = Paths.get(configPathValue);
+        if (!configPath.isAbsolute()) {
+            String pathHome = Paths.get(System.getProperty(pathRootEnvVar)).toAbsolutePath().toString();
+            configPath = Paths.get(pathHome, configPathValue);
+        }
+
+        if (!Files.exists(configPath))
+            return null;
+        return configPath;
+    }
+
+    /**
+     * Load an arbitrary set of properties. Most often used to load
+     * the java system properties. See shell.java
+     *
+     * @return same object, with state changed
+     */
+    public PropertyManager MergeProperties(Properties externalProperties) {
+        StringWriter sw = new StringWriter();
+        try {
+            externalProperties.store(sw, "system properties");
+            StringReader sr = new StringReader(sw.toString());
+            _Properties.load(sr);
+            sw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return this;
+    }
+
+    /**
+     * Add a specific key to the properties
+     *
+     * @param key   resource id
+     * @param value resource
+     * @return instance
+     */
+    private PropertyManager MergeProperty(final String key, final String value) {
+        if (logger.isDebugEnabled()) DumpProperties();
+        _Properties.setProperty(key, value);
+        if (logger.isDebugEnabled()) DumpProperties();
+        return _instance;
+    }
+
+    /**
+     * Merge File resource
+     *
+     * @param resourcePath Path on file stream
+     * @return modified instance
+     */
+    public PropertyManager MergeResourceFile(String resourcePath) throws IOException {
+        InputStream inputStream = InputFileResource(resourcePath);
+        LoadProperties(inputStream);
+        return this;
+    }
+
+    /**
+     * Class in some other module load
+     *
+     * @param resourcePath relative to module
+     * @param clazz        host class
+     * @return modified this
+     */
+    public PropertyManager MergeClassResource(String resourcePath, Class<?> clazz) {
+        InputStream ins = InputJarResource(resourcePath, clazz);
+        LoadProperties(ins);
+        return this;
+    }
+
+    /**
+     * If you have a raw stream
+     *
+     * @param ins input stream
+     * @return modified this
+     */
+    public PropertyManager MergeInputStream(InputStream ins) {
+        LoadProperties(ins);
+        return this;
+    }
+
+    private void DumpProperties() {
+        logger.debug(String.format("Existing properties with length %d", _Properties.size()));
+        _Properties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
     }
 
     /**
@@ -53,6 +203,7 @@ public abstract class PropertyManager {
         return new Properties() {
             {
                 put("io.bdrc.am.audit.audittests.FileSequence.SequenceLength", "4");
+                put("io.bdrc.am.audit.audittests." + UserConfigPathKey, UserConfigPathValue);
             }
         };
     }
@@ -62,36 +213,45 @@ public abstract class PropertyManager {
      */
     private Properties _Properties;
 
-    final String _resourcePath;
-
     /**
      * Read integer resource from in core dictionary
      *
-     * @param resourceName unique name
-     * @return value of resourceName from in-memory properties
+     * @param key unique name
+     * @return value of key from in-memory properties
      */
-    public int getPropertyInt(String resourceName) {
+    public int getPropertyInt(String key)
+    {
+        if (logger.isDebugEnabled()) {
+            DumpProperties();
+        }
 
-        // LoadProperties is cheap to recall
-        LoadProperties();
-        _Properties.forEach((k, v) -> logger.debug("key :{}: value :{}:", k, _Properties.getProperty(k.toString())));
-
-        String resourceValue = _Properties.getProperty(resourceName);
+        String resourceValue = _Properties.getProperty(key);
         int rc;
         try {
             rc = Integer.parseInt(resourceValue);
-        } catch (Exception e) {
-            logger.error(String.format("Could not parse resource %s string value %s", resourceName, resourceValue));
+        } catch (NumberFormatException e) {
+
+            // asset-manager-106 - read from VM Args
+            logger.error(String.format("Could not parse resource %s string value %s", key, resourceValue));
             throw e;
         }
 
         return rc;
     }
 
-    public String getPropertyString(String resourceName) {
+    /**
+     * get a property's value and return as a string
+     *
+     * @param key property id
+     * @return string value, or empty string if not found
+     */
+    public String getPropertyString(String key) {
 
-        LoadProperties();
-        String rc = _Properties.getProperty(resourceName);
+        if (logger.isDebugEnabled()) {
+            DumpProperties();
+        }
+
+        String rc = _Properties.getProperty(key);
         if (StringUtils.isEmpty(rc)) {
             rc = "";
         }
@@ -101,12 +261,27 @@ public abstract class PropertyManager {
 
     final private Logger logger;
 
-    PropertyManager(String resourcePath) {
+    private static PropertyManager _instance;
+
+    // region builder methods
+
+    /**
+     * Constructor - loads default properties from this class
+     */
+    private PropertyManager() {
         logger = LoggerFactory.getLogger(getClass());
-        _resourcePath = resourcePath;
-        _Properties = null;
+        _Properties = BuildDefaultProperties();
     }
 
+    /**
+     * Builder pattern
+     *
+     * @return a PropertyManager instance with internal defaults loaded
+     */
+    public static PropertyManager PropertyManagerBuilder() {
+        _instance = new PropertyManager();
+        return _instance;
+    }
 
     // endregion
 }
