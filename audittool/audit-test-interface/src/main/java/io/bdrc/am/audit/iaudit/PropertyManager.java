@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -29,11 +30,13 @@ public class PropertyManager {
 
     /**
      * Load Properties from a stream
+     *
      * @param resourceStream any kind of input stream - string, file, etc
      * @return self, with state change
      */
     public PropertyManager LoadProperties(InputStream resourceStream) {
 
+        if (resourceStream == null) return _instance;
         try {
             _Properties.load(resourceStream);
             if (logger.isDebugEnabled()) {
@@ -51,10 +54,9 @@ public class PropertyManager {
             File external = new File(cr);
             return new FileInputStream(external);
         } catch (IOException e) {
-            logger.error("Couldn't open Input File Resource {} error {}", filePath, e.getMessage());
-            e.printStackTrace();
-            throw e;
+            logger.warn("Couldn't open Input File Resource {} error {}", filePath, e.getMessage());
         }
+        return null;
     }
 
     private InputStream InputJarResource(String path, Class<?> clazz) {
@@ -66,36 +68,55 @@ public class PropertyManager {
      * the parameter 'configKey
      * If the property value of this key is an absolute path, use it,
      * otherwise the path is relative to system user.home (NOT user.dir)
+     *
      * @return this same object, with state changed
      */
 
     public PropertyManager MergeUserConfig()
     {
-        return MergeConfigGivenInProperty(UserConfigPathKey, "user.home");
+        Path configPath = PathObjectFromProperty(UserConfigPathKey, "user.home");
+        if (configPath == null) {
+            return this;
+        }
+        return MergeConfigGivenInProperty(configPath);
     }
 
     /**
-     * Merges properties from a file whose path is given in a property key
-     * @param configKey key to lookup
-     * @param pathRootEnvVar environment variable - a file path which contains configKey
-     * @return
+     * Merges properties from a file
+     *
+     * @param configPath  existing file containing properties
+     * @return self
      */
-    public PropertyManager MergeConfigGivenInProperty(String configKey, String pathRootEnvVar)  {
+    public PropertyManager MergeConfigGivenInProperty(Path configPath) {
 
+        try {
+            LoadProperties(InputFileResource(configPath.toString()));
+        } catch (IOException e) {
+            logger.warn(String.format("Couldn't open %s ", configPath.toString()), e);
+        }
+        return this;
+    }
+
+    /**
+     * Read the in-core properties to derive a path
+     * @param configKey property key
+     * @param pathRootEnvVar environment variable giving parent of configKey value
+     * @return resulting Path if it exists, null otherwise
+     */
+    private Path PathObjectFromProperty(String configKey, String pathRootEnvVar)
+    {
         String configPathValue = _Properties.getProperty(configKey);
-        if (StringUtils.isBlank(configPathValue)) return this;
+        if (StringUtils.isBlank(configPathValue)) return null;
 
         Path configPath = Paths.get(configPathValue);
         if (!configPath.isAbsolute()) {
             String pathHome = Paths.get(System.getProperty(pathRootEnvVar)).toAbsolutePath().toString();
             configPath = Paths.get(pathHome, configPathValue);
         }
-        try {
-            LoadProperties(InputFileResource(configPath.toString()));
-        } catch (IOException e) {
-            logger.error(String.format("Couldn't open %s ",configPathValue),e);
-        }
-        return this;
+
+        if (!Files.exists(configPath))
+            return null;
+        return configPath;
     }
 
     /**

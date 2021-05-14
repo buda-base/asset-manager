@@ -93,8 +93,104 @@ folder names of parents of image groups.
 
 Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.
 
+## Overriding properties
+
++ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
++ As a system administrator, you can override any property (even user properties) by defining them in the VM options
+section of the `audittool.sh` (`audittool.ps1` on Windows command line).
+
+In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
+```shell
+java -DMaximumImageFileSize=300K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+
+**Note** the evaluation is one-pass. You cannot override the
+default user.properties file on the command line. This will not cause the
+values of 'other_config.properties' to be read in. Command line
+properties are always read last.
+
+```shell
+java -DUserConfigPath=wont.be.read.properties  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+
+Detailed examples are given in Appendix I.
 ## Warnings as errors
 The user can override any error they wish (while still remaining mindful that some errors 
 must be fixed when submitting works to BDRC or its partners). You do this by adding 
 numeric values to `shell.properties ErrorsAsWarning` property.
 Please refer to the installation's `shell.properties` for the appropriate values.
+
+# Appendix I
+## Property overriding example
+
+In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows 
+runs that use:
+- the default property
+- a much smaller value, defined in `user.properties`
+- an override of that smaller value defined in the shell script.
+
+Ex 1. No `user.properties` file, `shell.properties` value of `400K` used. Tests pass
+```shell
+❯ ls -l ~/.config/bdrc/auditTool/user.properties
+gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+```
+
+Ex 2. Using User.properties
+Here, the default is set to 40K, and the Image file size test fails.
+```shell
+❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=40K
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+Errors! returned:1: check logs
+```
+
+Ex 3: Raising the user properties value
+
+```shell
+❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=300K
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+```
+Ex 4: Overriding user.properties with VM arguments
+
+In this example, we've defined a much smaller argument in a copy of the command file, and the test 
+fails.
+```shell
+❯ grep Maximum ./use_vm_args_to_override.sh
+java -DMaximumImageFileSize=30K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+❯ ./use_vm_args_to_override.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+Errors! returned:1: check logs
+```
