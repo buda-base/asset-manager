@@ -42,7 +42,6 @@ public class FileSequence extends ImageGroupParents {
     public FileSequence(Logger logger, String testName) {
         super(testName);
         sysLogger = logger;
-        _pm = PropertyManager.PropertyManagerBuilder().MergeClassResource("/auditTool.properties", getClass());
         _sequenceLength = getSequenceSubstringLength();
 
     }
@@ -251,7 +250,7 @@ public class FileSequence extends ImageGroupParents {
      */
     private int getSequenceSubstringLength() {
         if (_sequenceLength == 0) {
-            _sequenceLength = _pm.getPropertyInt(this.getClass().getCanonicalName() + ".SequenceLength");
+            _sequenceLength = PropertyManager.PropertyManagerBuilder().MergeClassResource("/auditTool.properties", getClass()).getPropertyInt(this.getClass().getCanonicalName() + ".SequenceLength");
         }
         return _sequenceLength;
     }
@@ -261,9 +260,6 @@ public class FileSequence extends ImageGroupParents {
     //endregion
     // region fields
     private int _sequenceLength;
-    private final PropertyManager _pm;
-
-
     // endregion
 
 }
