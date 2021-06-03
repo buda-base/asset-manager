@@ -1,19 +1,33 @@
 package io.bdrc.am.audit.auditlib;
 
+import org.apache.http.NameValuePair;
+
+import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.HashMap;
 
+/**
+ * IAuditHttpRequest
+ * Generic Http  Client
+ *
+ */
 public interface IAuditHttpRequest {
 
-    void setRequestHeader(HashMap<String, String> header_map);
-
+    void setRequestHeader(List<NameValuePair> header_map);
+    List<NameValuePair> getRequestHeader();
     void addRequestHeader(String key, String value);
 
-    void setURI(URI uri);
-
     void setURI(String uri);
+    String getURI();
 
-    void setMethod(String method);
+    // GET, PUT, etc
+    void setRESTOperation(RestOps method);
+    RestOps getRESTOperation();
+
+    void setArgs(List<NameValuePair> args);
+    List<NameValuePair> getArgs();
+    void addArg(String key, String value) ;
 
     // returns -1 if no request was made
     Integer getResponseStatus();
@@ -22,6 +36,6 @@ public interface IAuditHttpRequest {
 
     String getResponseBody();
 
-    Integer SendRequest();
+    Integer SendRequest() throws IOException;
 
 }
