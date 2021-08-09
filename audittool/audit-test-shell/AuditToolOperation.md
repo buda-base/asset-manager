@@ -140,11 +140,42 @@ and separating the path allows for easier data access.
 ## Principles of operation
 Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.
 ### Property file
-Audit tool reads several variables from its property file `shell.properties.` These properties define parameters which the tests need, such as the
-folder names of parents of image groups. `shell.properties` is expected to be found in the same directory as the audit-tool main jar file.
 
+`shell.properties`
+
+Audit tool reads several variables from its property file `shell.properties` which is found in the same subdirectory as the shell jar file. These properties locate the tests and define parameters which the tests need, such as the
+folder names of parents of image groups.
+
+`log4j2.properties`
+
+Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.
+
+## Overriding properties
+
++ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
++ As a system administrator, you can override any property (even user properties) by defining them in the VM options
+section of the `audittool.sh` (`audittool.ps1` on Windows command line).
+
+In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
+```shell
+java -DMaximumImageFileSize=300K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+
+**Note** the evaluation is one-pass. You cannot override the
+default user.properties file on the command line. This will not cause the
+values of 'other_config.properties' to be read in. Command line
+properties are always read last.
+
+```shell
+java -DUserConfigPath=wont.be.read.properties  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+
+Detailed examples are given in Appendix I.
+
+### Test Requirements
 The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
+
 ### Operation
 The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java) can either run an internal set of tests,
 or can use an external jar file.  It runs all the tests in the library against all the directories given in the arguments.
