@@ -319,9 +319,85 @@ This code fragment of `audit-test-shell` shows this operation
 The `TestResult.Passed()` method contains the overall outcome of the test.
 Test messages are retrieved by the `TestResults.getErrors()` method. It's a good idea to have the first error in the list name the container which failed the test, followed by all the specific failure instances for each file. The caller determines the logging disposition.
 
+
+# Appendix I
+## Property overriding example
+
+In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows 
+runs that use:
+- the default property
+- a much smaller value, defined in `user.properties`
+- an override of that smaller value defined in the shell script.
+
+Ex 1. No `user.properties` file, `shell.properties` value of `400K` used. Tests pass
+```shell
+❯ ls -l ~/.config/bdrc/auditTool/user.properties
+gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+```
+
+Ex 2. Using User.properties
+Here, the default is set to 40K, and the Image file size test fails.
+```shell
+❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=40K
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+Errors! returned:1: check logs
+```
+
+Ex 3: Raising the user properties value
+
+```shell
+❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=300K
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+```
+Ex 4: Overriding user.properties with VM arguments
+
+In this example, we've defined a much smaller argument in a copy of the command file, and the test 
+fails.
+```shell
+❯ grep Maximum ./use_vm_args_to_override.sh
+java -DMaximumImageFileSize=30K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+❯ ./use_vm_args_to_override.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+Errors! returned:1: check logs
+```
 # Updates
 Date|Notes
 ---|---
 4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run. 
  &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings. 
  &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded)  
+ 2021-05-14|Add overrides of properties
