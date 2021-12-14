@@ -1,27 +1,19 @@
 package io.bdrc.am.audit.auditlib;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
-import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
-import org.graalvm.compiler.nodes.java.PluginFactory_RegisterFinalizerNode;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.Closeable;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * AuditHttpRequestImpl
@@ -31,47 +23,53 @@ public class AuditHttpRequestImpl implements IAuditHttpRequest, AutoCloseable {
 
     public AuditHttpRequestImpl() {
         _client = HttpClientBuilder.create().build();
-        _requestHeader = new ArrayList<>();
-        _args = new ArrayList<>();
+        _requestHeader = new HashMap<>();
+        _args = new HashMap<>();
+        _responseHeaders = new HashMap<>();
     }
 
-    private CloseableHttpClient _client;
+    private final CloseableHttpClient _client;
     private CloseableHttpResponse _response;
 
 
     // region Header
-    private List<NameValuePair> _requestHeader;
+    private final HashMap<String, String> _requestHeader;
+
     @Override
-    public void setRequestHeader(final List<NameValuePair> headerNameValuePairs) {
-        _requestHeader = headerNameValuePairs;
+    public void setRequestHeader(final Map<String, String> headerNameValuePairs) {
+        _requestHeader.clear();
+        headerNameValuePairs.forEach(_requestHeader::put);
     }
 
 
     @Override
-    public List<NameValuePair> getRequestHeader() {
+    public Map<String, String> getRequestHeader() {
         return _requestHeader;
     }
 
     @Override
     public void addRequestHeader(final String key, final String value) {
         _requestHeader.put(key, value);
+
     }
     // endregion Header
 
 
     private String _uri;
+
     @Override
     public void setURI(final String uri) {
-     _uri = uri;
+        _uri = uri;
     }
 
 
     @Override
-    public String getURI() {
-        return _uri;
+    public URI getURI() {
+        return URI.create(_uri);
     }
 
     private RestOps _restOp;
+
     @Override
     public void setRESTOperation(final RestOps method) {
         _restOp = method;
@@ -82,88 +80,115 @@ public class AuditHttpRequestImpl implements IAuditHttpRequest, AutoCloseable {
         return _restOp;
     }
 
-    // region Arguments
-    private List<NameValuePair> _args;
-
-    @Override
     /**
-     * Replace all args
+     * Argument handling:
+     * Post arguments are just a blob of text
+     * Get Arguments are a list of NameValuePairs, appended to the URL
      */
-    public void setArgs(final List<NameValuePair> args) {
-        _args = args;
+    // region Arguments
+    private final Map<String, String> _args;
+
+    /**
+     * set the args for a get statement
+     *
+     * @param args list of args
+     */
+    @Override
+    public void setGetArgs(final Map<String, String> args) {
+        _args.clear();
+        args.forEach(_args::put);
     }
 
     @Override
-    public List<NameValuePair> getArgs() {
+    public Map<String, String> getGetArgs() {
         return _args;
     }
 
     @Override
-    public void addArg(String key, String value) {
+    public void addGetArg(String key, String value) {
         _args.put(key, value);
+    }
+
+    private String _postArgs = "";
+
+    @Override
+    public void setPostArgs(final String value) {
+        _postArgs = value;
+    }
+
+    @Override
+    public String getPostArgs() {
+        return _postArgs;
     }
     // endregion
 
     private Integer _responseStatus;
+
     @Override
     public Integer getResponseStatus() {
         return _responseStatus;
     }
 
-    private HashMap<String , String > _responseHeaders;
+    private final Map<String, String> _responseHeaders;
+
     @Override
-    public HashMap<String, String> getResponseHeaders() {
+    public Map<String, String> getResponseHeaders() {
+        Header[] responses;
+        if (_response != null) {
+            _responseHeaders.clear();
+            responses = _response.getAllHeaders();
+            Arrays.stream(responses).forEach(x -> _responseHeaders.put(x.getName(), x.getValue()));
+        }
         return _responseHeaders;
     }
 
     private String _responseBody;
+
     @Override
     public String getResponseBody() {
+        if (_response != null)
+            _responseBody = _response.getEntity().toString();
         return _responseBody;
     }
 
     @Override
-    public Integer SendRequest() throws IOException {
+    public void SendRequest() throws IOException {
         // https://github.com/apache/httpcomponents-client/blob/5.1.x/httpclient5/src/test/java/org/apache/hc/client5/http/examples/ClientConnectionRelease.java
-        _response = closeResponse(_response);
 
         HttpRequestBase _req = getReqFromRest(getRESTOperation());
-        _args.forEach(_req.
 
+        _req.setURI(getURI());
 
+        List<NameValuePair> nameValuePairs = new ArrayList<>();
+        _args.forEach((k,v)->  nameValuePairs.add(new BasicNameValuePair(k,v)));
+        try {
+            URI uri = new URIBuilder(_req.getURI())
+                    .addParameters(nameValuePairs)
+                    .build();
+            _req.setURI(uri);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
-        _response = _client.execute(_re)
-
-        return null;
+        _response = _client.execute(_req);
+        _responseStatus = _response.getStatusLine().getStatusCode();
     }
 
     private HttpRequestBase getReqFromRest(RestOps restOp) {
-        HttpRequestBase _req;
+
         if (RestOps.POST == restOp) {
             return new HttpPost();
-        }
-        else if (RestOps.PUT == restOp) {
+        } else if (RestOps.PUT == restOp) {
             return new HttpPut();
-        }
-        else if (RestOps.DELETE == restOp) {
+        } else if (RestOps.DELETE == restOp) {
             return new HttpDelete();
-        }
-        else if (RestOps.HEAD == restOp) {
+        } else if (RestOps.HEAD == restOp) {
             return new HttpHead();
         }
 
-        // default fallback
-        else (RestOps.GET == restOp ) {
+        // default fallback is GET
+        else
             return new HttpGet();
-        }
-    }
-
-    private CloseableHttpResponse closeResponse(CloseableHttpResponse response) throws IOException {
-        if (response != null) {
-            response.close();
-            return (CloseableHttpResponse)  null;
-        }
-
     }
 
     /**
