@@ -120,7 +120,14 @@ public class EXIFTest  extends ImageGroupParents {
                             });
                             FailTest(outcome, fileObjectPathString, badTags.toString());
                         }
+//                        try {
+//                            exifAttrs.DumpDictionaries(fileObject);
+//                        }
+//                        catch (ImageProcessingException ignored) {
+//
+//                        }
                     }
+
                     catch (UnsupportedFormatException ufe) {
                         FailTest(outcome, fileObjectPathString);
                     }

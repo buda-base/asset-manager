@@ -2,6 +2,7 @@ package io.bdrc.am.audit.audittests;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
@@ -10,7 +11,7 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageEXIFAttributes {
@@ -53,7 +54,43 @@ public class ImageEXIFAttributes {
             throw new UnsupportedFormatException(MessageFormat.format("EXIF Image Processing Exception{0}",
                     ipe.getMessage()));
         }
+
     }
+
+    public void DumpDictionaries(File fileObject) throws IOException, ImageProcessingException, UnsupportedFormatException {
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(fileObject);
+            for (Directory directory : metadata.getDirectories()) {
+                String dirName = directory.getName();
+                for (Tag tag : directory.getTags()) {
+                    try {
+                        String tagName = tag.getTagName();
+                        int tagType = tag.getTagType();
+                        Object ttv = directory.getObject(tagType);
+                        String tagTypeHex = tag.getTagTypeHex();
+                        String tagDesc = tag.getDescription();
+                        System.out.format("[%s] - %s  -type %d (0x%s) value: %s %s\n",
+                                dirName, tagName, tagType, tagTypeHex, String.valueOf(ttv), tagDesc);
+                    }
+                    catch (Exception eek) {
+                        System.err.format("%s\n", eek.getMessage());
+                    }
+                }
+                if (directory.hasErrors()) {
+                    for (String error : directory.getErrors()) {
+                        System.err.format("ERROR: %s", error);
+                    }
+                }
+            }
+        }
+        catch (ImageProcessingException ipe) {
+                throw new UnsupportedFormatException(MessageFormat.format("EXIF Image Processing Exception{0}",
+                        ipe.getMessage()));
+        }
+
+
+    }
+
 
 }
 
