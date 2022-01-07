@@ -7,9 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="audit-test-interface" />
-        <module name="audit-test-lib" />
-        <module name="audit-test-shell" />
         <module name="AssetManager" />
+        <module name="audit-test-lib" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
