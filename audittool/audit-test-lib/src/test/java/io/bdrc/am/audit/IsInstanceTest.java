@@ -1,10 +1,9 @@
 package io.bdrc.am.audit;
 
 
-import io.bdrc.am.audit.iaudit.LibOutcome;
-
-import io.bdrc.am.audit.iaudit.IAuditTest;
 import io.bdrc.am.audit.iaudit.AuditTestConfig;
+import io.bdrc.am.audit.iaudit.IAuditTest;
+import io.bdrc.am.audit.iaudit.LibOutcome;
 import io.bdrc.am.audit.iaudit.TestResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Hashtable;
 
 /**
@@ -44,7 +42,7 @@ public class IsInstanceTest extends AuditTestTestBase {
         Hashtable<String, AuditTestConfig> libTests = getTestDictionary(libUrl, dictName);
 
         Assert.assertNotNull(libTests);
-        Assert.assertEquals("Number of tests doesnt match", 7, libTests.size());
+        Assert.assertEquals("Number of tests doesnt match", 8, libTests.size());
     }
 
     @Test

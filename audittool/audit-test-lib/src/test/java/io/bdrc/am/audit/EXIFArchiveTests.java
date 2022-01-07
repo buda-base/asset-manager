@@ -25,10 +25,10 @@ public class EXIFArchiveTests extends AuditTestTestBase {
      */
     private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
         // This value is for published images
-        // put(DERIVED_GROUP_PARENT,  "images");
-        // this tests our collateral
+        //         put(TestArgNames.DERIVED_GROUP_PARENT,"images");
+        // this tests our test collateral
         put(TestArgNames.ARC_GROUP_PARENT,  "testImages");
-        put(TestArgNames.DERIVED_GROUP_PARENT,"images");
+        put(TestArgNames.DERIVED_GROUP_PARENT,  "testImages");
     }};
 
     @Test
