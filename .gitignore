@@ -23,6 +23,7 @@ target/
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/libraries/
 
 # Generated files
 .idea/**/contentModel.xml
