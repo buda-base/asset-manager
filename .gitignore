@@ -23,6 +23,7 @@ target/
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/libraries/
 
 # Generated files
 .idea/**/contentModel.xml
@@ -50,6 +51,7 @@ target/
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
+**/*.iml
 *.iml
 *.ipr
 

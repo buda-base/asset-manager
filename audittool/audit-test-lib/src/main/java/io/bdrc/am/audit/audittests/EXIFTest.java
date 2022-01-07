@@ -24,7 +24,7 @@ public class EXIFTest  extends ImageGroupParents {
     {
         super(testName);
         sysLogger = logger;
-        outcome = outcomeMap.get(testName);
+  //      outcome = outcomeMap.get(testName);
     }
 
     /**
@@ -32,7 +32,7 @@ public class EXIFTest  extends ImageGroupParents {
      * The outcome depends on the source directory. So user can warn about archive
      * failures, but hard fail on image failures
      */
-    private final Integer outcome ;
+//    private final Integer outcome ;
 
     // The outcome depends on the source directory. So user can warn about archive
     // failures, but not
@@ -120,7 +120,17 @@ public class EXIFTest  extends ImageGroupParents {
                             });
                             FailTest(outcome, fileObjectPathString, badTags.toString());
                         }
+                        if (sysLogger.isDebugEnabled()) {
+                            try {
+//                            exifAttrs.DumpEXIFDirectories(fileObject);
+                                exifAttrs.DumpCommonsMetadata(fileObject);
+                            } catch (Exception someExc) {
+                                sysLogger.error(String.valueOf(someExc));
+
+                            }
+                        }
                     }
+
                     catch (UnsupportedFormatException ufe) {
                         FailTest(outcome, fileObjectPathString);
                     }

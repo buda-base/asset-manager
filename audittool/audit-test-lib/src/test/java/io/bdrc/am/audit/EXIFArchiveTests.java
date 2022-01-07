@@ -25,9 +25,10 @@ public class EXIFArchiveTests extends AuditTestTestBase {
      */
     private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
         // This value is for published images
-        // put(DERIVED_GROUP_PARENT,  "images");
-        // this tests our collateral
+        //         put(TestArgNames.DERIVED_GROUP_PARENT,"images");
+        // this tests our test collateral
         put(TestArgNames.ARC_GROUP_PARENT,  "testImages");
+        put(TestArgNames.DERIVED_GROUP_PARENT,  "testImages");
     }};
 
     @Test
@@ -47,6 +48,12 @@ public class EXIFArchiveTests extends AuditTestTestBase {
     @Test(expected=java.lang.AssertionError.class)
     public void ImageEXIFTestDoesntThrowArchiveEXIFError() {
         MixedRotationAndNoTagsFails(TestDictionary.EXIF_IMAGE_TEST_NAME, LibOutcome.INVALID_ARCHIVE_EXIF);
+    }
+
+    @Test
+    public void ImageDirectoryTest() {
+        runEXIFTest("src/test/images/EXIF.Bad_dirs",TestDictionary.EXIF_IMAGE_TEST_NAME);
+
     }
 
     public void MixedRotationAndNoTagsFails(String testName, Integer expectedOutcome) {

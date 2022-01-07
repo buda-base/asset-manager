@@ -53,11 +53,15 @@
         <!-- http://www.slf4j.org/codes.html#multiple_bindings
         Embedded components such as libraries or frameworks should not declare a dependency on any SLF4J binding
         but only depend on slf4j-api. -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.logging.log4j</groupId>-->
-            <!--<artifactId>log4j-slf4j-impl</artifactId>-->
-            <!--<version>2.12.1</version>-->
-        <!--</dependency>-->
+        <!-- Update:  If we include this in scope = test, maybe no duplicate..
+        https://stackoverflow.com/questions/49217012/slf4j-failed-to-load-class-org-slf4j-impl-staticloggerbinder-intellij-issue
+        -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.12.1</version>
+            <scope>test</scope>
+        </dependency>
         <!--<dependency>-->
         <!--<groupId>org.apache.logging.log4j</groupId>-->
         <!--<artifactId>log4j-api</artifactId>-->
@@ -68,6 +72,13 @@
             <artifactId>commons-io</artifactId>
             <version>2.7</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-imaging -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-imaging</artifactId>
+            <version>1.0-alpha2</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -79,6 +90,13 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.10</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+
         <dependency>
             <groupId>io.bdrc.am</groupId>
             <artifactId>audit-test-interface</artifactId>

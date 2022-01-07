@@ -1,17 +1,17 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="shell properties from filepath" type="Application" factoryName="Application">
+  <configuration default="false" name="shell" type="Application" factoryName="Application" nameIsGenerated="true">
     <envs>
-      <env name="ATHOME" value="$PROJECT_DIR$/audit-test-shell/target/output/" />
+      <env name="ATHOME" value="$PROJECT_DIR$/audit-test-shell/target/classes" />
     </envs>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.shell.shell" />
     <module name="audit-test-shell" />
-    <option name="PROGRAM_PARAMETERS" value="-l . Archive/W8LS68226" />
+    <option name="PROGRAM_PARAMETERS" value="-DArchiveImageGroupParent:''  -l . W1PD96684 " />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../tmp" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="io.bdrc.am.audit.shell.*" />
-        <option name="ENABLED" value="false" />
+        <option name="ENABLED" value="true" />
       </pattern>
     </extension>
     <method v="2">
