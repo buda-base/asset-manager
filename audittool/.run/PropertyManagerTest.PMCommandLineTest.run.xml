@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="PropertyManagerTest.PMCommandLineTest" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
-    <module name="audit-test-interface" />
+    <module name="audit-test-IAudit" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="io.bdrc.am.audit.iaudit.*" />
