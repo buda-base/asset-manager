@@ -23,7 +23,14 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.0.0-M1</version>
                 </plugin>
-            </plugins>
+            <!-- To define the plugin version in your parent POM -->
+
+                    <plugin>
+                        <groupId>com.github.akman</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>0.1.3</version>
+                    </plugin>
+                </plugins>
         </pluginManagement>
         <plugins>
             <!-- jimk: this is stupid if I have to put this here to get
