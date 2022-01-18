@@ -1,0 +1,382 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] audit-tool                                                         [pom]
+[INFO] audit-test-interface                                               [jar]
+[INFO] audit-test-lib                                                     [jar]
+[INFO] audit-test-shell                                                   [jar]
+[INFO] 
+[INFO] -----------------------< io.bdrc.am:audit-tool >------------------------
+[INFO] Building audit-tool 0.9-SNAPSHOT-1                                 [1/4]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- jpackage-maven-plugin:0.1.3:help (default-cli) @ audit-tool ---
+[INFO] JPackage Maven Plugin 0.1.3
+  The jpackage maven plugin is used to link Java 13+ projects
+
+jpackage:jpackage
+  The jpackage goal lets you create a custom runtime image with the jpackage
+  tool introduced in Java 13.
+  The main idea is to avoid being tied to project artifacts and allow the user
+  to fully control the process of creating an image.
+
+  Available parameters:
+
+    addlaunchers
+      Specifies options are added to, or used to overwrite, the original command
+      line options to build additional alternative launchers. BUG: A path cannot
+      contain spaces and unicode characters.
+      <addlaunchers>
+       <addlauncher>
+       <name>launcher1</name>
+       <file>config/jpackage/launcher1.properties</file>
+       <module>mainModule1Name/mainClass1Name</module>
+       <mainjar>mainJar1.jar</mainjar>
+       <mainclass>mainClass1Name</mainclass>
+       <arguments>--arg11 --arg12</arguments>
+       <javaoptions>-Xms128m -Xmx1024m</javaoptions>
+       <appversion>1.0.1</appversion>
+       <icon>config/jpackage/launcher1.ico</icon>
+       <winconsole>true</winconsole>
+       </addlauncher>
+      </addlaunchers>
+      
+      
+      
+      The jpackage CLI is: --add-launcher name=path
+
+    addmodules
+      Specifies the modules names (names of root modules) to add to the runtime
+      image. Their transitive dependencies will add too. This module list, along
+      with the main module (if specified) will be passed to jlink as the
+      --add-module argument. If not specified, either just the main module (if
+      module is specified), or the default set of modules (if mainjar is
+      specified) are used.
+      <addmodules>
+       <addmodule>java.base</addmodule>
+       <addmodule>org.example.rootmodule</addmodule>
+      </addmodules>
+      
+      
+      
+      The jpackage CLI is: --add-modules module [, module...]
+
+    appimage
+      Specifies the location of the predefined application image that is used to
+      build an installable package. BUG: A path cannot contain spaces and
+      unicode characters.
+      The jpackage CLI is: --app-image path
+
+    appversion
+      Specifies version of the application and/or package.
+      The jpackage CLI is: --app-version version
+
+    arguments
+      Specifies the command line arguments to pass to the main class if no
+      command line arguments are given to the launcher.
+      The jpackage CLI is: --arguments args
+
+    bindservices (Default: false)
+      Link service provider modules and their dependencies. Pass on
+      --bind-services option to jlink.
+      The jpackage CLI is: --bind-services
+
+    copyright
+      Specifies copyright for the application.
+      The jpackage CLI is: --copyright copyright
+
+    description
+      Specifies description of the application.
+      The jpackage CLI is: --description description
+
+    dest (Default: ${project.build.directory}/jpackage)
+      Specifies the location in which generated output files are placed. BUG: A
+      path cannot contain spaces and unicode characters.
+      The jpackage CLI is: --dest path
+
+    fileassociations
+      Specifies the location of a properties file that contains list of key,
+      value pairs. The keys 'extension', 'mime-type', 'icon', and 'description'
+      can be used to describe the association.
+      <fileassociations>
+       <fileassociation>assoc1.properties</fileassociation>
+       <fileassociation>assoc2.properties</fileassociation>
+      </fileassociations>
+      
+      
+      BUG: A path cannot contain spaces and unicode characters.
+      The jpackage CLI is: --file-associations path
+
+    icon
+      Specifies the location of the icon of the application launcher. BUG: A
+      path cannot contain spaces and unicode characters.
+      The jpackage CLI is: --icon path
+
+    input
+      Specifies the location of the input directory that contains the files to
+      be packaged. All files in the input directory will be packaged into the
+      application image into $APPDIR directory. BUG: A path cannot contain
+      spaces and unicode characters.
+      The jpackage CLI is: --input path
+
+    installdir
+      Specifies the relative sub-path under the default installation location of
+      the application for Windows, or absolute path of the installation
+      directory of the application for Mac or Linux.
+      The jpackage CLI is: --install-dir name
+
+    javaoptions
+      Specifies the options to pass to the Java runtime.
+      The jpackage CLI is: --java-options opts
+
+    licensefile
+      Specifies the location of a license file. BUG: A path cannot contain
+      spaces and unicode characters.
+      The jpackage CLI is: --license-file path
+
+    linuxappcategory
+      Group value of the RPM name.spec file or Section value of DEB control
+      file.
+      The jpackage CLI is: --linux-app-category name
+
+    linuxapprelease
+      Release value of the RPM name.spec file or Debian revision value of the
+      DEB control file.
+      The jpackage CLI is: --linux-app-release name
+
+    linuxdebmaintainer
+      Maintainer for .deb package.
+      The jpackage CLI is: --linux-deb-maintainer email
+
+    linuxmenugroup
+      Menu group this application is placed in.
+      The jpackage CLI is: --linux-menu-group name
+
+    linuxpackagedeps
+      Required packages or capabilities for the application.
+      The jpackage CLI is: --linux-package-deps
+
+    linuxpackagename
+      Name for Linux package, defaults to the application name.
+      The jpackage CLI is: --linux-package-name name
+
+    linuxrpmlicensetype
+      Type of the license ('License: name' of the RPM .spec).
+      The jpackage CLI is: --linux-rpm-license-type name
+
+    linuxshortcut
+      Creates a shortcut for the application.
+      The jpackage CLI is: --linux-shortcut
+
+    macpackageidentifier
+      An identifier that uniquely identifies the application for macOS. Defaults
+      to the main class name. May only use alphanumeric (A-Z,a-z,0-9), hyphen
+      (-), and period (.) characters.
+      The jpackage CLI is: --mac-package-identifier id
+
+    macpackagename
+      Name of the application as it appears in the Menu Bar. This can be
+      different from the application name. This name must be less than 16
+      characters long and be suitable for displaying in the menu bar and the
+      application Info window. Defaults to the application name.
+      The jpackage CLI is: --mac-package-name name
+
+    macpackagesigningprefix
+      When signing the application package, this value is prefixed to all
+      components that need to be signed that don't have an existing package
+      identifier.
+      The jpackage CLI is: --mac-package-signing-prefix prefix
+
+    macsign
+      Request that the package be signed.
+      The jpackage CLI is: --mac-sign
+
+    macsigningkeychain
+      Path of the keychain to search for the signing identity (absolute path or
+      relative to the current directory). If not specified, the standard
+      keychains are used. BUG: A path cannot contain spaces and unicode
+      characters.
+      The jpackage CLI is: --mac-signing-keychain path
+
+    macsigningkeyusername
+      Team name portion in Apple signing identities' names. For example
+      'Developer ID Application: '.
+      The jpackage CLI is: --mac-signing-key-user-name name
+
+    mainclass
+      Specifies the qualified name of the application main class to execute.
+      This option can only be used if mainjar is specified.
+      The jpackage CLI is: --main-class class-name
+
+    mainjar
+      Specifies the main JAR of the application, specified as a path relative to
+      the input path, containing the main class. Either module or mainjar option
+      can be specified but not both.
+      The jpackage CLI is: --main-jar jar-name
+
+    module
+      Specifies the main module (and optionally main class) of the application.
+      This module must be located on the module path. When this option is
+      specified, the main module will be linked in the Java runtime image.
+      Either module or mainjar option can be specified but not both.
+      The jpackage CLI is: --module module-name[/class-name]
+
+    modulepath
+      Specifies the module path. The path where the jlink tool discovers
+      observable modules: modular JAR files, JMOD files, exploded modules. If
+      this option is not specified, then the default module path is
+      $JAVA_HOME/jmods. This directory contains the java.base module and the
+      other standard and JDK modules. If this option is specified but the
+      java.base module cannot be resolved from it, then the jlink command
+      appends $JAVA_HOME/jmods to the module path. Pass on --modulepath option
+      to jlink.
+      pathelements - passed to jlink as is filesets - sets of files (without
+      directories) dirsets - sets of directories (without files) dependencysets
+      - sets of dependencies with specified includes and excludes patterns
+      (glob: or regex:) for file names and regex patterns only for module names
+      
+      <modulepath>
+       <pathelements>
+       <pathelement>mod.jar</pathelement>
+       <pathelement>mod.jmod</pathelement>
+       <pathelement>mods/exploded/mod</pathelement>
+       </pathelements>
+       <filesets>
+       <fileset>
+       <directory>${project.build.directory}</directory>
+       <includes>
+       <include>**/*</include>
+       </includes>
+       <excludes>
+       <exclude>**/*Empty.jar</exclude>
+       </excludes>
+       <followSymlinks>false</followSymlinks>
+       </fileset>
+       </filesets>
+       <dirsets>
+       <dirset>
+       <directory>target</directory>
+       <includes>
+       <include>**/*</include>
+       </includes>
+       <excludes>
+       <exclude>**/*Test</exclude>
+       </excludes>
+       <followSymlinks>true</followSymlinks>
+       </dirset>
+       </dirsets>
+       <dependencysets>
+       <dependencyset>
+       <includeoutput>false</includeoutput>
+       <excludeautomatic>false</excludeautomatic>
+       <includes>
+       <include>glob:**/*.jar</include>
+       <include>regex:foo-(bar|baz)-.*?\.jar</include>
+       </includes>
+       <includenames>
+       <includename>.*</includename>
+       </includenames>
+       <excludes>
+       <exclude>glob:**/javafx.*Empty</exclude>
+       </excludes>
+       <excludenames>
+       <excludename>javafx\..+Empty</excludename>
+       </excludenames>
+       </dependencyset>
+       </dependencysets>
+      </modulepath>
+      
+      
+      
+      The jpackage CLI is: --modulepath path
+
+    name
+      Specifies the name of subdirectory relative to the destination directory
+      in which files of generated application image are placed. BUG: A name
+      cannot contain spaces and unicode characters. BUG: The names used to
+      create the application image and the application installer must match.
+      The jpackage CLI is: --name directory-name
+
+    resourcedir
+      Specifies the location of a resources directory that override jpackage
+      resources. Icons, template files, and other resources of jpackage can be
+      overridden by adding replacement resources to this directory. BUG: A path
+      cannot contain spaces and unicode characters.
+      The jpackage CLI is: --resource-dir path
+
+    runtimeimage
+      Specifies the location of the predefined runtime image (result of jlink)
+      that will be copied into the application image. If not specified, jpackage
+      will run jlink to create the runtime image using options: - --strip-debug
+      - --no-header-files - --no-man-pages - --strip-native-commands BUG: A path
+      cannot contain spaces and unicode characters.
+      The jpackage CLI is: --runtime-image path
+
+    temp
+      Specifies the location in which temporary files are placed. If specified,
+      the directory will not be removed upon the task completion and must be
+      removed manually. BUG: A path cannot contain spaces and unicode
+      characters.
+      The jpackage CLI is: --temp path
+
+    toolhome
+      Specifies the path to the JDK home directory providing the tool needed.
+
+    type (Default: PLATFORM)
+      Specifies the type of package to create: { 'PLATFORM', 'IMAGE', 'EXE',
+      'MSI' }.
+      The jpackage CLI is: --type {app-image|exe|msi}
+
+    vendor
+      Specifies vendor of the application.
+      The jpackage CLI is: --vendor vendor
+
+    verbose (Default: false)
+      Enable verbose tracing.
+      The jpackage CLI is: --verbose
+
+    winconsole (Default: false)
+      Enable creating a console launcher for the application, should be
+      specified for application which requires console interactions.
+      The jlink CLI is: --win-console
+
+    windirchooser (Default: false)
+      Enable adding a dialog to choose a directory in which the product is
+      installed.
+      The jpackage CLI is: --win-dir-chooser
+
+    winmenu (Default: false)
+      Enable adding the application to the system menu.
+      The jpackage CLI is: --win-menu
+
+    winmenugroup
+      Start menu group this application is placed in.
+      The jpackage CLI is: --win-menu-group name
+
+    winperuserinstall (Default: false)
+      Enable requesting to perform an install on a per-user basis.
+      The jpackage CLI is: --win-per-user-install
+
+    winshortcut (Default: false)
+      Enable creating a desktop shortcut for the application.
+      The jpackage CLI is: --win-shortcut
+
+    winupgradeuuid
+      UUID associated with upgrades for this package.
+      The jpackage CLI is: --win-upgrade-uuid uuid
+
+
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for audit-tool 0.9-SNAPSHOT-1:
+[INFO] 
+[INFO] audit-tool ......................................... SUCCESS [  0.235 s]
+[INFO] audit-test-interface ............................... SKIPPED
+[INFO] audit-test-lib ..................................... SKIPPED
+[INFO] audit-test-shell ................................... SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.431 s
+[INFO] Finished at: 2022-01-10T16:33:36-05:00
+[INFO] ------------------------------------------------------------------------
