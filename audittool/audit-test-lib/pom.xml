@@ -2,12 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+    <parent>
+        <artifactId>audit-tool</artifactId>
+        <groupId>io.bdrc.am.audit</groupId>
+        <version>0.9-SNAPSHOT-1</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>audit-test-lib</artifactId>
-    <groupId>io.bdrc.am</groupId>
+    <groupId>audit.test.lib</groupId>
     <version>0.9-SNAPSHOT-1</version>
+    <packaging>jar</packaging>
+    <name>audit-test-lib</name>
     <build>
         <plugins>
             <plugin>
