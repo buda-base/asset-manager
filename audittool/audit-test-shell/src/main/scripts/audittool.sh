@@ -29,7 +29,9 @@ shellJar=${CONFIG_SHELL_JAR_FILE}
 # Says you cant use -cp and -jar, and you cant find the 
 # java -cp ${CONFIG_TEST_LIB_JAR_FILE} -DtestJar=${CONFIG_TEST_LIB_JAR_FILE} -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar} $@
 echo "starting "$@
-java  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+/Applications/audit-tool.app/Contents/MacOS/audit-tool  $@
+
+# java  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
 rc=$?
 [[ $rc == 0 ]] ||  printf "Errors! returned:${rc}: check logs\n"
 exit $rc
