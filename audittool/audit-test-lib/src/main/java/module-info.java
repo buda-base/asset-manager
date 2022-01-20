@@ -2,7 +2,7 @@ module audit.test.lib {
     exports io.bdrc.am.audit.audittests;
 
     requires org.apache.commons.io;
-    requires slf4j.api;
+    requires org.slf4j;
     requires audit.test.IAudit;
     requires java.xml;
     requires java.desktop;
