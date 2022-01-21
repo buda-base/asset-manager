@@ -6,13 +6,14 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <groupId>io.bdrc.am.audit</groupId>
+    <groupId>io.bdrc.audit</groupId>
     <artifactId>audit-tool</artifactId>
     <packaging>pom</packaging>
-    <version>0.9-SNAPSHOT-1</version>
+    <version>1.0-alpha</version>
     <modules>
-        <module>audit-test-lib</module>
-        <module>audit-test-IAudit</module>
+        <!-- groupId elements of children -->
+        <module>test-lib</module>
+        <module>IAudit</module>
         <module>audit-test-shell</module>
     </modules>
     <build>
@@ -47,6 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>copy-artifact</id>
@@ -64,17 +66,22 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>audit-test-interface</artifactId>
+                                    <artifactId>IAudit</artifactId>
                                     <version>${project.version}</version>
                                     <type>${project.packaging}</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>audit-test-lib</artifactId>
+                                    <artifactId>test-lib</artifactId>
                                     <version>${project.version}</version>
                                     <type>${project.packaging}</type>
                                 </artifactItem>
-
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>shell</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>${project.packaging}</type>
+                                </artifactItem>
                             </artifactItems>
                             <outputDirectory>target/output</outputDirectory>
                         </configuration>

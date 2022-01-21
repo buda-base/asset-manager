@@ -5,7 +5,7 @@
     </envs>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.shell.shell" />
-    <module name="audit-test-shell" />
+    <module name="shell" />
     <option name="PROGRAM_PARAMETERS" value="-DArchiveImageGroupParent:''  -l . W1PD96684 " />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../tmp" />
     <extension name="coverage">
