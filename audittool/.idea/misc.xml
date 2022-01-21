@@ -35,6 +35,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/audit-test-shell/pom.xml" />
         <option value="$PROJECT_DIR$/audit-test-IAudit/pom.xml" />
+        <option value="$PROJECT_DIR$/IAudit/pom.xml" />
       </list>
     </option>
   </component>

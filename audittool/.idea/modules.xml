@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/audit-test-IAudit/IAudit.iml" filepath="$PROJECT_DIR$/audit-test-IAudit/IAudit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/audit-test-lib/TestLib.iml" filepath="$PROJECT_DIR$/audit-test-lib/TestLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/audit-test-interface/audit-test-IAudit.iml" filepath="$PROJECT_DIR$/audit-test-interface/audit-test-IAudit.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audit-test-IAudit/audit-test-interface.iml" filepath="$PROJECT_DIR$/audit-test-IAudit/audit-test-interface.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audit-test-lib/audit-test-lib.iml" filepath="$PROJECT_DIR$/audit-test-lib/audit-test-lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audit-test-shell/audit-test-shell.iml" filepath="$PROJECT_DIR$/audit-test-shell/audit-test-shell.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/audittool.iml" filepath="$PROJECT_DIR$/.idea/audittool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/audit-test-shell/shell.iml" filepath="$PROJECT_DIR$/audit-test-shell/shell.iml" />
     </modules>
   </component>
 </project>

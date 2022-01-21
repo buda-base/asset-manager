@@ -4,14 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>audit-tool</artifactId>
-        <groupId>io.bdrc.am.audit</groupId>
-        <version>0.9-SNAPSHOT-1</version>
+        <groupId>io.bdrc.audit</groupId>
+        <version>1.0-alpha</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>audit.test.shell</groupId>
-    <artifactId>audit-test-shell</artifactId>
-    <version>0.9-SNAPSHOT-1</version>
+    <artifactId>shell</artifactId>
     <packaging>jar</packaging>
     <name>audit-test-shell</name>
     <build>
@@ -23,6 +21,7 @@
                 <configuration>
                     <source>14</source>
                     <target>14</target>
+                    <verbose>true</verbose>
                 </configuration>
             </plugin>
             <!-- jimk: package in a jar file, with dependencies -->
@@ -36,7 +35,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>io.bdrc.am.audit.shell.shell</mainClass>
+                            <mainClass>io.bdrc.audit.shell.shell</mainClass>
                         </manifest>
                     </archive>
                     <excludes>
@@ -48,7 +47,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>copy-resources-to-package</id>
@@ -88,7 +87,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -101,7 +100,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>io.bdrc.am.audit.shell.shell</mainClass>
+                            <mainClass>io.bdrc.audit.shell.shell</mainClass>
                         </manifest>
                     </archive>
                     <descriptors>
@@ -121,6 +120,18 @@
         </resources>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>io.bdrc.audit</groupId>
+            <artifactId>test-lib</artifactId>
+            <version>1.0-alpha</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.bdrc.audit</groupId>
+            <artifactId>IAudit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -142,11 +153,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.17.1</version>
         </dependency>
-        <dependency>
-            <groupId>io.bdrc.am</groupId>
-            <artifactId>audit-test-interface</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!--<dependency>-->
         <!--<groupId>io.bdrc.am</groupId>-->
         <!--<artifactId>audit-test-lib</artifactId>-->
@@ -167,19 +173,6 @@
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
             <scope>test</scope>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-api</artifactId>-->
-            <!--<version>2.0.0-alpha1</version>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
-
-        <dependency>
-            <groupId>io.bdrc.am</groupId>
-            <artifactId>audit-test-lib</artifactId>
-            <version>0.9-SNAPSHOT-1</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
