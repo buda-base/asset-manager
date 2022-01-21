@@ -6,7 +6,8 @@
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.shell.shell" />
     <module name="shell" />
-    <option name="PROGRAM_PARAMETERS" value="-DArchiveImageGroupParent:''  -l . W1PD96684 " />
+    <option name="PROGRAM_PARAMETERS" value="  -l . W1PD96684 " />
+    <option name="VM_PARAMETERS" value="-DArchiveImageGroupParent:'' -Dlog4j.debug" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../tmp" />
     <extension name="coverage">
       <pattern>
