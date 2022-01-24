@@ -1,5 +1,5 @@
 module io.bdrc.audit.tests {
-    exports io.bdrc.am.audit.audittests;
+    exports io.bdrc.audit.audittests;
 
     requires org.apache.commons.io;
     requires org.slf4j;

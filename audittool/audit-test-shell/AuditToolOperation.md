@@ -237,7 +237,7 @@ The shell assumes that the package `io.bdrc.am.audit.iaudit` is either:
 
 #### Test Config objects
 
-The test dictionary has a dependency on io.bdrc.am.audit.iaudit.AuditTestConfig class. Test developers include this library
+The test dictionary has a dependency on AuditTestConfig class. Test developers include this library
 in their Jar, and provide Test configuration objects. The test configuration objects provide information to the shell as
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
 .
@@ -291,7 +291,7 @@ name|type|description
 fullName|`String`|Free form text
 argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs`
 shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value
-clazz|`Class<?>`|Any class object which implements the `io.bdrc.am.audit.iaudit.IAuditTest` interface.
+clazz|`Class<?>`|Any class object which implements the `IAuditTest` interface.
 
 #### Running a test
 A full production instance is available in `audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java`
