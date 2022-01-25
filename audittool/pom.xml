@@ -12,8 +12,8 @@
     <version>1.0-alpha</version>
     <modules>
         <!-- groupId elements of children -->
-        <module>test-lib</module>
         <module>IAudit</module>
+        <module>test-lib</module>
         <module>audit-test-shell</module>
     </modules>
     <build>
