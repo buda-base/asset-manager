@@ -71,8 +71,8 @@ public class TestDictionary {
             put(EXIF_IMAGE_TEST_NAME, new AuditTestConfig("Image EXIF Test",
                     Arrays.asList(DERIVED_GROUP_PARENT,"ImageEXIF"), EXIF_IMAGE_TEST_NAME,EXIFTest.class));
 
-            put(NO_IMAGES_TEST_NAME, new AuditTestConfig("No Images Except Scan Requests",
-                    Arrays.asList(DERIVED_GROUP_PARENT, ARC_GROUP_PARENT),NO_IMAGES_TEST_NAME,ImageGroupHasImages.class));
+            // put(NO_IMAGES_TEST_NAME, new AuditTestConfig("No Images Except Scan Requests",
+            //         Arrays.asList(DERIVED_GROUP_PARENT, ARC_GROUP_PARENT),NO_IMAGES_TEST_NAME,ImageGroupHasImages.class));
         }
     };
 }

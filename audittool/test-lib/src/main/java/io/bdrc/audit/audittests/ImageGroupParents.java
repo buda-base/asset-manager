@@ -16,7 +16,7 @@ import static io.bdrc.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
  * ImageGroupParents is a specific path base test where the names of special "imageGroup"
  * folders are passed in
  */
-abstract public class ImageGroupParents extends PathTestBase {
+abstract public class ImageGroupParents extends io.bdrc.audit.audittests.PathTestBase {
 
     ImageGroupParents(String testName) {
         super(testName);
