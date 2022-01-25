@@ -50,6 +50,9 @@ public class PropertyManager {
 
     private InputStream InputFileResource(String filePath) throws IOException {
         try {
+
+            // Have to translate to absolute path here. On Windows, /tmp/bladdbla is not
+            // absolute, but on Linux it is.
             String cr = new File(filePath).getCanonicalPath();
             File external = new File(cr);
             return new FileInputStream(external);
@@ -108,14 +111,19 @@ public class PropertyManager {
         String configPathValue = _Properties.getProperty(configKey);
         if (StringUtils.isBlank(configPathValue)) return null;
 
+        Path configPath = toAbsolutePath(pathRootEnvVar, configPathValue);
+
+        if (!Files.exists(configPath))
+            return null;
+        return configPath;
+    }
+
+    public Path toAbsolutePath(final String pathRootEnvVar, final String configPathValue) {
         Path configPath = Paths.get(configPathValue);
         if (!configPath.isAbsolute()) {
             String pathHome = Paths.get(System.getProperty(pathRootEnvVar)).toAbsolutePath().toString();
             configPath = Paths.get(pathHome, configPathValue);
         }
-
-        if (!Files.exists(configPath))
-            return null;
         return configPath;
     }
 
@@ -257,6 +265,16 @@ public class PropertyManager {
         }
 
         return rc;
+    }
+
+    /**
+     * get a property's value and map it to a real file path
+     * @param key
+     * @return
+     */
+    public Path getPropertyPath(String key) {
+        String val = getPropertyString(key);
+        return toAbsolutePath("user.home",val);
     }
 
     final private Logger logger;
