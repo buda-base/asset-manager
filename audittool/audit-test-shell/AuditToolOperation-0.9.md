@@ -1,8 +1,8 @@
-# Audit Tool Operation
+# Audit Tool 0.9 Operation
 ## Installation and Configuration
 Please refer to [Installation](Install.md) for details of installation.
 
-Please see the section 
+Please see the section
 ## Operation
 On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
@@ -25,7 +25,7 @@ where:
 
 The `-d` switch has no functionality as of release 0.9
 ### Exit status
-Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis. 
+Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis.
 With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
 The overall result of a batch of tests has new semantics as well. Formerly, a test run passed only if all tests passed. A WARNING result would have been determined to be the same as an ERROR. In this release, the overall run result is calculated:
 - PASS only if every test passed
@@ -42,13 +42,13 @@ most of audit tool's supported platforms. Using redirection (the `>` or `|` oper
 **may not** create files with the correct encoding. Powershell's pipe operator doesn't behave like
 Linux, so piping a output of a file to audit tool may not behave as expected.
 
-Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation 
+Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation
 inside the `cmd` environment, or upgrade to PowerShell 6.
 ### Outputs
 
 #### Run logs and work logs
 Audit tool creates two sets of logs:
-- Run logs, which capture one invocation of Audit tool. These are in _\<User home\>_/audit-tool-logs/. Two sets, 
+- Run logs, which capture one invocation of Audit tool. These are in _\<User home\>_/audit-tool-logs/. Two sets,
 csv, and log files are generated. _\<User home\>_ is the interactive user's home directory.
 - Per Work logs. One .CSV file is created for each work audittool scans. A "work" in this context means a top level directory.
 It is not connected to any existing BDRC library. These are located in either the Run log home (above) or in the directory
@@ -99,7 +99,7 @@ The work run log contains a blend of the summary and the detail loggers below, i
 Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
 folder in two ways:
 - edit in the Audit tool's `log4j2.properties` entry `property.logRoot` entry.
-- use the `-l | --log_home` argument in the call to `audittool.sh` 
+- use the `-l | --log_home` argument in the call to `audittool.sh`
 
 You can configure other logging properties in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
 
@@ -184,7 +184,7 @@ Please refer to [Using an external library](#Using-an-external-test-library) for
 ### Test output
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
-to send to a database. 
+to send to a database.
 
 You can toggle on and off logging by changing comment status as described in the `log4j2.properties` file.
 
@@ -216,7 +216,7 @@ appender.testInternals.type=Null
 Audit tool contains an internal library which contains various tests. To run a different library, you need to define two
 JVM options with the `-D` flag:
 - testJar:  Path to the Jar file which contains the tests
-- testDictionaryClassName: the fully qualified variable name of a public class in the `testJar` which implements 
+- testDictionaryClassName: the fully qualified variable name of a public class in the `testJar` which implements
 `io.bdrc.audit.ITestDictionary`
 
 Example:
@@ -323,7 +323,7 @@ Test messages are retrieved by the `TestResults.getErrors()` method. It's a good
 # Appendix I
 ## Property overriding example
 
-In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows 
+In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows
 runs that use:
 - the default property
 - a much smaller value, defined in `user.properties`
@@ -378,7 +378,7 @@ INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
 ```
 Ex 4: Overriding user.properties with VM arguments
 
-In this example, we've defined a much smaller argument in a copy of the command file, and the test 
+In this example, we've defined a much smaller argument in a copy of the command file, and the test
 fails.
 ```shell
 ❯ grep Maximum ./use_vm_args_to_override.sh
@@ -397,7 +397,7 @@ Errors! returned:1: check logs
 # Updates
 Date|Notes
 ---|---
-4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run. 
- &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings. 
+4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.
+ &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.
  &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded)  
  2021-05-14|Add overrides of properties
