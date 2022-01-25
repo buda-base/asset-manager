@@ -76,9 +76,10 @@ public class PropertyManagerTest {
         StringReader sr = new StringReader("HardWired.prop1 = value 1\nHardwired.prop2 = value 2");
         inStream = IOUtils.toInputStream(IOUtils.toString(sr));
 
-        String loadedUserConfigPath =
-                PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass()).getPropertyString(UserConfigPathKey);
-        BuildUserProperties(Paths.get(loadedUserConfigPath),userPropertyMap);
+        Path loadedUserConfigPath =
+                PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass()).getPropertyPath(UserConfigPathKey);
+
+        BuildUserProperties(loadedUserConfigPath,userPropertyMap);
 
     }
 
@@ -104,7 +105,7 @@ public class PropertyManagerTest {
         PropertyManager pm =
                 PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
 
-        Path userPropertiesFilePath = Paths.get(pm.getPropertyString(UserConfigPathKey));
+        Path userPropertiesFilePath = pm.getPropertyPath(UserConfigPathKey);
         if (userPropertiesFilePath.toFile().exists()) {
             DeleteUserProperties(userPropertiesFilePath);
         }
@@ -168,7 +169,7 @@ public class PropertyManagerTest {
                 PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass());
 
         String expectedDefaultPropertyValue = "UserOverrideDefault";
-        Path userPropertiesFilePath = Paths.get(pm.getPropertyString(UserConfigPathKey));
+        Path userPropertiesFilePath = pm.getPropertyPath(UserConfigPathKey);
 
         // shouldnt already be here
         assertNotEquals(pm.getPropertyString(defaultTestProperty),expectedDefaultPropertyValue);
