@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/audittool/AssetManager.iml" filepath="$PROJECT_DIR$/audittool/AssetManager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audittool/audit-test-interface.iml" filepath="$PROJECT_DIR$/audittool/audit-test-interface.iml" group="audit-tool and modules" />
-      <module fileurl="file://$PROJECT_DIR$/audittool/audit-test-lib.iml" filepath="$PROJECT_DIR$/audittool/audit-test-lib.iml" group="audit-tool and modules" />
+      <module fileurl="file://$PROJECT_DIR$/audittool/IAudit/IAudit.iml" filepath="$PROJECT_DIR$/audittool/IAudit/IAudit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/audittool/test-lib/test-lib.iml" filepath="$PROJECT_DIR$/audittool/test-lib/test-lib.iml" />
     </modules>
   </component>
 </project>

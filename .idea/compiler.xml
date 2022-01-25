@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="audit-test-interface" />
+        <module name="test-lib" />
+        <module name="IAudit" />
         <module name="AssetManager" />
-        <module name="audit-test-lib" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -16,6 +16,8 @@
       <module name="audit-test-interface" target="8" />
       <module name="audit-test-lib" target="8" />
       <module name="audit-test-shell" target="8" />
+      <module name="IAudit" target="14" />
+      <module name="test-lib" target="14" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
