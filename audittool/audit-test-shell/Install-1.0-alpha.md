@@ -57,6 +57,9 @@ You'll see each line. Add the line of the installation directory.
 
 You will see a table of your environment variables.
 
+Add the last line (the default installation is shown as an example)
+
+
 ## Configuration
 ### Sample Run
 
