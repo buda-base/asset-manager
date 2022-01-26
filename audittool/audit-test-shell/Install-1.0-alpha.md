@@ -59,6 +59,8 @@ You will see a table of your environment variables.
 
 Add the last line (the default installation is shown as an example)
 
+![Adding install directory](../images/2022/01/adding-install-directory.png)
+
 
 ## Configuration
 ### Sample Run
