@@ -1,4 +1,6 @@
-# Running Audit tool
+# Audit Tool User Guide
+See 'Installation and Configuration' for system requirements.
+This document uses examples from Linux, but identical functions can be performed on any installed platform, except where noted.
 ## References
 [Audit Tool installation and configuration](https://github.com/buda-base/asset-manager/blob/master/audittool/audit-test-shell/AuditToolOperation.md)
 
@@ -115,15 +117,15 @@ java -DUserConfigPath=wont.be.read.properties  -DatHome=${CONFIG_ATHOME} -Dlog4j
 
 Detailed examples are given in Appendix I.
 ## Warnings as errors
-The user can override any error they wish (while still remaining mindful that some errors 
-must be fixed when submitting works to BDRC or its partners). You do this by adding 
+The user can override any error they wish (while still remaining mindful that some errors
+must be fixed when submitting works to BDRC or its partners). You do this by adding
 numeric values to `shell.properties ErrorsAsWarning` property.
 Please refer to the installation's `shell.properties` for the appropriate values.
 
 # Appendix I
 ## Property overriding example
 
-In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows 
+In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows
 runs that use:
 - the default property
 - a much smaller value, defined in `user.properties`
@@ -178,7 +180,7 @@ INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
 ```
 Ex 4: Overriding user.properties with VM arguments
 
-In this example, we've defined a much smaller argument in a copy of the command file, and the test 
+In this example, we've defined a much smaller argument in a copy of the command file, and the test
 fails.
 ```shell
 ❯ grep Maximum ./use_vm_args_to_override.sh
