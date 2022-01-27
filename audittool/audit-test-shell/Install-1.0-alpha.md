@@ -84,6 +84,59 @@ and drag 'audit-tool.app' to '/Applications'
 
 ### Debian installation
 
+Values in this table are referred to in the instruction as `{Property}`. (eg, `{Package name}`)
+
+Property|Value
+---|---
+Application name  |  `audit-tool`
+Application version  |  `1.0-alpha`
+Package name   |  `audit-v1`
+Package-Release|  1
+Package File name  |  `audit-v1_1.0-alpha-1_amd64.deb`
+Install location  |  `/opt/audit-v1`
+Executable  |  `/opt/audit-v1/bin/audit-tool`
+
+Download: TODO: web loc `audit-v1_1.0-alpha-1_amd64.deb` into `some_folder`
+Install: `sudo apt install -f some_folder/audit-v1_1.0-alpha-1_amd64.deb`
+This creates a package in the Install location above, overwriting existing contents and configurations.
+
+
+
+There are several options for general user access:
+1. Add `/opt/{Package Name}/bin` to the path of any users who use it.
+2. Create a symbolic link in a generally public path: `ln -s /opt/{Package name}/bin/audit-tool`
+3. Use the `update-alternatives` scheme to install the version into a list of choices (to allow multiple global installations). While this is more cumbersome, it is more sysadmin friendly than writing directly into /usr/local/bin.
+
+It also automatically creates a link into any directory you choose (in this example, we use `/usr/local/bin`, but you're free to create your own distribution means.)
+
+Suppose you want to install a new version and retain the older one. Since BDRC always changes the package name on every release, you would install them separately.
+For this example, we've installed two versions:
+audit-tool-v1 and audit-tool-v1.1
+
+To configure for easy change over, we would:
+
+```
+$ sudo update-alternatives --install /usr/local/bin/audit-tool audit-tool /opt/audit-v1/bin/audit-tool 50
+$ sudo update-alternatives --install /usr/local/bin/audit-tool audit-tool /opt/audit-v1.1/bin/audit-tool 55
+```
+You can see the results here, by invoking the config switcher:
+
+```
+$  sudo update-alternatives --config audit-tool
+
+There are 2 choices for the alternative audit-tool (providing /usr/local/bin/audit-tool).
+
+  Selection    Path                            Priority   Status
+------------------------------------------------------------
+* 0            /opt/audit-v1.1/bin/audit-tool   55        auto mode
+  1            /opt/audit-v1.1/bin/audit-tool   55        manual mode
+  2            /opt/audit-v1/bin/audit-tool     50        manual mode
+
+Press <enter> to keep the current choice[*], or type selection number:
+```
+You would simply press 1 or 2 here to change the versions you want users to run.
+
+
 ## Configuration
 This section applies to all platforms.
 
