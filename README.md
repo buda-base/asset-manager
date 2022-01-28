@@ -1,24 +1,20 @@
-# asset-manager
+# BDRC Asset Manager
+## Overview
+Asset Manager is a suite of tools and applications developed by the Buddhist Digital Resource Center
+(BDRC) to aid contributors and staff to audit, package, and transmit content to BDRC for publication
 
-## Source code documentation
-This document is intended for developers of audit tool.
-### Audit Tool
-#### Installation and configuration
-
-[Audit Test Shell installation](audittool/audit-test-shell/Install-1.0-alpha.md)
-
-[Operation](audittool/audit-test-shell/AuditToolOperation-1.0-alpha.md)
-
-[Test Library (Google Doc)](https://docs.google.com/document/d/1TrjUdoLJd5N90d1vWloRqNrlC144-DPfLrClOLsbhVg/edit?usp=sharing) This is provisional documentation.
-
-## mkdocs (not maintained)
-### Development
-#### Requires:
+## User Documentation
+[Fill in after release]
+## Development
+This section applies to developers
+### Requires:
 - Java 17 SDK
 - Mkdocs version 1.0.4
 
-#### Build:
-##### docs
+### Build
+#### Code
+Audit tool is a maven project. Although it is open source, BDRC cannot support development by others.
+#### docs
 - clone the repository
 - `$cd  <repository>`
 - `mkdocs serve` to test locally

@@ -38,9 +38,15 @@ Download:
 ### Windows installation
 
 #### Run the launcher `audit-tool-1.0.exe`
+
+**Note** if the installer fails to launch within a minute, it may be because there is an existing `audit-tool`
+installation. Use Settings | Control Panel | Apps | Uninstall programs to remove it.
+
+**Note** The installer may take a few moments to launch, or to show a selection of folders, if that option is chosen (see below)
+
 ![Windows Install Intro](../images/2022/01/windows-install-intro.png)
 
-If audit tool was installed when you launched, you have an opportunity to choose your action:
+If audit tool was installed when you launched, you mAY have an opportunity to choose your action:
 
 ![Change or Repair](../images/2022/01/change-or-repair.png)
 
