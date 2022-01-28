@@ -6,9 +6,10 @@ Version 1.0 is built and packaged under the most current LTS (Long Term Support)
 - No requirement for pre-installed Java - Audit-tool provides its own JRE (Java Runtime Engine), at JRE 17.3
 - No need to configure a new install.
 - Much simpler configuration: shell and Powershell scripts are no longer required.
--
+
 ## Version Information
-Use these values of VER and REL where they appear below
+Use these values of VER and REL where they appear below:
+
 - Current VER is 1.0
 - Current REL is alpha
 
@@ -32,10 +33,9 @@ Download:
 ### Debian download
 ### MacOS download
 
-## Install
+## Installation
 
-### Install procedures
-### Windows installations
+### Windows installation
 
 #### Run the launcher `audit-tool-1.0.exe`
 ![Windows Install Intro](../images/2022/01/windows-install-intro.png)

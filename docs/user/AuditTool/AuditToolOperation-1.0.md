@@ -2,12 +2,10 @@
 ## Installation and Configuration
 Please refer to [Installation](./Install-1.0.md) for details of installation.
 
-Please see the section
 ## Operation
 On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
-Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
-The arguments to audit tool are simply:
+
 ```psv
 usage: AuditTest [options] { - | Directory,Directory,Directory}
 where:
