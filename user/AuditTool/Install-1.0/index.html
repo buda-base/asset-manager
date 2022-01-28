@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Jim Katz">
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>Installation - Buddhist Digital Resource Center Asset Manager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../../../css/style.css" rel="stylesheet" />
+  <link href="../../../css/tooltip.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Installation";
+    var mkdocs_page_input_path = "user/AuditTool/Install-1.0.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> Buddhist Digital Resource Center Asset Manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#new-in-version-10">New In Version 1.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#version-information">Version Information</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-platforms">Supported Platforms</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#download">Download</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#windows-download">Windows download</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debian-download">Debian download</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#macos-download">MacOS download</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#windows-installation">Windows installation</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#run-the-launcher-audit-tool-10exe">Run the launcher audit-tool-1.0.exe</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#setting-path">Setting path</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#macos-installation">MacOS installation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debian-installation">Debian installation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#guidelines-for-updating-an-existing-installation">Guidelines for Updating an existing installation</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../AuditToolOperation-1.0/">Operation</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">Buddhist Digital Resource Center Asset Manager</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Installation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="audit-tool-installation">Audit Tool Installation</h1>
+<h2 id="new-in-version-10">New In Version 1.0</h2>
+<p>Version 1.0 is built and packaged under the most current LTS (Long Term Support) version of Java, 17. It exploits a packaging utility which provides native installation packages on supported MacOS, Debian, and Windows 10 platforms. This provides:</p>
+<ul>
+<li>No requirement for pre-installed Java - Audit-tool provides its own JRE (Java Runtime Engine), at JRE 17.3</li>
+<li>No need to configure a new install.</li>
+<li>Much simpler configuration: shell and Powershell scripts are no longer required.</li>
+</ul>
+<h2 id="version-information">Version Information</h2>
+<p>Use these values of VER and REL where they appear below:</p>
+<ul>
+<li>Current VER is 1.0</li>
+<li>Current REL is alpha</li>
+</ul>
+<h2 id="supported-platforms">Supported Platforms</h2>
+<ul>
+<li>Windows 10</li>
+<li>Mac OS X 11.6 (Big Sur) or earlier 11. MacOS 10 version have not been tested.</li>
+<li>Debian 10 (Buster)</li>
+</ul>
+<p><strong>Note</strong>: Release 1.0-alpha does not require supporting packages such as:
+- Powershell 3.0 on windows
+- gnu coreutils on MacOS
+- Java</p>
+<h2 id="download">Download</h2>
+<p>Releases are available to download on <a href="https://github.com/buda-base/asset-manager/releases">asset-manager-code Releases</a></p>
+<p>Download:</p>
+<h3 id="windows-download">Windows download</h3>
+<h3 id="debian-download">Debian download</h3>
+<h3 id="macos-download">MacOS download</h3>
+<h2 id="installation">Installation</h2>
+<h3 id="windows-installation">Windows installation</h3>
+<h4 id="run-the-launcher-audit-tool-10exe">Run the launcher <code>audit-tool-1.0.exe</code></h4>
+<p><strong>Note</strong> if the installer fails to launch within a minute, it may be because there is an existing <code>audit-tool</code>
+installation. Use Settings | Control Panel | Apps | Uninstall programs to remove it.</p>
+<p><strong>Note</strong> The installer may take a few moments to launch, or to show a selection of folders, if that option is chosen (see below)</p>
+<p><img alt="Windows Install Intro" src="../../images/2022/01/windows-install-intro.png" /></p>
+<p>If audit tool was installed when you launched, you mAY have an opportunity to choose your action:</p>
+<p><img alt="Change or Repair" src="../../images/2022/01/change-or-repair.png" /></p>
+<p>You can choose your installation directory:</p>
+<p><img alt="Choose directory" src="../../images/2022/01/choose-directory.png" /></p>
+<p><strong>Note</strong> if you choose the default installation directory, <code>audit-tool</code> will be available to all users of the computer on which it is installed.</p>
+<p><img alt="Install prompt" src="../../images/2022/01/install-prompt.png" /></p>
+<h4 id="setting-path">Setting path</h4>
+<p>audit-tool still needs to be launched from a console window (such as <a href="https://www.microsoft.com/en-US/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab">Windows Terminal</a> or  <a href="https://www.microsoft.com/en-us/p/fluent-terminal/9p2krlmfxf9t?activetab=pivot:overviewtab">Fluent Terminal</a> ).
+You may find it helpful to add its location to your PATH.</p>
+<p>Settings (You can reach this with the shortcut WindowsKey+Pause) --&gt; find</p>
+<p><img alt="environment" src="../../images/2022/01/environment.png" />
+Edit Environment variables</p>
+<p><img alt="Personal Environment variables" src="../../images/2022/01/personal-environment-variables.png" /></p>
+<p>Select 'Path' and click 'Edit' as shown here:</p>
+<p><img alt="ClickPath" src="../../images/2022/01/clickpath.png" />
+You'll see each line. Add the line of the installation directory.</p>
+<p><img alt="Environment setting" src="../../images/2022/01/environment-setting.png" /></p>
+<p>You will see a table of your environment variables.</p>
+<p>Add the last line (the default installation is shown as an example)</p>
+<p><img alt="Adding install directory" src="../../images/2022/01/adding-install-directory.png" /></p>
+<h3 id="macos-installation">MacOS installation</h3>
+<p>Open the downloaded package:</p>
+<p><img alt="Installation" src="../../images/2022/01/installer.png" /></p>
+<p>and drag 'audit-tool.app' to '/Applications'</p>
+<h3 id="debian-installation">Debian installation</h3>
+<p>Values in this table are referred to in the instruction as <code>{Property}</code>. (eg, <code>{Package name}</code>)</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Application name</td>
+<td><code>audit-tool</code></td>
+</tr>
+<tr>
+<td>Application version</td>
+<td><code>1.0-alpha</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>audit-v1</code></td>
+</tr>
+<tr>
+<td>Package-Release</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Package File name</td>
+<td><code>audit-v1_1.0-alpha-1_amd64.deb</code></td>
+</tr>
+<tr>
+<td>Install location</td>
+<td><code>/opt/audit-v1</code></td>
+</tr>
+<tr>
+<td>Executable</td>
+<td><code>/opt/audit-v1/bin/audit-tool</code></td>
+</tr>
+</tbody>
+</table>
+<p>Download: TODO: web loc <code>audit-v1_1.0-alpha-1_amd64.deb</code> into <code>some_folder</code>
+Install: <code>sudo apt install -f some_folder/audit-v1_1.0-alpha-1_amd64.deb</code>
+This creates a package in the Install location above, overwriting existing contents and configurations.</p>
+<p>There are several options for general user access:
+1. Add <code>/opt/{Package Name}/bin</code> to the path of any users who use it.
+2. Create a symbolic link in a generally public path: <code>ln -s /opt/{Package name}/bin/audit-tool</code>
+3. Use the <code>update-alternatives</code> scheme to install the version into a list of choices (to allow multiple global installations). While this is more cumbersome, it is more sysadmin friendly than writing directly into /usr/local/bin.</p>
+<p>It also automatically creates a link into any directory you choose (in this example, we use <code>/usr/local/bin</code>, but you're free to create your own distribution means.)</p>
+<p>Suppose you want to install a new version and retain the older one. Since BDRC always changes the package name on every release, you would install them separately.
+For this example, we've installed two versions:
+audit-tool-v1 and audit-tool-v1.1</p>
+<p>To configure for easy change over, we would:</p>
+<pre><code>$ sudo update-alternatives --install /usr/local/bin/audit-tool audit-tool /opt/audit-v1/bin/audit-tool 50
+$ sudo update-alternatives --install /usr/local/bin/audit-tool audit-tool /opt/audit-v1.1/bin/audit-tool 55
+</code></pre>
+<p>You can see the results here, by invoking the config switcher:</p>
+<pre><code>$  sudo update-alternatives --config audit-tool
+
+There are 2 choices for the alternative audit-tool (providing /usr/local/bin/audit-tool).
+
+  Selection    Path                            Priority   Status
+------------------------------------------------------------
+* 0            /opt/audit-v1.1/bin/audit-tool   55        auto mode
+  1            /opt/audit-v1.1/bin/audit-tool   55        manual mode
+  2            /opt/audit-v1/bin/audit-tool     50        manual mode
+
+Press &lt;enter&gt; to keep the current choice[*], or type selection number:
+</code></pre>
+<p>You would simply press 1 or 2 here to change the versions you want users to run.</p>
+<h2 id="configuration">Configuration</h2>
+<p>This section applies to all platforms.</p>
+<p><code>audit-tool</code> now uses the <code>app/</code> subfolder of its installation directory for all its configuration. This file is generated by the install process. Changes you make to it will be overwritten when the application is re-installed.</p>
+<p>This configuration replaces the <code>AT_HOME</code> and <code>CONFIG_ATHOME</code> settings of prior releases. Users with write permission can simply edit the <code>app/</code> files:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>audit-tool.cfg</td>
+<td>Generated list of complete properties to launch the application. Changes to this list are unsupported</td>
+</tr>
+<tr>
+<td>shell.properties</td>
+<td>Parameters for tests (such as names of directories, limits and error overrides)</td>
+</tr>
+<tr>
+<td>log4j2.properties</td>
+<td>Logging control</td>
+</tr>
+</tbody>
+</table>
+<p>Detailed configuration is described in <a href="../AuditToolOperation-1.0/">AuditToolOperation-1.0-alpha.md</a></p>
+<h2 id="guidelines-for-updating-an-existing-installation">Guidelines for Updating an existing installation</h2>
+<p>Installation overwrites any prior installations.
+It is advisable to save existing configurations in the <code>app/</code> folder of the install and *<em>carefully</em> merge them into a new install.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../AuditToolOperation-1.0/" class="btn btn-neutral float-right" title="Operation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../../.." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../.." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../AuditToolOperation-1.0/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme_extra.js" defer></script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

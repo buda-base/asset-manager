@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Jim Katz">
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>Audit Tool Installation - Buddhist Digital Resource Center Asset Manager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../../../css/style.css" rel="stylesheet" />
+  <link href="../../../css/tooltip.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Audit Tool Installation";
+    var mkdocs_page_input_path = "user/AuditTool/Install-0.9.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> Buddhist Digital Resource Center Asset Manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Install-1.0/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../AuditToolOperation-1.0/">Operation</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">Buddhist Digital Resource Center Asset Manager</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Audit Tool Installation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="audit-tool-installation">Audit Tool Installation</h1>
+<ul>
+<li>Current VER is 0.9</li>
+<li>Current REL is SNAPSHOT-1</li>
+</ul>
+<h2 id="supported-platforms">Supported Platforms</h2>
+<ul>
+<li>Windows 10 with Powershell 3.0 and above</li>
+<li>Mac OS X 10.14 (High Sierra) with Bash 4 ( <strong>requires gnu coreutils</strong> )</li>
+<li>Debian 10</li>
+</ul>
+<p><strong> Note </strong> A shell script ending in <code>.sh</code> has the same name on windows, but the suffix <code>.ps1</code> </p>
+<h2 id="download">Download</h2>
+<p>Releases are available on <a href="https://github.com/buda-base/asset-manager/releases">asset-manager-code Releases</a></p>
+<p>Download:
+- <code>audit-test-shell-VER-REL-Install.zip</code></p>
+<h2 id="install">Install</h2>
+<h3 id="install-procedures">Install procedures</h3>
+<p>Identify a target directory and unzip <code>audit-test-shell-VER-REL-Install.zip</code> into it. This directory will be known as AT_INSTALL_HOME
+Please refer to "Updating Guidelines"</p>
+<h2 id="configuration">Configuration</h2>
+<h3 id="sample-run">Sample Run</h3>
+<p>Configuration is performed by running <code>$AT_INSTALL_HOME/audit-tool-config.sh</code></p>
+<p>A sample run is shown below:</p>
+<p>```bash
+❯ audit-tool-config.sh
+This script prompts you for a file path and saves the answers in '.../.config/bdrc/auditTool/config'.</p>
+<p>It asks for the jar file which runs the whole process.
+You press [Enter] to accept the defaults.
+Press [Enter] when you are ready to continue.
+Enter the path to the jar file which launches the process [ default ".../xxx/audit-test-shell-0.9-SNAPSHOT-1.jar" ]?
+```</p>
+<h3 id="walkthrough">Walkthrough</h3>
+<ul>
+<li>audit-tool-config.sh sets  environment variables which the running script, <code>audittool.sh</code> refers to:</li>
+<li>CONFIG_SHELL_JAR_FILE: the file name of the .JAR which launches the tests and logs their results.</li>
+<li>CONFIG_ATHOME: The folder in which Audit Tool is installed. This is useful, because it allows you to move <code>audittool.sh</code> into your path, and it will still run the jar file in the configured path.</li>
+</ul>
+<p>Since audit-tool-config.sh stores preferences in a <strong>per-user</strong> folder, you might want to create a template which saves these variables.
+You do this by editing <code>$AT_INSTALL_HOME/DEFAULT-BDRC-AT-CONFIG.sh</code> When you know the location of the  downloaded files.</p>
+<h4 id="installation-troubleshooting">Installation troubleshooting</h4>
+<p>The configuration will fail:
+- if you have no existing per-user config file,
+- and no default config file,
+- and you do not type values in at the prompts.</p>
+<p>It also warns if the files you enter don't exist, but writes the values anyway, expecting you'll get around to it later.</p>
+<h2 id="guidelines-for-updating-an-existing-installation">Guidelines for Updating an existing installation</h2>
+<p>Installation overwrites any prior installations.
+It is advisable to unzip an update into a scratch directory and merge any site customizations into it before making it available on a server. </p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme_extra.js" defer></script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

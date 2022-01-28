@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Jim Katz">
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>Operation - Buddhist Digital Resource Center Asset Manager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="../../../css/style.css" rel="stylesheet" />
+  <link href="../../../css/tooltip.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Operation";
+    var mkdocs_page_input_path = "user/AuditTool/AuditToolOperation-1.0.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> Buddhist Digital Resource Center Asset Manager</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../Install-1.0/">Installation</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Operation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation-and-configuration">Installation and Configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#operation">Operation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#starting">Starting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#exit-status">Exit status</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-input-files">Using input files</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#run-logs-and-work-logs">Run logs and work logs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#per-work-logs">Per work logs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#work-log-contents">Work log contents</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-logs">Run logs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#log-contents">Log Contents</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#principles-of-operation">Principles of operation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#property-file">Property file</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#overriding-properties">Overriding properties</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#test-output">Test output</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test-internal-logging">Test Internal logging</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">Buddhist Digital Resource Center Asset Manager</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Operation</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="audit-tool-10-operation">Audit Tool 1.0 Operation</h1>
+<h2 id="installation-and-configuration">Installation and Configuration</h2>
+<p>Please refer to <a href="../Install-1.0/">Installation</a> for details of installation.</p>
+<h2 id="operation">Operation</h2>
+<p>On Windows machines, the script type <code>.sh</code> is replaced with PowerShell scripts, which have the suffix <code>.ps1</code></p>
+<h3 id="starting">Starting</h3>
+<pre><code class="language-psv">usage: AuditTest [options] { - | Directory,Directory,Directory}
+where:
+
+                 - read folders from standard input (not supported on PowerShell)
+
+                 Directory .... is a list of directories separated by whitespace.
+[options] are:
+ -d,--debug             Show debugging information
+ -i,--inputFile &lt;arg&gt;   Input file, one path per line
+ -l,--log_home &lt;arg&gt;    Test Result log directory. Must be writable.
+                        Default is &lt;UserHome&gt;/audit-test-logs/. Created if
+                        not exists. Other logs are still written to default log home
+</code></pre>
+<p>The <code>-d</code> switch has no functionality as of release 1.0</p>
+<h3 id="exit-status">Exit status</h3>
+<p>Release <code>V09. Rel 4</code> (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the <code>shell.properties</code> files on a site-by-site basis.
+With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
+The overall result of a batch of tests has new semantics as well. Formerly, a test run passed only if all tests passed. A WARNING result would have been determined to be the same as an ERROR. In this release, the overall run result is calculated:
+- PASS only if every test passed
+- WARN if some tests passed and some tests had WARN status
+- FAIL if any test failed.
+This result is captured in the output file name of the run result: <code>{PASS|WARN|FAIL}-WorkRID={date}.csv</code></p>
+<p>However, the return code of the audittool program is still
+- 0 if no tests failed (some may have passed, some may have warned)
+- 1 if any test failed</p>
+<h3 id="using-input-files">Using input files</h3>
+<p>The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
+most of audit tool's supported platforms. Using redirection (the <code>&gt;</code> or <code>|</code> operators)on Microsoft Windows Powershell<br />
+<strong>may not</strong> create files with the correct encoding. Powershell's pipe operator doesn't behave like
+Linux, so piping a output of a file to audit tool may not behave as expected.</p>
+<p>Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation
+inside the <code>cmd</code> environment, or upgrade to PowerShell 6.</p>
+<h3 id="outputs">Outputs</h3>
+<h4 id="run-logs-and-work-logs">Run logs and work logs</h4>
+<p>Audit tool creates two sets of logs:
+- Run logs, which capture one invocation of Audit tool. These are in <em>\&lt;User home></em>/audit-tool-logs/. Two sets,
+csv, and log files are generated. <em>\&lt;User home></em> is the interactive user's home directory.
+- Per Work logs. One .CSV file is created for each work audittool scans. A "work" in this context means a top level directory.
+It is not connected to any existing BDRC library. These are located in either the Run log home (above) or in the directory
+specified in the <code>-l | --log_home</code> argument.</p>
+<p>Note to windows users: You can change the default log home in the <code>log4j2.properties</code> file in the installer.
+That file contains a proposed Windows location.</p>
+<h4 id="per-work-logs">Per work logs</h4>
+<h5 id="file-name">File name</h5>
+<p>Each work which is analyzed has its output written to a file <em>WorkName.YYYY-MM-DD-HH-MM</em>.csv in the work log location (se above.)
+<em>YYYY-MM-DD-HH-MM</em> of course, stands for the run date and time.</p>
+<p>Optionally, the user can indicate the pass or fail status of each work's test by setting properties
+in the installation's <code>log4j2.propertes</code> file. This shows the properties:</p>
+<pre><code class="language-properties">property.passPrefix=PASS-
+property.failPrefix=FAIL-
+property.warnPrefix=WARN-
+
+</code></pre>
+<p>Any unicode text is allowed, but please bear in mind that support staff might not have the fonts
+installed on their machines.</p>
+<h4 id="work-log-contents">Work log contents</h4>
+<p>The work log file contains the results for each test in sequence. Tests which are ordinarily found in the detail
+logs are added after the overall test result.</p>
+<p>The work run log contains a blend of the summary and the detail loggers below, in <code>csv</code> format. A sample work log is:</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>test_name</th>
+<th>outcome</th>
+<th>error_number</th>
+<th>error_test</th>
+<th>detail_path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W1KG13765</td>
+<td>No Files in Root Folder</td>
+<td>Passed</td>
+<td></td>
+<td></td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+</tr>
+<tr>
+<td>W1KG13765</td>
+<td>Web Image Attributes</td>
+<td>Failed</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>110</td>
+<td>Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader.</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>110</td>
+<td>Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader.</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>110</td>
+<td>Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510075.tif has no suitable reader.</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>110</td>
+<td>Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510101.tif has no suitable reader.</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+</tr>
+<tr>
+<td>W1KG13765</td>
+<td>No folders allowed in Image Group folders</td>
+<td>Passed</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>W1KG13765</td>
+<td>File Sequence Test</td>
+<td>Failed</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>106</td>
+<td>Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test.</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>105</td>
+<td>Sequence File dimensions does not end in an integer: ends with  not found</td>
+<td>/Users/dev/tmp/pub/00/W1KG13765</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="run-logs">Run logs</h3>
+<p>Audit Tool log outputs are in subdirectories of <code>audit-tool-logs</code> of the user's home directory. You can change the base
+folder in two ways:
+- edit in the Audit tool's <code>log4j2.properties</code> entry <code>property.logRoot</code> entry.
+- use the <code>-l | --log_home</code> argument in the call to <code>audittool.sh</code></p>
+<p>You can configure other logging properties in the <code>log4j2.properties</code> file. <strong>NOTE: log4j2 is significantly different from the original log4j.</strong></p>
+<p>Under <code>audit-tool-logs</code> are folders containing <strong>csv</strong> and <strong>log</strong></p>
+<h4 id="log-contents">Log Contents</h4>
+<h5 id="log">Log</h5>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>File name</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Summary</td>
+<td><code>AuditTestShell-SUMMARY-date&amp;Time.log</code></td>
+<td>Audit Tool writes a summary of each test to the console, and to a summary log file. The summary log file shows the pass/fail status of each test on each given directory.</td>
+</tr>
+<tr>
+<td>Detail</td>
+<td><code>AuditTestShell-DETAIL-date&amp;Time.log</code></td>
+<td>A detailed log file,  shows each file which failed a specific test.</td>
+</tr>
+<tr>
+<td>Internal</td>
+<td><code>AuditTestShell-TestInt-date&amp;time.log</code></td>
+<td>the shell passes in this log4j logger for test internal logging.</td>
+</tr>
+</tbody>
+</table>
+<p>The detail files contain the summary result. If there were failures, each item which failed is separately listed (see below)</p>
+<h5 id="csv">CSV</h5>
+<p>CSV files are output for easier analysis and collection. They follow the log files' naming conventions.</p>
+<p>Summary and detail log files have different data formats.
+The summary file contains:</p>
+<table>
+<thead>
+<tr>
+<th>outcome</th>
+<th>path</th>
+<th>test_name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Passed</td>
+<td>\\TBRCRS3\Archive\W1KG10190</td>
+<td>No Files in Root Folder</td>
+</tr>
+</tbody>
+</table>
+<p>The detail file contains:</p>
+<table>
+<thead>
+<tr>
+<th>error_number</th>
+<th>error_test</th>
+<th>path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>104</td>
+<td>Image group folder \\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  fails files only test.</td>
+<td>\\TBRCRS3\Archive\W1KG10190</td>
+</tr>
+<tr>
+<td>103</td>
+<td>Image group folder \\TBRCRS3\Archive\W1KG10190\archive\W1KG10190-I1KG10192  contains directory S0001491.JOB-A</td>
+<td>\\TBRCRS3\Archive\W1KG10190</td>
+</tr>
+</tbody>
+</table>
+<p>Note that the path which failed the test is given as a separate data element: there is  no obligation that the error message contain the path,
+and separating the path allows for easier data access.</p>
+<h2 id="principles-of-operation">Principles of operation</h2>
+<p>Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.</p>
+<h3 id="property-file">Property file</h3>
+<p><code>shell.properties</code></p>
+<p>Audit tool reads several variables from its property file <code>shell.properties</code> which is found in the same subdirectory as the shell jar file. These properties locate the tests and define parameters which the tests need, such as the
+folder names of parents of image groups.</p>
+<p><code>log4j2.properties</code></p>
+<p>Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.</p>
+<h2 id="overriding-properties">Overriding properties</h2>
+<ul>
+<li>As a user, you can override <code>shell.properties</code> properties by creating a file <code>$HOME/.config/bdrc/auditTool/user.properties</code></li>
+<li>As a system administrator, you can override any property (even user properties) by defining them in the <code>[JavaOptions</code>options
+section of <code>INSTALL_DIR/app/audit-tool.cfg</code> file. (where <code>INSTALL_DIR</code> is the location where the system installed Audit tool )
+See <a href="../Install-1.0/">Audit Tool Install 1.0 Guide</a></li>
+</ul>
+<p>In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.</p>
+<pre><code>....
+[JavaOptions]
+....
+java-options=-DMaximumImageFileSize=300k
+...
+</code></pre>
+<p><strong>Note</strong> the evaluation is one-pass. You cannot override the
+default user.properties file on the command line. This will not cause the
+values of 'other_config.properties' to be read in. Command line
+properties are always read last.</p>
+<p>Detailed examples are given in Appendix I.</p>
+<h3 id="test-output">Test output</h3>
+<p>The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
+Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
+to send to a database.</p>
+<p>You can toggle on and off logging by changing comment status as described in the <code>log4j2.properties</code> file.</p>
+<h3 id="test-internal-logging">Test Internal logging</h3>
+<p>To trace tests' internal logs, each test gets passed in an internal logger whose name
+ is its class name. The logger which handles these are in the <code>log4j2.properties</code> file in the section <code>logger.testLogger.name=io.bdrc.am.audit.audittests</code>
+To reduce output, this logger's appender is set to null, as shown here:</p>
+<pre><code># ---------------------      Test Internals logging  ---------------
+
+appender.testInternals.name=testInternalsName
+#
+# To activate internal test logging, uncomment this line, and comment out
+# the remaining testInternals lines
+appender.testInternals.type=Null
+# To activate internal test logging, comment the previous line, and uncomment the next stanza
+# appender.testInternals.type=File
+# appender.testInternals.append=false
+# appender.testInternals.fileName=${logPrefix}-${TestInt}-${date:yyyy-MM-dd-HH-mm-ss}.log
+# appender.testInternals.layoutString.type = PatternLayout
+# appender.testInternals.layoutString.pattern=%d{yyyy-MM-dd HH.mm.ss}   %-5p %m   :%C:%n
+#
+# --------------------- end  Test Internals logging ----------------
+
+</code></pre>
+<h1 id="appendix-i">Appendix I</h1>
+<h2 id="property-overriding-example">Property overriding example</h2>
+<p>In this example, we test a work overriding the <code>MaximumImageFileSize</code> property. This example shows
+runs that use:
+- the default property
+- a much smaller value, defined in <code>user.properties</code>
+- an override of that smaller value defined in the system parameters (for administrators only).</p>
+<p>Ex 1. No <code>user.properties</code> file, <code>shell.properties</code> value of <code>400K</code> used. Tests pass</p>
+<pre><code class="language-shell">❯ ls -l ~/.config/bdrc/auditTool/user.properties
+gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Archive EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Image EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Sequence Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Size Test
+</code></pre>
+<p>Ex 2. Using User.properties
+Here, the default is set to 40K, and the Image file size test fails.</p>
+<pre><code class="language-shell">❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=40K
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Archive EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Image EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Sequence Test
+ERROR Failed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Size Test
+Errors! returned:1: check logs
+</code></pre>
+<p>Ex 3: Raising the user properties value</p>
+<pre><code class="language-shell">❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=300K
+❯ audittool.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Archive EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Image EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Sequence Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Size Test
+</code></pre>
+<p>Ex 4: Overriding user.properties with VM arguments</p>
+<p>In this example, we've defined a much smaller argument in <code>INSTALL_DIR/app/audit-tool.cfg</code>, and the test
+fails.</p>
+<pre><code class="language-shell">❯ grep Maximum /opt/audit-tool/app/audit-tool.cfg
+java-option=-DMaximumImageFileSize=30K
+
+❯ ./use_vm_args_to_override.sh -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Archive EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Image EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Sequence Test
+ERROR Failed    /Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226     File Size Test
+Errors! returned:1: check logs
+</code></pre>
+<h1 id="updates">Updates</h1>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 Nov 2020</td>
+<td>Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. </br>(For example, the <code>ImageSizeTest</code> test requires the folder <code>image</code> to exist.</br>If it does not, the test cannot be said to fail, since it was never run.</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>Cases where this occurs generate a test result of WARN.</br>Files which would have been renamed PASS or FAIL </br>are now renamed WARN--... in the case when some tests succeeded and some had warnings.</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>The return code of <code>audittool</code> also accommodates this extension. If any test failed outright,</br> the return code from <code>audittool</code> is 1. If all tests succeeded,</br> or some tests succeeded, while some generated warnings,</br> <code>audittool</code> returns 0 (as if all tests succeeded)</td>
+</tr>
+<tr>
+<td>2021-05-14</td>
+<td>Add overrides of properties</td>
+</tr>
+<tr>
+<td>26 Jan 2022</td>
+<td>Added platform install changes to configuration.</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>Removed external test and test development - Still in 0.9 Operation</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../Install-1.0/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Install-1.0/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme_extra.js" defer></script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
