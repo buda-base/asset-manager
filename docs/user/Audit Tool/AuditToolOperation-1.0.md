@@ -1,6 +1,6 @@
 # Audit Tool 1.0 Operation
 ## Installation and Configuration
-Please refer to [Installation](Install.md) for details of installation.
+Please refer to [Installation](./Install-1.0.md) for details of installation.
 
 Please see the section
 ## Operation
@@ -23,7 +23,7 @@ where:
                         not exists. Other logs are still written to default log home
 ```
 
-The `-d` switch has no functionality as of release 0.9
+The `-d` switch has no functionality as of release 1.0
 ### Exit status
 Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis.
 With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
@@ -153,12 +153,17 @@ Values relating to logging and output appear here. You can configure the parent 
 ## Overriding properties
 
 + As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
-+ As a system administrator, you can override any property (even user properties) by defining them in the VM options
-section of the `audittool.sh` (`audittool.ps1` on Windows command line).
++ As a system administrator, you can override any property (even user properties) by defining them in the `[JavaOptions`options
+section of `INSTALL_DIR/app/audit-tool.cfg` file. (where `INSTALL_DIR` is the location where the system installed Audit tool )
+See [Audit Tool Install 1.0 Guide](./Install-1.0.md)
 
 In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
-```shell
-java -DMaximumImageFileSize=300K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+....
+[JavaOptions]
+....
+java-options=-DMaximumImageFileSize=300k
+...
 ```
 
 **Note** the evaluation is one-pass. You cannot override the
@@ -166,21 +171,8 @@ default user.properties file on the command line. This will not cause the
 values of 'other_config.properties' to be read in. Command line
 properties are always read last.
 
-```shell
-java -DUserConfigPath=wont.be.read.properties  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
-```
-
 Detailed examples are given in Appendix I.
 
-### Test Requirements
-The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
-can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
-
-### Operation
-The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java) can either run an internal set of tests,
-or can use an external jar file.  It runs all the tests in the library against all the directories given in the arguments.
-
-Please refer to [Using an external library](#Using-an-external-test-library) for instructions on how to use an external test library.
 ### Test output
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
@@ -212,113 +204,6 @@ appender.testInternals.type=Null
 
 ```
 
-### Using an external test library
-Audit tool contains an internal library which contains various tests. To run a different library, you need to define two
-JVM options with the `-D` flag:
-- testJar:  Path to the Jar file which contains the tests
-- testDictionaryClassName: the fully qualified variable name of a public class in the `testJar` which implements
-`io.bdrc.audit.ITestDictionary`
-
-Example:
-```
-java -DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar -DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary -DatHome=${CONFIG_ATHOME}  io.bdrc.am.audit.shell.shell /Volumes/Archive/W2KG20927
-```
-
-
-## Test Developer's Guide
-This section describes how to implement and package different test libraries. The general Audit Tool User doesn't need
-this material.
-### Locating the tests
-#### Test Dictionary
-The shell assumes that the package `io.bdrc.am.audit.iaudit` is either:
- - in the shell jar file itself
- - on the class path
- - or specified with the `-DtestJar .... -DtestDictionaryClassName` (see 'Using an external test library' above)
-
-#### Test Config objects
-
-The test dictionary has a dependency on AuditTestConfig class. Test developers include this library
-in their Jar, and provide Test configuration objects. The test configuration objects provide information to the shell as
-to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
-.
-
-![AuditTestConfig](.AuditToolOperation_images/AuditTestConfig.png)
-
-#### `AuditTestConfig` constructor
-```
- /**
-     * Instantiates a new Audit test config.
-     *
-     * @param fullName  the full name
-     * @param argNames  the arg names
-     * @param shortName the short name
-     * @param clazz     the clazz
-     */
-    public AuditTestConfig(String fullName, List<String> argNames, String shortName, Class<?> clazz)
-```
-To package a test you implement one of these and add it to your TestDictionary.
-
-`audit-test-lib.TestDictionary()` constructor shows `AuditTestConfig` usaqe:
-
-```
- private final Hashtable<String, AuditTestConfig> _TestDictionary = new Hashtable<String, AuditTestConfig>() {
-        {
-            put("FileSequence", new AuditTestConfig("File Sequence Test",
-
-                    // This statement asserts that the caller has to provide values for these
-                    // arguments
-                    Arrays.asList(
-                            "ArchiveImageGroupParent", "DerivedImageGroupParent"),
-                    "FileSequence", FileSequence.class));
-
-            //noinspection ArraysAsListWithZeroOrOneArgument
-            put("NoFilesInFolder", new AuditTestConfig("No Files in Root Folder",
-                    Arrays.asList(""),
-                    "NoFilesInFolder",
-                    NoFilesInRoot.class));
-
-            put("NoFoldersInImageGroups", new AuditTestConfig("No folders allowed in Image Group folders",
-                    Arrays.asList("ArchiveImageGroupParent", "DerivedImageGroupParent"),"NoFoldersInImageGroups",
-                    NoFoldersInImageGroups.class));
-        }
-    };
-```
-##### Parameters
-The constructor takes these parameters
-
-name|type|description
-----|----|----
-fullName|`String`|Free form text
-argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs`
-shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value
-clazz|`Class<?>`|Any class object which implements the `IAuditTest` interface.
-
-#### Running a test
-A full production instance is available in `audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java`
-
-Once you've acquired its `AuditTestConfig` object, the components of running a test are:
-- Instantiating its with its constructor
-- setting its path and keyword arguments (`IAudit.setParams()`)
-- calling it's `LaunchTest` implementation.
-
-This code fragment of `audit-test-shell` shows this operation
-```
-          Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class);
-            IAuditTest inst = ctor.newInstance(testLogger);
-
-            inst.setParams((Object[]) params);
-            inst.LaunchTest();
-
-            tr = inst.getTestResult();
-```
-(you can implement your test classes without a Constructor requiring a logger. In this case, the test writer and the shell writer conspired together to require a logger in the constructor.)
-
-#### Examining test results.
-`audit-test-interface/io/bdrc/am/audit/iaudit/TestResult` and `TestMessage` define the objects which implement test results.
-
-The `TestResult.Passed()` method contains the overall outcome of the test.
-Test messages are retrieved by the `TestResults.getErrors()` method. It's a good idea to have the first error in the list name the container which failed the test, followed by all the specific failure instances for each file. The caller determines the logging disposition.
-
 
 # Appendix I
 ## Property overriding example
@@ -327,7 +212,7 @@ In this example, we test a work overriding the `MaximumImageFileSize` property. 
 runs that use:
 - the default property
 - a much smaller value, defined in `user.properties`
-- an override of that smaller value defined in the shell script.
+- an override of that smaller value defined in the system parameters (for administrators only).
 
 Ex 1. No `user.properties` file, `shell.properties` value of `400K` used. Tests pass
 ```shell
@@ -378,11 +263,12 @@ INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
 ```
 Ex 4: Overriding user.properties with VM arguments
 
-In this example, we've defined a much smaller argument in a copy of the command file, and the test
+In this example, we've defined a much smaller argument in `INSTALL_DIR/app/audit-tool.cfg`, and the test
 fails.
 ```shell
-❯ grep Maximum ./use_vm_args_to_override.sh
-java -DMaximumImageFileSize=30K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+❯ grep Maximum /opt/audit-tool/app/audit-tool.cfg
+java-option=-DMaximumImageFileSize=30K
+
 ❯ ./use_vm_args_to_override.sh -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
@@ -397,7 +283,9 @@ Errors! returned:1: check logs
 # Updates
 Date|Notes
 ---|---
-4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.
- &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.
- &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded)  
+4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. </br>(For example, the `ImageSizeTest` test requires the folder `image` to exist.</br>If it does not, the test cannot be said to fail, since it was never run.
+ &nbsp;| Cases where this occurs generate a test result of WARN.</br>Files which would have been renamed PASS or FAIL </br>are now renamed WARN--... in the case when some tests succeeded and some had warnings.
+ &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright,</br> the return code from `audittool` is 1. If all tests succeeded,</br> or some tests succeeded, while some generated warnings,</br> `audittool` returns 0 (as if all tests succeeded)  
  2021-05-14|Add overrides of properties
+26 Jan 2022|Added platform install changes to configuration.
+&nbsp;|Removed external test and test development - Still in 0.9 Operation

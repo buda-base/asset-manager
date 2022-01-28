@@ -150,7 +150,7 @@ audit-tool.cfg  | Generated list of complete properties to launch the applicatio
 shell.properties  | Parameters for tests (such as names of directories, limits and error overrides)
 log4j2.properties  | Logging control
 
-Detailed configuration is described in [AuditToolOperation-1.0-alpha.md](./AuditToolOperation-1.0-alpha.md)
+Detailed configuration is described in [AuditToolOperation-1.0-alpha.md](./AuditToolOperation-1.0.md)
 
 ## Guidelines for Updating an existing installation
 Installation overwrites any prior installations.

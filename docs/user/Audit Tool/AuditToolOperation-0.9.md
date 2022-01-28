@@ -1,6 +1,6 @@
 # Audit Tool 0.9 Operation
 ## Installation and Configuration
-Please refer to [Installation](Install.md) for details of installation.
+Please refer to [Installation](./Install-0.9.md) for details of installation.
 
 Please see the section
 ## Operation
