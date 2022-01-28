@@ -6,14 +6,16 @@ theme: readthedocs
 
 nav:
 - Home: index.md
-- Requirements:
-  - req/requirements.md
-  - req/tests.md
-- Building:
-    - Design: design/design.md
-- Resources:
-  - About: resources/about.md
-  - References: resources/resources.md
+- Installation: user/AuditTool/Install-1.0.md
+- Operation: user/AuditTool/AuditToolOperation-1.0.md
+#- Requirements:
+#  - req/requirements.md
+#  - req/tests.md
+#- Building:
+#    - Design: design/design.md
+#- Resources:
+#  - About: resources/about.md
+#  - References: resources/resources.md
 
 extra_css:
     - css/style.css

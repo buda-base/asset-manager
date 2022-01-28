@@ -62,7 +62,8 @@ class ArgParser {
         {
             cl = clp.parse(options, args);
             isParsed = true;
-            cl.getArgList().stream().forEach(z -> logger.debug("Found arg :{}:",z));
+
+            cl.getArgList().forEach(z -> logger.debug("Found arg :{}:",z));
 
             // nonOptionArgs = RecurseParse(cl.getArgList());
             nonOptionArgs = cl.getArgList() ;
@@ -154,7 +155,8 @@ class ArgParser {
             try {
                 fileArgs =
                         Files.readAllLines(Paths.get(argFile), StandardCharsets.UTF_8);
-                fileArgs.replaceAll(x -> x.trim());
+                fileArgs.replaceAll(String::trim);
+
                 returned = new ArrayList<>(fileArgs);
 
 
@@ -183,7 +185,8 @@ class ArgParser {
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("audittool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
+        formatter.printHelp("audit-tool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
+
                                     "folders from " +
                                     "standard input\n\t" +
                                     "Directory .... is a list of directories separated by whitespace " +
