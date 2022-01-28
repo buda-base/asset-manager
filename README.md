@@ -4,9 +4,9 @@ Asset Manager is a suite of tools and applications developed by the Buddhist Dig
 (BDRC) to aid contributors and staff to audit, package, and transmit content to BDRC for publication
 
 ## User Documentation
-[Fill in after release]
+User Documentation can be found at [Github Asset Manager Pages](https://buda-base.github.io/asset-manager/)
 ## Development
-This section applies to developers
+This section applies to developers.
 ### Requires:
 - Java 17 SDK
 - Mkdocs version 1.0.4
