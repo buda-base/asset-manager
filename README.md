@@ -8,6 +8,7 @@ User Documentation can be found at [Github Asset Manager Pages](https://buda-bas
 ## Development
 This section applies to developers.
 ### Requires:
+
 - Java 17 SDK
 - Mkdocs version 1.0.4
 
