@@ -27,12 +27,14 @@ Use these values of VER and REL where they appear below:
 ## Download
 Releases are available to download on [asset-manager-code Releases](https://github.com/buda-base/asset-manager/releases)
 
-Download:
+Download from the [v1.0 alpha Github release](https://github.com/buda-base/asset-manager/releases/tag/v1.0-alpha) 
 
 ### Windows download
+[Windows.10.audit-tool-1.0.exe](https://github.com/buda-base/asset-manager/releases/download/v1.0-alpha/Windows.10.audit-tool-1.0.exe)
 ### Debian download
+[Debian.audit-v1_1.0-alpha-1_amd64.deb](https://github.com/buda-base/asset-manager/releases/download/v1.0-alpha/Debian.audit-v1_1.0-alpha-1_amd64.deb)
 ### MacOS download
-
+[Mac.OS.audit-tool-1.0.dmg](https://github.com/buda-base/asset-manager/releases/download/v1.0-alpha/Mac.OS.audit-tool-1.0.dmg)
 ## Installation
 
 ### Windows installation
