@@ -175,3 +175,11 @@ certutil -hashfile c:\Users\JDoe\Downloads\someFile SHA512
 Get-FileHash -Path c:\Users\JDoe\Desktop\abc.exe -Algorithm SHA512
 ```
 ### Debian
+```shell
+sha512sum _someFile_
+```
+### MacOS
+
+```shell
+sha512sum _someFile_
+```
