@@ -9,7 +9,7 @@
   <meta name="author" content="Jim Katz">
   
   <link rel="shortcut icon" href="../../../img/favicon.ico">
-  <title>Audit Tool 0.9 Operation - Buddhist Digital Resource Center Asset Manager</title>
+  <title>0.9 Operation - Buddhist Digital Resource Center Asset Manager</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../../css/theme.css" />
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Audit Tool 0.9 Operation";
+    var mkdocs_page_name = "0.9 Operation";
     var mkdocs_page_input_path = "user/AuditTool/AuditToolOperation-0.9.md";
     var mkdocs_page_url = null;
   </script>
@@ -60,6 +60,81 @@
                     <li class="toctree-l1"><a class="reference internal" href="../AuditToolOperation-1.0/">Operation</a>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Previous Versions</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../Install-0.9/">0.9 Installation</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">0.9 Operation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation-and-configuration">Installation and Configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#operation">Operation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#starting">Starting</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#exit-status">Exit status</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-input-files">Using input files</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#outputs">Outputs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#run-logs-and-work-logs">Run logs and work logs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#per-work-logs">Per work logs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#work-log-contents">Work log contents</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-logs">Run logs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#log-contents">Log Contents</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#principles-of-operation">Principles of operation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#property-file">Property file</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#overriding-properties">Overriding properties</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#test-requirements">Test Requirements</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#operation_1">Operation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test-output">Test output</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test-internal-logging">Test Internal logging</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-an-external-test-library">Using an external test library</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#test-developers-guide">Test Developer's Guide</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#locating-the-tests">Locating the tests</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#test-dictionary">Test Dictionary</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#test-config-objects">Test Config objects</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#audittestconfig-constructor">AuditTestConfig constructor</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#running-a-test">Running a test</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#examining-test-results">Examining test results.</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -80,8 +155,12 @@
     <li><a href="../../..">Docs</a> &raquo;</li>
     
       
+        
+          <li>Previous Versions &raquo;</li>
+        
+      
     
-    <li>Audit Tool 0.9 Operation</li>
+    <li>0.9 Operation</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -415,7 +494,7 @@ this material.</p>
 in their Jar, and provide Test configuration objects. The test configuration objects provide information to the shell as
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
 .</p>
-<p><img alt="AuditTestConfig" src=".AuditToolOperation_images/AuditTestConfig.png" /></p>
+<p><img alt="AuditTestConfig" src="../../images/AuditTestConfig.png" /></p>
 <h4 id="audittestconfig-constructor"><code>AuditTestConfig</code> constructor</h4>
 <pre><code> /**
      * Instantiates a new Audit test config.
@@ -600,6 +679,13 @@ Errors! returned:1: check logs
           </div>
           <footer>
   
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../Install-0.9/" class="btn btn-neutral" title="0.9 Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
 
   <hr/>
 
@@ -621,6 +707,8 @@ Errors! returned:1: check logs
   <div class="rst-versions" role="note" aria-label="versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
     
+    
+      <span><a href="../Install-0.9/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
