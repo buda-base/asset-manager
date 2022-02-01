@@ -242,7 +242,7 @@ in their Jar, and provide Test configuration objects. The test configuration obj
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
 .
 
-![AuditTestConfig](.AuditToolOperation_images/AuditTestConfig.png)
+![AuditTestConfig](../images/AuditTestConfig.png)
 
 #### `AuditTestConfig` constructor
 ```
