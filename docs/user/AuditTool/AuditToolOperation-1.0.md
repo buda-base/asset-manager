@@ -11,6 +11,8 @@ If `audit-tool` is not on your path, add its installation directory (this exampl
 export path=(/Applications/audit-tool.app/Contents/MacOS $path)
 ```
 
+Please refer to 'Setting Path' in [Installation](./Install-1.0.md)
+
 Running:
 
 ```
@@ -44,6 +46,7 @@ This result is captured in the output file name of the run result: `{PASS|WARN|F
 However, the return code of the audittool program is still
 - 0 if no tests failed (some may have passed, some may have warned)
 - 1 if any test failed
+
 ### Using input files
 The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
 most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  
@@ -160,12 +163,11 @@ Values relating to logging and output appear here. You can configure the parent 
 
 ## Overriding properties
 
-+ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
-+ As a system administrator, you can override any property (even user properties) by defining them in the `[JavaOptions`options
++ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties` where `$HOME` stands for your login directory.
++ As a system administrator, you can override any property (even overriding user properties!) by defining them in the `[JavaOptions]`options
 section of `INSTALL_DIR/app/audit-tool.cfg` file. (where `INSTALL_DIR` is the location where the system installed Audit tool )
 See [Audit Tool Install 1.0 Guide](./Install-1.0.md)
-
-In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
+In this example, we're overriding  MaximumImageFileSize property in the to a value slightly smaller than the default.
 ```
 ....
 [JavaOptions]
