@@ -3,23 +3,33 @@
 Please refer to [Installation](./Install-1.0.md) for details of installation.
 
 ## Operation
-On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
 
-```psv
-usage: AuditTest [options] { - | Directory,Directory,Directory}
+If `audit-tool` is not on your path, add its installation directory (this example is for MacOS running `zsh`)
+
+```
+export path=(/Applications/audit-tool.app/Contents/MacOS $path)
+```
+
+Running:
+
+```
+❯ audit-tool
+usage: audit-tool [options] { - | Directory,Directory,Directory}
 where:
 
-                 - read folders from standard input (not supported on PowerShell)
+                 - read folders from standard input
 
-                 Directory .... is a list of directories separated by whitespace.
+                 Directory .... is a list of directories separated by
+                 whitespace
 [options] are:
- -d,--debug             Show debugging information
- -i,--inputFile <arg>   Input file, one path per line
- -l,--log_home <arg>    Test Result log directory. Must be writable.
-                        Default is <UserHome>/audit-test-logs/. Created if
-                        not exists. Other logs are still written to default log home
+-d,--debug             Show debugging information
+-i,--inputFile <arg>   Input file, one path per line
+-l,--log_home <arg>    Test Result log directory. Must be writable.
+                       Default is <UserHome>/audit-test-logs/. Created if
+                       not exists
 ```
+
 
 The `-d` switch has no functionality as of release 1.0
 ### Exit status
