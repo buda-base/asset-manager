@@ -104,13 +104,6 @@
     </ul>
                     </li>
                 </ul>
-                <p class="caption"><span class="caption-text">Previous Versions</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../Install-0.9/">0.9 Installation</a>
-                    </li>
-                    <li class="toctree-l1"><a class="reference internal" href="../AuditToolOperation-0.9/">0.9 Operation</a>
-                    </li>
-                </ul>
       </div>
     </div>
     </nav>
@@ -148,20 +141,25 @@
 <h2 id="installation-and-configuration">Installation and Configuration</h2>
 <p>Please refer to <a href="../Install-1.0/">Installation</a> for details of installation.</p>
 <h2 id="operation">Operation</h2>
-<p>On Windows machines, the script type <code>.sh</code> is replaced with PowerShell scripts, which have the suffix <code>.ps1</code></p>
 <h3 id="starting">Starting</h3>
-<pre><code class="language-psv">usage: AuditTest [options] { - | Directory,Directory,Directory}
+<p>If <code>audit-tool</code> is not on your path, add its installation directory (this example is for MacOS)</p>
+<pre><code>export path=(/Applications/audit-tool.app/Contents/MacOS $path)
+</code></pre>
+<p>Running:</p>
+<pre><code>❯ audit-tool
+usage: audit-tool [options] { - | Directory,Directory,Directory}
 where:
 
-                 - read folders from standard input (not supported on PowerShell)
+                 - read folders from standard input
 
-                 Directory .... is a list of directories separated by whitespace.
+                 Directory .... is a list of directories separated by
+                 whitespace
 [options] are:
- -d,--debug             Show debugging information
- -i,--inputFile &lt;arg&gt;   Input file, one path per line
- -l,--log_home &lt;arg&gt;    Test Result log directory. Must be writable.
-                        Default is &lt;UserHome&gt;/audit-test-logs/. Created if
-                        not exists. Other logs are still written to default log home
+-d,--debug             Show debugging information
+-i,--inputFile &lt;arg&gt;   Input file, one path per line
+-l,--log_home &lt;arg&gt;    Test Result log directory. Must be writable.
+                       Default is &lt;UserHome&gt;/audit-test-logs/. Created if
+                       not exists
 </code></pre>
 <p>The <code>-d</code> switch has no functionality as of release 1.0</p>
 <h3 id="exit-status">Exit status</h3>
@@ -543,8 +541,6 @@ Errors! returned:1: check logs
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../Install-0.9/" class="btn btn-neutral float-right" title="0.9 Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
       
         <a href="../Install-1.0/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
@@ -574,8 +570,6 @@ Errors! returned:1: check logs
     
       <span><a href="../Install-1.0/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../Install-0.9/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
