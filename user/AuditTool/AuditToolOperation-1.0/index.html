@@ -104,6 +104,17 @@
     </ul>
                     </li>
                 </ul>
+                <p class="caption"><span class="caption-text">Earlier releases</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">v0.9</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../AuditToolOperation-0.9/">Audit Tool 0.9 Operation</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../Install-0.9/">Audit Tool Installation</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
       </div>
     </div>
     </nav>
@@ -145,6 +156,7 @@
 <p>If <code>audit-tool</code> is not on your path, add its installation directory (this example is for MacOS running <code>zsh</code>)</p>
 <pre><code>export path=(/Applications/audit-tool.app/Contents/MacOS $path)
 </code></pre>
+<p>Please refer to 'Setting Path' in <a href="../Install-1.0/">Installation</a></p>
 <p>Running:</p>
 <pre><code>❯ audit-tool
 usage: audit-tool [options] { - | Directory,Directory,Directory}
@@ -391,12 +403,12 @@ folder names of parents of image groups.</p>
 <p>Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.</p>
 <h2 id="overriding-properties">Overriding properties</h2>
 <ul>
-<li>As a user, you can override <code>shell.properties</code> properties by creating a file <code>$HOME/.config/bdrc/auditTool/user.properties</code></li>
-<li>As a system administrator, you can override any property (even user properties) by defining them in the <code>[JavaOptions</code>options
+<li>As a user, you can override <code>shell.properties</code> properties by creating a file <code>$HOME/.config/bdrc/auditTool/user.properties</code> where <code>$HOME</code> stands for your login directory.</li>
+<li>As a system administrator, you can override any property (even overriding user properties!) by defining them in the <code>[JavaOptions]</code>options
 section of <code>INSTALL_DIR/app/audit-tool.cfg</code> file. (where <code>INSTALL_DIR</code> is the location where the system installed Audit tool )
-See <a href="../Install-1.0/">Audit Tool Install 1.0 Guide</a></li>
+See <a href="../Install-1.0/">Audit Tool Install 1.0 Guide</a>
+In this example, we're overriding  MaximumImageFileSize property in the to a value slightly smaller than the default.</li>
 </ul>
-<p>In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.</p>
 <pre><code>....
 [JavaOptions]
 ....
@@ -541,6 +553,8 @@ Errors! returned:1: check logs
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../AuditToolOperation-0.9/" class="btn btn-neutral float-right" title="Audit Tool 0.9 Operation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
       
         <a href="../Install-1.0/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
@@ -570,6 +584,8 @@ Errors! returned:1: check logs
     
       <span><a href="../Install-1.0/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../AuditToolOperation-0.9/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
