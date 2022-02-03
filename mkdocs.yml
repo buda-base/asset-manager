@@ -8,6 +8,11 @@ nav:
 - Home: index.md
 - Installation: user/AuditTool/Install-1.0.md
 - Operation: user/AuditTool/AuditToolOperation-1.0.md
+- Earlier releases:
+  - v0.9:
+    - Installation: user/AuditTool/Install-0.9.md
+    - Operation: user/AuditTool/AuditToolOperation-0.9.md
+
 #- Requirements:
 #  - req/requirements.md
 #  - req/tests.md
