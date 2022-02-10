@@ -95,6 +95,16 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#overriding-properties">Overriding properties</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#user-property-overrides">User property overrides</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#system-property-overrides">System property overrides</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#shellproperties">shell.properties</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#audit-toolcfg">audit-tool.cfg</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#test-output">Test output</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#test-internal-logging">Test Internal logging</a>
@@ -156,7 +166,7 @@
 <p>If <code>audit-tool</code> is not on your path, add its installation directory (this example is for MacOS running <code>zsh</code>)</p>
 <pre><code>export path=(/Applications/audit-tool.app/Contents/MacOS $path)
 </code></pre>
-<p>Please refer to 'Setting Path' in <a href="../Install-1.0/">Installation</a></p>
+<p>Please refer to 'Setting Path' in <a href="../Install-1.0/">Audit Tool Install 1.0 Guide</a></p>
 <p>Running:</p>
 <pre><code>❯ audit-tool
 usage: audit-tool [options] { - | Directory,Directory,Directory}
@@ -402,13 +412,17 @@ folder names of parents of image groups.</p>
 <p><code>log4j2.properties</code></p>
 <p>Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.</p>
 <h2 id="overriding-properties">Overriding properties</h2>
-<ul>
-<li>As a user, you can override <code>shell.properties</code> properties by creating a file <code>$HOME/.config/bdrc/auditTool/user.properties</code> where <code>$HOME</code> stands for your login directory.</li>
-<li>As a system administrator, you can override any property (even overriding user properties!) by defining them in the <code>[JavaOptions]</code>options
+<h3 id="user-property-overrides">User property overrides</h3>
+<p>As a user, you can override <code>shell.properties</code> properties by creating a file <code>$HOME/.config/bdrc/auditTool/user.properties</code> where <code>$HOME</code> stands for your login directory.</p>
+<p><strong>Note:</strong> v0.9 of audit tool used to create the <code>$HOME/.config/bdrc/auditTool</code> directory and populate it, but v1.0 Installation won't create it.</p>
+<h3 id="system-property-overrides">System property overrides</h3>
+<h4 id="shellproperties"><code>shell.properties</code></h4>
+<p>System administrators can freely edit the application property file <code>INSTALL_DIR/app/shell.properties</code></p>
+<h4 id="audit-toolcfg"><code>audit-tool.cfg</code></h4>
+<p>As a system administrator, you can override any property (even overriding user overrides!) by defining them in the <code>[JavaOptions]</code>options
 section of <code>INSTALL_DIR/app/audit-tool.cfg</code> file. (where <code>INSTALL_DIR</code> is the location where the system installed Audit tool )
 See <a href="../Install-1.0/">Audit Tool Install 1.0 Guide</a>
-In this example, we're overriding  MaximumImageFileSize property in the to a value slightly smaller than the default.</li>
-</ul>
+In this example, we're overriding  MaximumImageFileSize property in the to a value slightly smaller than the default.</p>
 <pre><code>....
 [JavaOptions]
 ....
@@ -416,9 +430,8 @@ java-options=-DMaximumImageFileSize=300k
 ...
 </code></pre>
 <p><strong>Note</strong> the evaluation is one-pass. You cannot override the
-default user.properties file on the command line. This will not cause the
-values of 'other_config.properties' to be read in. Command line
-properties are always read last.</p>
+default user.properties path property (see <code>shell.properties</code>) in the <code>audit-tool.cfg</code> file . This will not cause the
+override value to be read in. <code>audit-tool.cfg</code> properties are always read last, and supersede any other properties set in <code>shell.properties</code> or <code>user.properties</code></p>
 <p>Detailed examples are given in Appendix I.</p>
 <h3 id="test-output">Test output</h3>
 <p>The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
