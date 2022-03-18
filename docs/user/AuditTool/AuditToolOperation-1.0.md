@@ -11,7 +11,7 @@ If `audit-tool` is not on your path, add its installation directory (this exampl
 export path=(/Applications/audit-tool.app/Contents/MacOS $path)
 ```
 
-Please refer to 'Setting Path' in [Installation](./Install-1.0.md)
+Please refer to 'Setting Path' in [Audit Tool Install 1.0 Guide](./Install-1.0.md)
 
 Running:
 
@@ -163,8 +163,16 @@ Values relating to logging and output appear here. You can configure the parent 
 
 ## Overriding properties
 
-+ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties` where `$HOME` stands for your login directory.
-+ As a system administrator, you can override any property (even overriding user properties!) by defining them in the `[JavaOptions]`options
+### User property overrides
+As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties` where `$HOME` stands for your login directory.
+
+  **Note:** v0.9 of audit tool used to create the `$HOME/.config/bdrc/auditTool` directory and populate it, but v1.0 Installation won't create it.
+
+### System property overrides
+#### `shell.properties`
+System administrators can freely edit the application property file `INSTALL_DIR/app/shell.properties`
+#### `audit-tool.cfg`
+As a system administrator, you can override any property (even overriding user overrides!) by defining them in the `[JavaOptions]`options
 section of `INSTALL_DIR/app/audit-tool.cfg` file. (where `INSTALL_DIR` is the location where the system installed Audit tool )
 See [Audit Tool Install 1.0 Guide](./Install-1.0.md)
 In this example, we're overriding  MaximumImageFileSize property in the to a value slightly smaller than the default.
@@ -177,9 +185,8 @@ java-options=-DMaximumImageFileSize=300k
 ```
 
 **Note** the evaluation is one-pass. You cannot override the
-default user.properties file on the command line. This will not cause the
-values of 'other_config.properties' to be read in. Command line
-properties are always read last.
+default user.properties path property (see `shell.properties`) in the `audit-tool.cfg` file . This will not cause the
+override value to be read in. `audit-tool.cfg` properties are always read last, and supersede any other properties set in `shell.properties` or `user.properties`
 
 Detailed examples are given in Appendix I.
 
