@@ -1,5 +1,7 @@
 #  Audit Tool Installation
 
+## Version Information
+This document refers to the version v1.0-alpha of audit-tool
 ## New In Version 1.0
 Version 1.0 is built and packaged under the most current LTS (Long Term Support) version of Java, 17. It exploits a packaging utility which provides native installation packages on supported MacOS, Debian, and Windows 10 platforms. This provides:
 
@@ -7,11 +9,7 @@ Version 1.0 is built and packaged under the most current LTS (Long Term Support)
 - No need to configure a new install.
 - Much simpler configuration: shell and Powershell scripts are no longer required.
 
-## Version Information
-Use these values of VER and REL where they appear below:
 
-- Current VER is 1.0
-- Current REL is alpha
 
 ## Supported Platforms
 
@@ -19,19 +17,18 @@ Use these values of VER and REL where they appear below:
 - Mac OS X 11.6 (Big Sur) or earlier 11. MacOS 10 version have not been tested.
 - Debian 10 (Buster)
 
-**Note**: Release 1.0-alpha does not require supporting packages such as:
+**Note**: Release v1.0-alpha does not require supporting packages such as:
 - Powershell 3.0 on windows
 - gnu coreutils on MacOS
 - Java
 
 ## Download
 Releases are available to download on [asset-manager-code Releases](https://github.com/buda-base/asset-manager/releases)
-
-Download:
+### v1.0-alpha Download
+Please refer to download instructions specific to this release in [v1.0 alpha Github release](https://github.com/buda-base/asset-manager/releases/tag/v1.0-alpha)
+For information on validating the download's integrity, please refer to [Appendix I - Download integrity validation](#appendix-i-download-integrity-validation)
 
 ### Windows download
-### Debian download
-### MacOS download
 
 ## Installation
 
@@ -117,7 +114,9 @@ It also automatically creates a link into any directory you choose (in this exam
 
 Suppose you want to install a new version and retain the older one. Since BDRC always changes the package name on every release, you would install them separately.
 For this example, we've installed two versions:
-audit-tool-v1 and audit-tool-v1.1
+audit-tool-v1 and audit-tool-v1.1[^fcf50797]
+
+[^fcf50797]: v1.1 does not exist - for example only
 
 To configure for easy change over, we would:
 
@@ -161,3 +160,26 @@ Detailed configuration is described in [AuditToolOperation-1.0-alpha.md](./Audit
 ## Guidelines for Updating an existing installation
 Installation overwrites any prior installations.
 It is advisable to save existing configurations in the `app/` folder of the install and **carefully* merge them into a new install.
+
+# Appendices
+## Appendix I: Download integrity validation
+BDRC uses the best practice SHA512 algorithm to calculate the thumbprint of its release binaries. This section provides instructions on how to generate  a SHA512 digest and compare it with the value given on a release website.
+
+### Windows 10.
+#### Method 1: Windows builtin `certutil`
+```
+certutil -hashfile c:\Users\JDoe\Downloads\someFile SHA512
+```
+#### Method 2: Power shell
+```
+Get-FileHash -Path c:\Users\JDoe\Desktop\abc.exe -Algorithm SHA512
+```
+### Debian
+```shell
+sha512sum _someFile_
+```
+### MacOS
+
+```shell
+sha512sum _someFile_
+```
