@@ -36,6 +36,7 @@ This result is captured in the output file name of the run result: `{PASS|WARN|F
 However, the return code of the audittool program is still
 - 0 if no tests failed (some may have passed, some may have warned)
 - 1 if any test failed
+
 ### Using input files
 The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
 most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  

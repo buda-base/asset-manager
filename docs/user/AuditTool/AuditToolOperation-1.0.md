@@ -3,23 +3,35 @@
 Please refer to [Installation](./Install-1.0.md) for details of installation.
 
 ## Operation
-On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
 
-```psv
-usage: AuditTest [options] { - | Directory,Directory,Directory}
+If `audit-tool` is not on your path, add its installation directory (this example is for MacOS running `zsh`)
+
+```
+export path=(/Applications/audit-tool.app/Contents/MacOS $path)
+```
+
+Please refer to 'Setting Path' in [Installation](./Install-1.0.md)
+
+Running:
+
+```
+❯ audit-tool
+usage: audit-tool [options] { - | Directory,Directory,Directory}
 where:
 
-                 - read folders from standard input (not supported on PowerShell)
+                 - read folders from standard input
 
-                 Directory .... is a list of directories separated by whitespace.
+                 Directory .... is a list of directories separated by
+                 whitespace
 [options] are:
- -d,--debug             Show debugging information
- -i,--inputFile <arg>   Input file, one path per line
- -l,--log_home <arg>    Test Result log directory. Must be writable.
-                        Default is <UserHome>/audit-test-logs/. Created if
-                        not exists. Other logs are still written to default log home
+-d,--debug             Show debugging information
+-i,--inputFile <arg>   Input file, one path per line
+-l,--log_home <arg>    Test Result log directory. Must be writable.
+                       Default is <UserHome>/audit-test-logs/. Created if
+                       not exists
 ```
+
 
 The `-d` switch has no functionality as of release 1.0
 ### Exit status
@@ -34,6 +46,7 @@ This result is captured in the output file name of the run result: `{PASS|WARN|F
 However, the return code of the audittool program is still
 - 0 if no tests failed (some may have passed, some may have warned)
 - 1 if any test failed
+
 ### Using input files
 The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
 most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  
@@ -150,12 +163,11 @@ Values relating to logging and output appear here. You can configure the parent 
 
 ## Overriding properties
 
-+ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
-+ As a system administrator, you can override any property (even user properties) by defining them in the `[JavaOptions`options
++ As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties` where `$HOME` stands for your login directory.
++ As a system administrator, you can override any property (even overriding user properties!) by defining them in the `[JavaOptions]`options
 section of `INSTALL_DIR/app/audit-tool.cfg` file. (where `INSTALL_DIR` is the location where the system installed Audit tool )
 See [Audit Tool Install 1.0 Guide](./Install-1.0.md)
-
-In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
+In this example, we're overriding  MaximumImageFileSize property in the to a value slightly smaller than the default.
 ```
 ....
 [JavaOptions]
