@@ -24,6 +24,7 @@ class ArgParser {
     private CommandLine cl;
     private final String infileOptionShort;
     private final String infileOptionStdin;
+
     private Boolean isParsed;
     private List<String> nonOptionArgs;
 
@@ -32,13 +33,14 @@ class ArgParser {
      *
      * @param args command line input after Java enviro vars parsed and removed.
      */
-    ArgParser(String[] args) {
+    ArgParser(String[] args)  {
 
         // Create the parser
         CommandLineParser clp = new DefaultParser();
         Options options = new Options();
         options.addOption("d", "debug", false, "Show debugging information");
         infileOptionShort = "i";
+        infileOptionStdin = "-";
         final String infileOptionLong = "inputFile";
 
         options.addOption(Option.builder(infileOptionShort)
@@ -73,6 +75,8 @@ class ArgParser {
 
             printHelp(options);
             isParsed = false;
+            return;
+
         }
 
         // sanity check. One of these must be true
@@ -99,7 +103,7 @@ class ArgParser {
                 _logDirectory = ldpStr;
             }
         }
-        infileOptionStdin = "-";
+
     }
 
     /**
@@ -231,6 +235,14 @@ class ArgParser {
      */
     String getLogDirectory() {
         return _logDirectory;
+    }
+
+    /**
+     *
+     * @return if parsing was correct
+     */
+    public Boolean getParsed() {
+        return isParsed;
     }
 
 
