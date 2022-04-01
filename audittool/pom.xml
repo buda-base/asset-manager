@@ -9,7 +9,7 @@
     <groupId>io.bdrc.audit</groupId>
     <artifactId>audit-tool</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-alpha</version>
+    <version>1.0-beta</version>
     <modules>
         <!-- groupId elements of children -->
         <module>IAudit</module>
