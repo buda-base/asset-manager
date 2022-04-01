@@ -55,10 +55,10 @@ public class AssembledAuditTests extends AuditTestTestBase {
     // Parameters annotation marks this as data generator
     @Parameterized.Parameters
     public static Collection Directories() {
-        Hashtable<String,String> properties = new Hashtable<String,String>() {
+        Hashtable<String,String> properties = new Hashtable<>() {
             {
-             put(ARC_GROUP_PARENT,"archive");
-             put(DERIVED_GROUP_PARENT,"images");
+                put(ARC_GROUP_PARENT, "archive");
+                put(DERIVED_GROUP_PARENT, "images");
             }
         };
 
@@ -83,8 +83,8 @@ public class AssembledAuditTests extends AuditTestTestBase {
         TestResult tr = fileSeqTest.getTestResult();
 
         treeCount tc = getTreeCount(testDirectory);
-        System.out.println(String.format("files: %d dirs: %d sec %s", tc.nFiles, tc.nDirs, sw.toString()));
-        System.out.println(String.format("outcome %s number of failures %d", tr.getOutcome(), tr.getErrors().size()));
+        System.out.printf("files: %d dirs: %d sec %s\n", tc.nFiles, tc.nDirs, sw);
+        System.out.printf("outcome %s number of failures %d\n", tr.getOutcome(), tr.getErrors().size());
 
         Boolean actualResult = tr.getOutcome().equals(Outcome.PASS);
         Assert.assertEquals(expectedResult,actualResult);

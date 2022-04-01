@@ -94,6 +94,8 @@ class ArgParser {
 
             printHelp(options);
             isParsed = false;
+            return;
+
         }
 
         // sanity check. One of these must be true
@@ -248,6 +250,14 @@ class ArgParser {
      */
     String getLogDirectory() {
         return _logDirectory;
+    }
+
+    /**
+     *
+     * @return if parsing was correct
+     */
+    public Boolean getParsed() {
+        return isParsed;
     }
 
 

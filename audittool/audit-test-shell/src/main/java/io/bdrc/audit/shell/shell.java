@@ -69,6 +69,12 @@ public class shell {
             sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
 
+            if (!argParser.getParsed()) {
+                sysLogger.trace("Invalid arguments");
+                System.out.println("Exiting on Invalid arguments");
+                System.exit(SYS_ERR);
+            }
+
             sysLogger.trace("Resolving properties");
             Path resourceFile = resolveResourceFile(defaultPropertyFileName);
 
@@ -127,7 +133,7 @@ public class shell {
 
         } catch (Exception e)
         {
-            System.out.println("Exiting on exception " + e.getMessage());
+            System.out.printf("Exiting on exception %s\n" , e.getMessage());
             sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
             System.exit(SYS_ERR);
         }
@@ -303,7 +309,7 @@ public class shell {
             }
         } catch (Exception e)
         {
-            System.out.println(String.format("%s %s", testDir, testClass.getCanonicalName()));
+            System.out.printf("%s %s\n", testDir, testClass.getCanonicalName());
             e.printStackTrace();
         }
 

@@ -1,13 +1,14 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="shell" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="ALTERNATIVE_JRE_PATH" value="openjdk-17" />
     <envs>
       <env name="ATHOME" value="$PROJECT_DIR$/audit-test-shell/target/classes" />
     </envs>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
-    <option name="MAIN_CLASS_NAME" value="io.bdrc.am.audit.shell.shell" />
+    <option name="MAIN_CLASS_NAME" value="io.bdrc.audit.shell.shell" />
     <module name="shell" />
-    <option name="PROGRAM_PARAMETERS" value="  -l . W1PD96684 " />
-    <option name="VM_PARAMETERS" value="-DArchiveImageGroupParent:'' -Dlog4j.debug" />
+    <option name="PROGRAM_PARAMETERS" value="  -q -l . W1PD96684 " />
+    <option name="VM_PARAMETERS" value="-DArchiveImageGroupParent:'' -Dlog4j.debug " />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../tmp" />
     <extension name="coverage">
       <pattern>
@@ -17,6 +18,7 @@
     </extension>
     <method v="2">
       <option name="Make" enabled="true" />
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="compile" />
     </method>
   </configuration>
 </component>
