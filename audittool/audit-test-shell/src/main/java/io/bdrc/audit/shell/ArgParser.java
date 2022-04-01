@@ -19,7 +19,7 @@ import java.util.List;
 class ArgParser {
 
     /* Persist the options */
-    private final Logger logger = LoggerFactory.getLogger("shellLogger");
+    private final Logger logger = LoggerFactory.getLogger("sys");
 
     private CommandLine cl;
 
@@ -29,6 +29,9 @@ class ArgParser {
     // These are class members because they are referenced outside the constructor
     private final String infileOptionShort = "i";
     private final String infileOptionStdin = "-";
+    private final String versionShort = "v";
+    private final String helpShort = "h";
+    private final Options options = new Options();
 
     /**
      * ArgParser. Returns values of arguments.
@@ -39,14 +42,12 @@ class ArgParser {
         final String infileOptionLong = "inputFile";
         final String logHome = "l";
         final String logHomeLong = "log_home";
-        final String versionShort = "v";
-        final String versionLong = "version";
-        final String helpShort = "h";
         final String helpLong = "help";
+        final String versionLong = "version";
 
         // Create the parser
         CommandLineParser clp = new DefaultParser();
-        Options options = new Options();
+
         options.addOption("d", "debug", false, "Show debugging information");
 
         options.addOption(Option.builder(infileOptionShort)
@@ -90,6 +91,8 @@ class ArgParser {
             nonOptionArgs = cl.getArgList() ;
         } catch (ParseException exc)
         {
+
+            // asset-manager-139
             logger.error("Failed to parse {}", exc.getMessage());
 
             printHelp(options);
@@ -99,7 +102,7 @@ class ArgParser {
         }
 
         // sanity check. One of these must be true
-        if (!has_DirList() && !getReadStdIn())
+        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo())
         {
             printHelp(options);
             isParsed = false;
@@ -201,11 +204,38 @@ class ArgParser {
         return returned;
     }
 
+    /**
+     * Overload to test without doing anything
+     * @return
+     */
+    public Boolean OnlyShowInfo()
+    {
+        return cl.hasOption(helpShort) || cl.hasOption(versionShort);
+    }
+
+
+    /**
+     * Parser has some options which return here only
+     */
+    public Boolean OnlyShowInfo(String version) {
+        boolean rc = false;
+        if (cl.hasOption(helpShort)) {
+            printHelp(options);
+            rc = true;
+        }
+
+        // Always show this in debug
+        logger.debug("Version {}", version);
+        if (cl.hasOption(versionShort)) {
+            System.out.printf("Version %s\n", version);
+            rc = true ;
+        }
+        return rc;
+    }
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("audit-tool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
-
                                     "folders from " +
                                     "standard input\n\t" +
                                     "Directory .... is a list of directories separated by whitespace " +

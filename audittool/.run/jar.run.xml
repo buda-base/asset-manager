@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="jar" type="JarApplication" show_console_on_std_out="true">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/audit-test-shell/target/output/shell-1.0-alpha.jar" />
+    <option name="PROGRAM_PARAMETERS" value="-q -l . WNONONO" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../tmp/am149" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="openjdk-17" />
+    <method v="2" />
+  </configuration>
+</component>
