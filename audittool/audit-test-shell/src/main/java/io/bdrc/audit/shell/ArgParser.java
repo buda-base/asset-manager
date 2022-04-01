@@ -19,27 +19,36 @@ import java.util.List;
 class ArgParser {
 
     /* Persist the options */
-    private final Logger logger = LoggerFactory.getLogger("shellLogger");
+    private final Logger logger = LoggerFactory.getLogger("sys");
 
     private CommandLine cl;
-    private final String infileOptionShort;
-    private final String infileOptionStdin;
+
     private Boolean isParsed;
     private List<String> nonOptionArgs;
+
+    // These are class members because they are referenced outside the constructor
+    private final String infileOptionShort = "i";
+    private final String infileOptionStdin = "-";
+    private final String versionShort = "v";
+    private final String helpShort = "h";
+    private final Options options = new Options();
 
     /**
      * ArgParser. Returns values of arguments.
      *
-     * @param args command line input after Java enviro vars parsed and removed.
+     * @param args command line input after Java environ vars parsed and removed.
      */
     ArgParser(String[] args) {
+        final String infileOptionLong = "inputFile";
+        final String logHome = "l";
+        final String logHomeLong = "log_home";
+        final String helpLong = "help";
+        final String versionLong = "version";
 
         // Create the parser
         CommandLineParser clp = new DefaultParser();
-        Options options = new Options();
+
         options.addOption("d", "debug", false, "Show debugging information");
-        infileOptionShort = "i";
-        final String infileOptionLong = "inputFile";
 
         options.addOption(Option.builder(infileOptionShort)
                                   .longOpt(infileOptionLong)
@@ -48,8 +57,6 @@ class ArgParser {
                                   .build());
 
 //         instead of adding to the group, add to mainline options
-        final String logHome = "l";
-        final String logHomeLong = "log_home";
         options.addOption(Option.builder(logHome)
                                   .longOpt(logHomeLong)
                                   .hasArg(true)
@@ -57,6 +64,21 @@ class ArgParser {
                                                 ". Created if not exists ")
                                   .required(false)
                                   .build());
+
+
+        options.addOption(Option.builder(versionShort)
+                .longOpt(versionLong)
+                .hasArg(false)
+                .desc("Shows internal development version (resources)")
+                .required(false)
+                .build());
+
+        options.addOption(Option.builder(helpShort)
+                .longOpt(helpLong)
+                .hasArg(false)
+                .desc("Usage")
+                .required(false)
+                .build());
 
         try
         {
@@ -69,37 +91,36 @@ class ArgParser {
             nonOptionArgs = cl.getArgList() ;
         } catch (ParseException exc)
         {
+
+            // asset-manager-139
             logger.error("Failed to parse {}", exc.getMessage());
 
             printHelp(options);
             isParsed = false;
+            return;
+
         }
 
         // sanity check. One of these must be true
-        if (!has_Dirlist() && !getReadStdIn())
+        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo())
         {
             printHelp(options);
             isParsed = false;
         }
 
 
-        if (cl.hasOption("l"))
-        {
+        if (cl.hasOption("l")) {
             Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
             String ldpStr = logDirPath.toString();
 
             // Log home directory must be writable. Create it now, evaluate result
-            if (!madeWritableDir(logDirPath))
-            {
+            if (!madeWritableDir(logDirPath)) {
                 printHelp(options);
                 logger.error("User supplied folder {} cannot be created. Using default", ldpStr);
-            }
-            else
-            {
+            } else {
                 _logDirectory = ldpStr;
             }
         }
-        infileOptionStdin = "-";
     }
 
     /**
@@ -107,9 +128,10 @@ class ArgParser {
      *
      * @return true when the infile option is set or a list of directories is given on the command line.
      */
-    Boolean has_Dirlist() {
+    Boolean has_DirList() {
         Boolean rc = cl.hasOption(infileOptionShort) || get_IfArgsCommandLine();
-        logger.debug("hasOption {} !getReadStdin {} has_Dirlist net: {} ", cl.hasOption(infileOptionShort), !getReadStdIn
+        logger.debug("hasOption {} !getReadStdin {} has_DirList net: {} ", cl.hasOption(infileOptionShort),
+                !getReadStdIn
                                                                                                                      (),
                 rc);
 
@@ -120,7 +142,7 @@ class ArgParser {
      * @return If the user has specified reading from standard input
      */
     Boolean getReadStdIn() {
-        logger.debug("nonoption args empty {}", nonOptionArgs.isEmpty());
+        logger.debug("non option args empty {}", nonOptionArgs.isEmpty());
         return (!nonOptionArgs.isEmpty()) && nonOptionArgs.get(0).equals
                                                                           (infileOptionStdin);
     }
@@ -129,7 +151,7 @@ class ArgParser {
      * @return If the user has specified reading from standard input
      */
     private Boolean get_IfArgsCommandLine() {
-        logger.debug("get_IfArgsCommandLine nonoption args empty {}", nonOptionArgs.isEmpty());
+        logger.debug("get_IfArgsCommandLine non option args empty {}", nonOptionArgs.isEmpty());
         return !nonOptionArgs.isEmpty() && !nonOptionArgs.get(0).equals
                                                                          (infileOptionStdin);
     }
@@ -137,7 +159,7 @@ class ArgParser {
     /**
      * Extracts the dir arguments
      *
-     * @return contents of the "-i --input" argument or the ,delimited list of arguments
+     * @return contents of the "-i --input" argument or the comma-delimited list of arguments
      */
     List<String> getDirs() throws IOException {
 
@@ -182,11 +204,38 @@ class ArgParser {
         return returned;
     }
 
+    /**
+     * Overload to test without doing anything
+     * @return
+     */
+    public Boolean OnlyShowInfo()
+    {
+        return cl.hasOption(helpShort) || cl.hasOption(versionShort);
+    }
+
+
+    /**
+     * Parser has some options which return here only
+     */
+    public Boolean OnlyShowInfo(String version) {
+        boolean rc = false;
+        if (cl.hasOption(helpShort)) {
+            printHelp(options);
+            rc = true;
+        }
+
+        // Always show this in debug
+        logger.debug("Version {}", version);
+        if (cl.hasOption(versionShort)) {
+            System.out.printf("Version %s\n", version);
+            rc = true ;
+        }
+        return rc;
+    }
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("audit-tool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
-
                                     "folders from " +
                                     "standard input\n\t" +
                                     "Directory .... is a list of directories separated by whitespace " +
@@ -195,7 +244,7 @@ class ArgParser {
     }
 
     /**
-     * Creates a directory, or checks an existing one for writability
+     * Creates a directory, or checks an existing one for write access
      *
      * @param pathToCreate full path to directory (caller must resolve)
      * @return true if directory is writable, false if not or if it cannot create.
@@ -231,6 +280,14 @@ class ArgParser {
      */
     String getLogDirectory() {
         return _logDirectory;
+    }
+
+    /**
+     *
+     * @return if parsing was correct
+     */
+    public Boolean getParsed() {
+        return isParsed;
     }
 
 

@@ -2,6 +2,7 @@ package io.bdrc.audit.shell;
 
 import io.bdrc.audit.iaudit.*;
 import io.bdrc.audit.iaudit.message.TestMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -48,12 +50,13 @@ public class shell {
      * Property key to find class name of test dictionary
      */
     private static final String TEST_DICT_PROPERTY_NAME = "testDictionaryClassName";
+    private static final String AT_VERSION = "auditToolVersion";
     private static final String TEST_LOGGER_HEADER = "id,test_name,outcome,error_number,error_test,detail_path\n";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
-    private final static Logger sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
-    private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
-    private final static Logger testResultLogger = LoggerFactory.getLogger("testResultLogger");
+    private static Logger sysLogger ;
+    private static Logger detailLogger ;
+    private static Logger testResultLogger ;
 
     private final static int SYS_OK = 0;
     private final static int SYS_ERR = 1;
@@ -63,11 +66,23 @@ public class shell {
 
     public static void main(String[] args) {
         List<Integer> allResults = new ArrayList<>();
+
+
+        sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
+        detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+        testResultLogger = LoggerFactory.getLogger("testResultLogger");
+
         try
         {
             sysLogger.trace("Entering main");
             sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
+
+            if (!argParser.getParsed()) {
+                sysLogger.trace("Invalid arguments");
+                System.out.println("Exiting on Invalid arguments");
+                System.exit(SYS_ERR);
+            }
 
             sysLogger.trace("Resolving properties");
             Path resourceFile = resolveResourceFile(defaultPropertyFileName);
@@ -79,7 +94,7 @@ public class shell {
             // Second, the user properties (defined in the /shell.properties property UserConfigPath)
             // Third, the command line properties (defined by the -Dprop=value.
             // If the command line properties contains the UserConfigPath, such as
-            // -DUserConfigPath=someother/path the properties in that path are reloaded.
+            // -DUserConfigPath=some_other/path the properties in that path are reloaded.
             //    PropertyManager.PropertyManagerBuilder().
             //    .toString())
 //            PropertyManager shellProperties =
@@ -87,9 +102,15 @@ public class shell {
 //                            shell.class.getClass())
 //
             PropertyManager shellProperties =
-                    PropertyManager.PropertyManagerBuilder().MergeResourceFile(resourceFile.toAbsolutePath().toString())
-                    .MergeUserConfig()
-                    .MergeProperties(System.getProperties());
+                    PropertyManager.PropertyManagerBuilder().MergeResourceFile(resourceFile.toAbsolutePath().toString());
+
+            // Need property manager for some argParsing infos that we dont want to override
+
+            if (argParser.OnlyShowInfo(shellProperties.getPropertyString(AT_VERSION))) {
+                System.exit(SYS_OK);
+            }
+            shellProperties =shellProperties.MergeUserConfig()
+                            .MergeProperties(System.getProperties());
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
@@ -102,7 +123,7 @@ public class shell {
 
             testLogController = BuildTestLog(argParser);
 
-            if (argParser.has_Dirlist())
+            if (argParser.has_DirList())
             {
                 for (String aTestDir : ResolvePaths(argParser.getDirs()))
                 {
@@ -127,7 +148,7 @@ public class shell {
 
         } catch (Exception e)
         {
-            System.out.println("Exiting on exception " + e.getMessage());
+            System.out.printf("Exiting on exception %s\n" , e.getMessage());
             sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
             System.exit(SYS_ERR);
         }
@@ -303,7 +324,7 @@ public class shell {
             }
         } catch (Exception e)
         {
-            System.out.println(String.format("%s %s", testDir, testClass.getCanonicalName()));
+            System.out.printf("%s %s\n", testDir, testClass.getCanonicalName());
             e.printStackTrace();
         }
 
@@ -391,17 +412,38 @@ public class shell {
 
         String resHome = System.getProperty("atHome");
 
-        if ((resHome == null) || resHome.isEmpty())
+        if (StringUtils.isEmpty(resHome))
         {
             sysLogger.debug("resolveResourceFile: atHome empty.");
             resHome = System.getenv("ATHOME");
             sysLogger.debug("resolveResourceFile: getenv ATHOME {}", resHome);
         }
-        if ((resHome == null) || resHome.isEmpty())
+
+        // asset-manager-34. Need to get the directory the jar is running
+        // in if there is no atHome (e.g. if debugging)
+        if (StringUtils.isEmpty(resHome))
         {
-            resHome = System.getProperty("user.dir");
-            sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
+            try {
+                resHome = shell.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI()
+                        .getPath();
+                sysLogger.debug("path from class: {}", resHome);
+            } catch (URISyntaxException e) {
+                sysLogger.debug("Invalid URI from java URL {}",e);
+                // don care, just keep going
+            }
+
+            // if all else fails
+            if (StringUtils.isEmpty(resHome)) {
+                resHome = System.getProperty("user.dir");
+                sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
+            }
+
         }
+
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
         return Paths.get(resHome, defaultFileName);
     }
