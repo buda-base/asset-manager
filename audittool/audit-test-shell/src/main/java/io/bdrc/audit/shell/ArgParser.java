@@ -53,7 +53,7 @@ class ArgParser {
         options.addOption(Option.builder(infileOptionShort)
                                   .longOpt(infileOptionLong)
                                   .hasArg(true)
-                                  .desc("Input file, one path per line")
+                                  .desc("Input file, one Path to Work per line")
                                   .build());
 
 //         instead of adding to the group, add to mainline options
@@ -116,7 +116,7 @@ class ArgParser {
             // Log home directory must be writable. Create it now, evaluate result
             if (!madeWritableDir(logDirPath)) {
                 printHelp(options);
-                logger.error("User supplied folder {} cannot be created. Using default", ldpStr);
+                logger.error("User supplied path {} cannot be created. Using default", ldpStr);
             } else {
                 _logDirectory = ldpStr;
             }
@@ -206,7 +206,7 @@ class ArgParser {
 
     /**
      * Overload to test without doing anything
-     * @return
+     * @return if we're not actually doing anything
      */
     public Boolean OnlyShowInfo()
     {
@@ -235,11 +235,10 @@ class ArgParser {
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("audit-tool [options] { - | Directory,Directory,Directory}\nwhere:\n\t- read " +
-                                    "folders from " +
-                                    "standard input\n\t" +
-                                    "Directory .... is a list of directories separated by whitespace " +
-                                    "\n[options] are:",
+        formatter.printHelp("audit-tool [options] { - | PathToWork PathToWork ..... }\nwhere:\n" +
+                        "\t- read Paths To Works from standard input\n" +
+                        "\tPathToWork ... is a list of directories separated by whitespace\n" +
+                        "[options] are:",
                 options);
     }
 
