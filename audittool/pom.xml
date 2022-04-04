@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.version>1.0-beta-1</project.version>
     </properties>
     <groupId>io.bdrc.audit</groupId>
     <artifactId>audit-tool</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-alpha</version>
+    <version>1.0-beta-1</version>
     <modules>
         <!-- groupId elements of children -->
         <module>IAudit</module>
@@ -45,49 +46,49 @@
                     <target>16</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-artifact</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>IAudit</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>test-lib</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>shell</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>target/output</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-dependency-plugin</artifactId>-->
+<!--                <version>3.2.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy-artifact</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>copy</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <artifactItems>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>${project.groupId}</groupId>-->
+<!--                                    <artifactId>${project.artifactId}</artifactId>-->
+<!--                                    <version>${project.version}</version>-->
+<!--                                    <type>${project.packaging}</type>-->
+<!--                                </artifactItem>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>${project.groupId}</groupId>-->
+<!--                                    <artifactId>IAudit</artifactId>-->
+<!--                                    <version>${project.version}</version>-->
+<!--                                    <type>${project.packaging}</type>-->
+<!--                                </artifactItem>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>${project.groupId}</groupId>-->
+<!--                                    <artifactId>test-lib</artifactId>-->
+<!--                                    <version>${project.version}</version>-->
+<!--                                    <type>${project.packaging}</type>-->
+<!--                                </artifactItem>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>${project.groupId}</groupId>-->
+<!--                                    <artifactId>shell</artifactId>-->
+<!--                                    <version>${project.version}</version>-->
+<!--                                    <type>${project.packaging}</type>-->
+<!--                                </artifactItem>-->
+<!--                            </artifactItems>-->
+<!--                            <outputDirectory>target/output</outputDirectory>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -95,4 +96,7 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+
+    </dependencies>
 </project>

@@ -5,11 +5,16 @@
     <parent>
         <artifactId>audit-tool</artifactId>
         <groupId>io.bdrc.audit</groupId>
-        <version>1.0-alpha</version>
+        <version>1.0-beta-1</version>
     </parent>
+    <properties>
+        <project.version>1.0-beta-1</project.version>
+    </properties>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>shell</artifactId>
+    <version>1.0-beta-1</version>
+
     <packaging>jar</packaging>
     <name>audit-test-shell</name>
     <build>
@@ -123,7 +128,7 @@
         <dependency>
             <groupId>io.bdrc.audit</groupId>
             <artifactId>test-lib</artifactId>
-            <version>1.0-alpha</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -132,27 +137,8 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.17.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.17.1</version>
-        </dependency>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.17.1</version>
-        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>io.bdrc.am</groupId>-->
         <!--<artifactId>audit-test-lib</artifactId>-->
