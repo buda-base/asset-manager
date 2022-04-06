@@ -1,29 +1,29 @@
-# Audit Tool 0.9 Operation
+# Audit Tool 1.0 Operation
 ## Installation and Configuration
-Please refer to [Installation](Install.md) for details of installation.
+Please refer to [Installation](Install-1.0.md) for details of installation.
 
-Please see the section
-## Operation
-On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
-Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
+Start the audit tool with the `audit-tool` command. Release 1.0 does not require the configuration that 0.9 did.
 The arguments to audit tool are simply:
 ```psv
-usage: AuditTest [options] { - | Directory,Directory,Directory}
+usage: audit-tool [options] { - | PathToWork PathToWork ..... }
 where:
 
-                 - read folders from standard input (not supported on PowerShell)
+                  - read Paths To Works from standard input
 
-                 Directory .... is a list of directories separated by whitespace.
+                  PathToWork ... is a list of directories separated by
+                  whitespace
 [options] are:
  -d,--debug             Show debugging information
- -i,--inputFile <arg>   Input file, one path per line
+ -h,--help              Usage
+ -i,--inputFile <arg>   Input file, one Path to Work per line
  -l,--log_home <arg>    Test Result log directory. Must be writable.
                         Default is <UserHome>/audit-test-logs/. Created if
-                        not exists. Other logs are still written to default log home
+                        not exists
+ -v,--version           Shows internal development version (resources)
 ```
 
-The `-d` switch has no functionality as of release 0.9
+The `-d` switch has no functionality as of release 1.0
 ### Exit status
 Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis.
 With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
@@ -82,24 +82,24 @@ logs are added after the overall test result.
 
 The work run log contains a blend of the summary and the detail loggers below, in `csv` format. A sample work log is:
 
-|id|test_name|outcome|error_number|error_test|detail_path|
-|---|---|---|---|---|---|
-|W1KG13765|No Files in Root Folder|Passed| | |/Users/dev/tmp/pub/00/W1KG13765|
-|W1KG13765|Web Image Attributes|Failed|/Users/dev/tmp/pub/00/W1KG13765| | |
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510075.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510101.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-|W1KG13765|No folders allowed in Image Group folders|Passed|/Users/dev/tmp/pub/00/W1KG13765| | |
-|W1KG13765|File Sequence Test|Failed|/Users/dev/tmp/pub/00/W1KG13765 | | |
-| | |106|Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test.|/Users/dev/tmp/pub/00/W1KG13765
-| | |105|Sequence File dimensions does not end in an integer: ends with  not found|/Users/dev/tmp/pub/00/W1KG13765
+| id        | test_name                                 | outcome | error_number                                                                           | error_test                                                                                                      | detail_path                     |
+|-----------|-------------------------------------------|---------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------------------------------|
+| W1KG13765 | No Files in Root Folder                   | Passed  |                                                                                        |                                                                                                                 | /Users/dev/tmp/pub/00/W1KG13765 |
+| W1KG13765 | Web Image Attributes                      | Failed  | /Users/dev/tmp/pub/00/W1KG13765                                                        |                                                                                                                 |                                 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510075.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510101.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+| W1KG13765 | No folders allowed in Image Group folders | Passed  | /Users/dev/tmp/pub/00/W1KG13765                                                        |                                                                                                                 |                                 |
+| W1KG13765 | File Sequence Test                        | Failed  | /Users/dev/tmp/pub/00/W1KG13765                                                        |                                                                                                                 |                                 |
+|           |                                           | 106     | Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test. | /Users/dev/tmp/pub/00/W1KG13765                                                                                 |                                 |
+|           |                                           | 105     | Sequence File dimensions does not end in an integer: ends with  not found              | /Users/dev/tmp/pub/00/W1KG13765                                                                                 |                                 |
 
 ### Run logs
 Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
 folder in two ways:
 - edit in the Audit tool's `log4j2.properties` entry `property.logRoot` entry.
-- use the `-l | --log_home` argument in the call to `audittool.sh`
+- use the `-l | --log_home` argument in the call to `audit-tool`
 
 You can configure other logging properties in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
 
@@ -153,12 +153,16 @@ Values relating to logging and output appear here. You can configure the parent 
 ## Overriding properties
 
 + As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
-+ As a system administrator, you can override any property (even user properties) by defining them in the VM options
-section of the `audittool.sh` (`audittool.ps1` on Windows command line).
++ As a system administrator, you can override any property (even user properties) by defining them in the `[JavaOptions]`
+section of the `app/audit-tool.config` file.
 
 In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
-```shell
-java -DMaximumImageFileSize=300K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+[JavaOptions]
+java-options=-Djpackage.app-version=1.0
+java-options=-Dfile.encoding=UTF-8
+java-options=-Xms256m
+java-options=-DMaximumImageFileSize=300K
 ```
 
 **Note** the evaluation is one-pass. You cannot override the
@@ -166,8 +170,12 @@ default user.properties file on the command line. This will not cause the
 values of 'other_config.properties' to be read in. Command line
 properties are always read last.
 
-```shell
-java -DUserConfigPath=wont.be.read.properties  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
+```
+[JavaOptions]
+java-options=-Djpackage.app-version=1.0
+java-options=-Dfile.encoding=UTF-8
+java-options=-Xms256m
+java-options=-DUserConfigPath=wont.be.read.properties
 ```
 
 Detailed examples are given in Appendix I.
@@ -177,7 +185,7 @@ The test requirements and functions are outside of the scope of this document. A
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
 
 ### Operation
-The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java) can either run an internal set of tests,
+The Audit Tool shell jar (which `audit-tool` passes as the main jar file to java) can either run an internal set of tests,
 or can use an external jar file.  It runs all the tests in the library against all the directories given in the arguments.
 
 Please refer to [Using an external library](#Using-an-external-test-library) for instructions on how to use an external test library.
@@ -220,8 +228,15 @@ JVM options with the `-D` flag:
 `io.bdrc.audit.ITestDictionary`
 
 Example:
+
+
 ```
-java -DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar -DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary -DatHome=${CONFIG_ATHOME}  io.bdrc.am.audit.shell.shell /Volumes/Archive/W2KG20927
+[JavaOptions]
+java-options=-Djpackage.app-version=1.0
+java-options=-Dfile.encoding=UTF-8
+java-options=-Xms256m
+java-options=-DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar
+java-options=-DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary
 ```
 
 
@@ -242,7 +257,7 @@ in their Jar, and provide Test configuration objects. The test configuration obj
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
 .
 
-![AuditTestConfig](.AuditToolOperation_images/AuditTestConfig.png)
+![AuditTestConfig](images/AuditTestConfig.png)
 
 #### `AuditTestConfig` constructor
 ```
@@ -286,12 +301,12 @@ To package a test you implement one of these and add it to your TestDictionary.
 ##### Parameters
 The constructor takes these parameters
 
-name|type|description
-----|----|----
-fullName|`String`|Free form text
-argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs`
-shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value
-clazz|`Class<?>`|Any class object which implements the `IAuditTest` interface.
+| name      | type           | description                                                                                                                                               |
+|-----------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| fullName  | `String`       | Free form text                                                                                                                                            |
+| argNames  | `List<String>` | List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs` |
+| shortName | `String`       | Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value              |
+| clazz     | `Class<?>`     | Any class object which implements the `IAuditTest` interface.                                                                                             |
 
 #### Running a test
 A full production instance is available in `audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java`
@@ -333,7 +348,7 @@ Ex 1. No `user.properties` file, `shell.properties` value of `400K` used. Tests 
 ```shell
 ❯ ls -l ~/.config/bdrc/auditTool/user.properties
 gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
-❯ audittool.sh -l .   ../../Archive/W8LS68226
+❯ audit-tool -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
@@ -349,7 +364,7 @@ Here, the default is set to 40K, and the Image file size test fails.
 ```shell
 ❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
 MaximumImageFileSize=40K
-❯ audittool.sh -l .   ../../Archive/W8LS68226
+❯ audit-tool -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
@@ -366,7 +381,7 @@ Ex 3: Raising the user properties value
 ```shell
 ❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
 MaximumImageFileSize=300K
-❯ audittool.sh -l .   ../../Archive/W8LS68226
+❯ audit-tool -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
@@ -395,9 +410,9 @@ ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
 Errors! returned:1: check logs
 ```
 # Updates
-Date|Notes
----|---
-4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.
- &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.
- &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded)  
- 2021-05-14|Add overrides of properties
+| Date       | Notes                                                                                                                                                                                                                                                                  |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 4 Nov 2020 | Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.          |
+| &nbsp;     | Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.                                                                        |
+| &nbsp;     | The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded) |
+| 2021-05-14 | Add overrides of properties                                                                                                                                                                                                                                            |

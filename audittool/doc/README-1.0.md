@@ -9,19 +9,21 @@ This document uses examples from Linux, but identical functions can be performed
 ## Synopsis
 
 ```bash
-usage: audit-tool [options] { - | Directory,Directory,Directory}
+usage: audit-tool [options] { - | PathToWork PathToWork ..... }
 where:
 
-                 - read folders from standard input
+                  - read Paths To Works from standard input
 
-                 Directory .... is a list of directories separated by
-                 whitespace
+                  PathToWork ... is a list of directories separated by
+                  whitespace
 [options] are:
  -d,--debug             Show debugging information
- -i,--inputFile <arg>   Input file, one path per line
+ -h,--help              Usage
+ -i,--inputFile <arg>   Input file, one Path to Work per line
  -l,--log_home <arg>    Test Result log directory. Must be writable.
                         Default is <UserHome>/audit-test-logs/. Created if
                         not exists
+ -v,--version           Shows internal development version (resources)
  ```
 
  # Audittool input

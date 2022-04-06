@@ -1,29 +1,29 @@
-# Audit Tool 1.0 Operation
+# Audit Tool 0.9 Operation
 ## Installation and Configuration
-Please refer to [Installation](Install-1.0-beta.md) for details of installation.
+Please refer to [Installation](Install-1.0.md) for details of installation.
 
+Please see the section
+## Operation
+On Windows machines, the script type `.sh` is replaced with PowerShell scripts, which have the suffix `.ps1`
 ### Starting
-Start the audit tool with the `audit-tool` command. Release 1.0 does not require the configuration that 0.9 did.
+Start the audit tool with the `audittool.sh` script. The configuration step above should have initialized  locations of the software which `audittool.sh` needs.
 The arguments to audit tool are simply:
 ```psv
-usage: audit-tool [options] { - | PathToWork PathToWork ..... }
+usage: AuditTest [options] { - | Directory,Directory,Directory}
 where:
 
-                  - read Paths To Works from standard input
+                 - read folders from standard input (not supported on PowerShell)
 
-                  PathToWork ... is a list of directories separated by
-                  whitespace
+                 Directory .... is a list of directories separated by whitespace.
 [options] are:
  -d,--debug             Show debugging information
- -h,--help              Usage
- -i,--inputFile <arg>   Input file, one Path to Work per line
+ -i,--inputFile <arg>   Input file, one path per line
  -l,--log_home <arg>    Test Result log directory. Must be writable.
                         Default is <UserHome>/audit-test-logs/. Created if
-                        not exists
- -v,--version           Shows internal development version (resources)
+                        not exists. Other logs are still written to default log home
 ```
 
-The `-d` switch has no functionality as of release 1.0
+The `-d` switch has no functionality as of release 0.9
 ### Exit status
 Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis.
 With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
@@ -99,7 +99,7 @@ The work run log contains a blend of the summary and the detail loggers below, i
 Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
 folder in two ways:
 - edit in the Audit tool's `log4j2.properties` entry `property.logRoot` entry.
-- use the `-l | --log_home` argument in the call to `audit-tool`
+- use the `-l | --log_home` argument in the call to `audittool.sh`
 
 You can configure other logging properties in the `log4j2.properties` file. **NOTE: log4j2 is significantly different from the original log4j.**
 
@@ -153,16 +153,12 @@ Values relating to logging and output appear here. You can configure the parent 
 ## Overriding properties
 
 + As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
-+ As a system administrator, you can override any property (even user properties) by defining them in the `[JavaOptions]`
-section of the `app/audit-tool.config` file.
++ As a system administrator, you can override any property (even user properties) by defining them in the VM options
+section of the `audittool.sh` (`audittool.ps1` on Windows command line).
 
 In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
-```
-[JavaOptions]
-java-options=-Djpackage.app-version=1.0
-java-options=-Dfile.encoding=UTF-8
-java-options=-Xms256m
-java-options=-DMaximumImageFileSize=300K
+```shell
+java -DMaximumImageFileSize=300K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
 ```
 
 **Note** the evaluation is one-pass. You cannot override the
@@ -170,12 +166,8 @@ default user.properties file on the command line. This will not cause the
 values of 'other_config.properties' to be read in. Command line
 properties are always read last.
 
-```
-[JavaOptions]
-java-options=-Djpackage.app-version=1.0
-java-options=-Dfile.encoding=UTF-8
-java-options=-Xms256m
-java-options=-DUserConfigPath=wont.be.read.properties
+```shell
+java -DUserConfigPath=wont.be.read.properties  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
 ```
 
 Detailed examples are given in Appendix I.
@@ -185,7 +177,7 @@ The test requirements and functions are outside of the scope of this document. A
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
 
 ### Operation
-The Audit Tool shell jar (which `audit-tool` passes as the main jar file to java) can either run an internal set of tests,
+The Audit Tool shell jar (which `audittool.sh` passes as the main jar file to java) can either run an internal set of tests,
 or can use an external jar file.  It runs all the tests in the library against all the directories given in the arguments.
 
 Please refer to [Using an external library](#Using-an-external-test-library) for instructions on how to use an external test library.
@@ -228,15 +220,8 @@ JVM options with the `-D` flag:
 `io.bdrc.audit.ITestDictionary`
 
 Example:
-
-
 ```
-[JavaOptions]
-java-options=-Djpackage.app-version=1.0
-java-options=-Dfile.encoding=UTF-8
-java-options=-Xms256m
-java-options=-DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar
-java-options=-DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary
+java -DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar -DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary -DatHome=${CONFIG_ATHOME}  io.bdrc.am.audit.shell.shell /Volumes/Archive/W2KG20927
 ```
 
 
@@ -257,7 +242,7 @@ in their Jar, and provide Test configuration objects. The test configuration obj
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
 .
 
-![AuditTestConfig](../images/AuditTestConfig.png)
+![AuditTestConfig](images/AuditTestConfig.png)
 
 #### `AuditTestConfig` constructor
 ```
@@ -348,7 +333,7 @@ Ex 1. No `user.properties` file, `shell.properties` value of `400K` used. Tests 
 ```shell
 ❯ ls -l ~/.config/bdrc/auditTool/user.properties
 gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
-❯ audit-tool -l .   ../../Archive/W8LS68226
+❯ audittool.sh -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
@@ -364,7 +349,7 @@ Here, the default is set to 40K, and the Image file size test fails.
 ```shell
 ❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
 MaximumImageFileSize=40K
-❯ audit-tool -l .   ../../Archive/W8LS68226
+❯ audittool.sh -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
@@ -381,7 +366,7 @@ Ex 3: Raising the user properties value
 ```shell
 ❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
 MaximumImageFileSize=300K
-❯ audit-tool -l .   ../../Archive/W8LS68226
+❯ audittool.sh -l .   ../../Archive/W8LS68226
 starting -l . ../../Archive/W8LS68226
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
 INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
