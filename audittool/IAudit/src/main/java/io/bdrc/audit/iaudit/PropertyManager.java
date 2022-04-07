@@ -92,12 +92,13 @@ public class PropertyManager {
      */
     public PropertyManager MergeConfigGivenInProperty(Path configPath) {
 
+        InputStream ins = null;
         try {
-            LoadProperties(InputFileResource(configPath.toString()));
+           ins = InputFileResource(configPath.toString());
         } catch (IOException e) {
-            logger.warn(String.format("Couldn't open %s ", configPath.toString()), e);
+            logger.warn(String.format("Couldn't open %s ", configPath), e);
         }
-        return this;
+        return LoadProperties(ins);
     }
 
     /**
@@ -269,8 +270,8 @@ public class PropertyManager {
 
     /**
      * get a property's value and map it to a real file path
-     * @param key
-     * @return
+     * @param key property identifier
+     * @return absolute path, relative to "user.dir", of the key's value
      */
     public Path getPropertyPath(String key) {
         String val = getPropertyString(key);
@@ -298,6 +299,18 @@ public class PropertyManager {
      */
     public static PropertyManager PropertyManagerBuilder() {
         _instance = new PropertyManager();
+        return _instance;
+    }
+
+    /**
+     * Use the existing property manager instance or die
+     * @return existing properties manager
+     * @throws IllegalStateException if invoked before constructed
+     */
+    public static PropertyManager getInstance() throws IllegalStateException {
+        if (_instance == null) {
+            throw new IllegalStateException("Property Manager invoked before construction. Contact BDRC support");
+        }
         return _instance;
     }
 

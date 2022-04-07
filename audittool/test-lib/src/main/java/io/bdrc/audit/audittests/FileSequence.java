@@ -36,14 +36,12 @@ public class FileSequence extends ImageGroupParents {
 
     /**
      * Constructor for variant test name
-     * @param logger
-     * @param testName
+     * @param logger log4j logger for this class
+     * @param testName key of test in database
      */
     public FileSequence(Logger logger, String testName) {
         super(testName);
         sysLogger = logger;
-        _sequenceLength = getSequenceSubstringLength();
-
     }
 
 
@@ -143,7 +141,7 @@ public class FileSequence extends ImageGroupParents {
                 if (failFile(imageGroupParent, anImageGroup)) {
                     continue;
                 }
-                sysLogger.debug("ImageGroup {}", anImageGroup.toString());
+                sysLogger.debug("ImageGroup {}", anImageGroup);
 
                 TreeMap<Integer, String> filenames = new TreeMap<>();
 
@@ -154,6 +152,7 @@ public class FileSequence extends ImageGroupParents {
                     // BUG: Dont parse by sequence length. Requirements call for parsing backward from last .
                     // to first non int, up to field length.
                     String fileSequence = trailingDigits(thisFileName,sequenceLength);
+                    sysLogger.debug(fileSequence);
 
                     int thisFileIndex = 0;
                     try {
@@ -221,6 +220,7 @@ public class FileSequence extends ImageGroupParents {
         private void GenerateFileMissingMessages(final TreeMap<Integer, String> filenames) {
             Integer curEntry = 0;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
+
                 Integer k = entry.getKey();
                 while (++curEntry < k) {
                     FailTest(LibOutcome.FILE_SEQUENCE, String.format("File Sequence %4d missing", curEntry));
@@ -250,13 +250,10 @@ public class FileSequence extends ImageGroupParents {
      */
     private int getSequenceSubstringLength() {
         if (_sequenceLength == 0) {
-            _sequenceLength = PropertyManager.PropertyManagerBuilder().MergeClassResource("/auditTool.properties",
-                    getClass()).getPropertyInt(this.getClass().getSimpleName() + ".SequenceLength");
+            _sequenceLength = PropertyManager.getInstance().getPropertyInt(this.getClass().getSimpleName() + ".SequenceLength");
         }
         return _sequenceLength;
     }
-
-
 
     //endregion
     // region fields
