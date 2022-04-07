@@ -26,7 +26,7 @@ public class PropertyManager {
     private final String UserConfigPathKey = "UserConfigPath";
 
     // as in the config file, this is relative to user's home directory, if not an absolute path
-    private final String UserConfigPathValue = Paths.get(".config", "bdrc", "auditTool", "config").toString();
+    private final String UserConfigPathValue = Paths.get(".config", "bdrc", "auditTool", "user.properties").toString();
 
     /**
      * Load Properties from a stream
@@ -211,8 +211,9 @@ public class PropertyManager {
     private Properties BuildDefaultProperties() {
         return new Properties() {
             {
-                put("io.bdrc.am.audit.audittests.FileSequence.SequenceLength", "4");
-                put("io.bdrc.am.audit.audittests." + UserConfigPathKey, UserConfigPathValue);
+                // jimk asset-manager-158 - looking at resources, they use the simple, not the fully qualified path name
+                put("FileSequence.SequenceLength", "4");
+                put(UserConfigPathKey, UserConfigPathValue);
             }
         };
     }
