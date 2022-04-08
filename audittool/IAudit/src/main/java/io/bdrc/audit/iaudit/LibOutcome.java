@@ -21,5 +21,7 @@ public class LibOutcome {
     public static final Integer UNKNOWN                         = 114;
     public static final Integer INVALID_ARCHIVE_EXIF            = 115 ;
     public static final Integer INVALID_IMAGE_EXIF              = 116 ;
+    public static final Integer INVALID_ARCHIVE_THUMBNAIL       = 117 ;
+    public static final Integer INVALID_IMAGE_THUMBNAIL         = 118 ;
 }
 
