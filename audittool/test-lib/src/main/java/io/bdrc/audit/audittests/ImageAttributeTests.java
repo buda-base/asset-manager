@@ -272,44 +272,6 @@ public class ImageAttributeTests extends ImageGroupParents {
             }
             return failedReasons.toString();
         }
-
-        /**
-         * Validates an image EXIF data is acceptable.
-         * @param imageExif Captured EXIF data
-         * @return the list of EXIF attributes which failed.
-         * Tests:
-         * - Orientation, if present, must be "up" (0x1)
-         */
-        private List<ImageEXIFBead> validateEXIF(ImageEXIFAttributes imageExif) {
-            List<ImageEXIFBead> failedEXIFs = new ArrayList<>();
-
-            // Test for orientation. This is the only test so far
-            imageExif.getExifAttributes().forEach( b -> {
-                if (b.getTagNumber() == ImageEXIFAttributes.ORIENTATION_TAG) {
-                    validOrientation(b,failedEXIFs);
-                }
-
-                // Add other tests here
-            });
-
-            return failedEXIFs;
-
-        }
-
-        /**
-         * Test an EXIF attribute for validity
-         * @param bead bead to test for rotation
-         * @param outList existing list. Adds a failed rotation node to the output list.
-         *
-         */
-        private void validOrientation(ImageEXIFBead bead, List<ImageEXIFBead> outList) {
-
-            if (bead.getTagNumber() == ImageEXIFAttributes.ORIENTATION_TAG
-                && bead.getTagValue() != ImageEXIFAttributes.NO_EXIF_ROTATION_TAG
-                && bead.getTagValue() != ImageEXIFAttributes.EXIF_ROTATION_TAG_UP) {
-                outList.add(bead);
-            }
-        }
     }
     
     @Override

@@ -11,20 +11,20 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-public class EXIFTest  extends ImageGroupParents {
+public class EXIFTest extends ImageGroupParents {
 
 
     /**
      * new AuditTestBase
      *
-     * @param logger internal logger
+     * @param logger   internal logger
      * @param testName caller names the test (mandatory - not like other classes with 1 arg constructors
      */
     public EXIFTest(Logger logger, String testName)
     {
         super(testName);
         sysLogger = logger;
-  //      outcome = outcomeMap.get(testName);
+        //      outcome = outcomeMap.get(testName);
     }
 
     /**
@@ -32,16 +32,16 @@ public class EXIFTest  extends ImageGroupParents {
      * The outcome depends on the source directory. So user can warn about archive
      * failures, but hard fail on image failures
      */
-//    private final Integer outcome ;
 
     // The outcome depends on the source directory. So user can warn about archive
     // failures, but not
     // See TestDictionary.java - this is the last argument to AuditTestConfig
-    private final Hashtable<String,Integer> outcomeMap =  new Hashtable<String,Integer>()
-    {
+    private final Hashtable<String, Integer> outcomeMap = new Hashtable<>() {
         {
             put(TestDictionary.EXIF_ARCHIVE_TEST_NAME, LibOutcome.INVALID_ARCHIVE_EXIF);
             put(TestDictionary.EXIF_IMAGE_TEST_NAME, LibOutcome.INVALID_IMAGE_EXIF);
+            put(TestDictionary.EXIF_ARCHIVE_THUMBNAIL_NAME, LibOutcome.INVALID_ARCHIVE_THUMBNAIL);
+            put(TestDictionary.EXIF_IMAGE_THUMBNAIL_NAME, LibOutcome.INVALID_IMAGE_THUMBNAIL);
         }
     };
 
@@ -92,6 +92,7 @@ public class EXIFTest  extends ImageGroupParents {
         /**
          * EXIF Image Testing.
          * Loop over images in an image group to
+         *
          * @param imageGroupParent folder containing imageGroups
          * @throws IOException If io error
          */
@@ -106,12 +107,21 @@ public class EXIFTest  extends ImageGroupParents {
 
             try (DirectoryStream<Path> imageFiles = Files.newDirectoryStream(imageGroupParent, filter)) {
                 for (Path imageFile : imageFiles) {
-                    File fileObject = imageFile.toAbsolutePath().toFile();
-                    java.lang.String fileObjectPathString = imageFile.toAbsolutePath().toString();
+
+                    // java.io.File object contains complete (normalized) path
+                    File fileObject = imageFile.toFile();
+                    String fileObjectPathString = fileObject.toString();
 
                     try {
-                        ImageEXIFAttributes exifAttrs = new ImageEXIFAttributes(fileObject);
-                        List<ImageEXIFBead> invalidExifAttrs = validateEXIF(exifAttrs);
+
+                        // map reduce pattern:
+                        // map: read all the attributes
+                        ImageEXIFAttributes exifAttrs = new ImageEXIFAttributes(fileObject, getTestName());
+
+                        // reduce: validate, and transform into attribute beads
+                        List<ImageExifBead> invalidExifAttrs = validateEXIF(exifAttrs);
+
+
                         if (invalidExifAttrs.size() > 0) {
                             StringBuilder badTags = new StringBuilder();
                             invalidExifAttrs.forEach(x -> {
@@ -122,24 +132,21 @@ public class EXIFTest  extends ImageGroupParents {
                         }
                         if (sysLogger.isDebugEnabled()) {
                             try {
-//                            exifAttrs.DumpEXIFDirectories(fileObject);
+                                exifAttrs.DumpEXIFDirectories(fileObject);
                                 exifAttrs.DumpCommonsMetadata(fileObject);
                             } catch (Exception someExc) {
                                 sysLogger.error(String.valueOf(someExc));
 
                             }
                         }
-                    }
-
-                    catch (UnsupportedFormatException ufe) {
-                        FailTest(outcome, fileObjectPathString);
+                    } catch (UnsupportedFormatException ufe) {
+                        FailTest(outcome, fileObjectPathString,"");
                     }
 
                 }
             }
             sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
-                    getTestResult()
-                            .getErrors().size());
+                    getTestResult().getErrors().size());
             if (!IsTestFailed()) {
                 PassTest();
             }
@@ -147,36 +154,40 @@ public class EXIFTest  extends ImageGroupParents {
 
         /**
          * Validates an image EXIF data is acceptable.
+         *
          * @param imageExif Captured EXIF data
          * @return the list of EXIF attributes which failed.
          * Tests:
          * - Orientation, if present, must be "up" (0x1)
          */
-        private List<ImageEXIFBead> validateEXIF(ImageEXIFAttributes imageExif) {
-            List<ImageEXIFBead> failedEXIFs = new ArrayList<>();
+        private List<ImageExifBead> validateEXIF(ImageEXIFAttributes imageExif) {
+            List<ImageExifBead> failedEXIFs = new ArrayList<>();
 
             // Test for orientation. This is the only test so far
-            imageExif.getExifAttributes().forEach( b -> {
+            imageExif.getExifAttributes().forEach(b -> {
                 if (b.getTagNumber() == ImageEXIFAttributes.ORIENTATION_TAG) {
-                    validOrientation(b,failedEXIFs);
+                    validOrientation(b, failedEXIFs);
                 }
 
-                // Add other tests here
+                // This is the Thumbnail image data tag
+                if (b.getTagNumber() == 0x40c) {
+                    failedEXIFs.add(b);
+                }
             });
             return failedEXIFs;
         }
 
         /**
          * Test an EXIF attribute for validity
-         * @param bead bead to test for rotation
-         * @param outList existing list. Adds a failed rotation node to the output list.
          *
+         * @param bead    bead to test for rotation
+         * @param outList existing list. Adds a failed rotation node to the output list.
          */
-        private void validOrientation(ImageEXIFBead bead, List<ImageEXIFBead> outList) {
+        private void validOrientation(ImageExifBead bead, List<ImageExifBead> outList) {
 
             if (bead.getTagNumber() == ImageEXIFAttributes.ORIENTATION_TAG
-                    && bead.getTagValue() != ImageEXIFAttributes.NO_EXIF_ROTATION_TAG
-                    && bead.getTagValue() != ImageEXIFAttributes.EXIF_ROTATION_TAG_UP) {
+                    && Integer.parseInt(bead.getTagValue().toString()) != ImageEXIFAttributes.NO_EXIF_ROTATION_TAG
+                    && Integer.parseInt(bead.getTagValue().toString()) != ImageEXIFAttributes.EXIF_ROTATION_TAG_UP) {
                 outList.add(bead);
             }
         }
