@@ -10,11 +10,11 @@ import static io.bdrc.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 
 public class TestFilteredErrors extends AuditTestTestBase {
 
-    private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
+    private  final Hashtable<String,String> _testParams = new Hashtable<>() {{
         // This value is for published images
         // put(DERIVED_GROUP_PARENT,  "images");
         // this tests our collateral
-        put(DERIVED_GROUP_PARENT,  "testImages");
+        put(DERIVED_GROUP_PARENT, "testImages");
     }};
 
 
@@ -60,7 +60,6 @@ public class TestFilteredErrors extends AuditTestTestBase {
     private ImageAttributeTests runTest(String path, Hashtable<String,String> testParams ) {
         ImageAttributeTests st = new ImageAttributeTests();
 
-        // Hmm TODO: Needs to consume properties differently
         st.setParams(path, testParams);
         st.LaunchTest();
 

@@ -6,7 +6,7 @@ class ImageAttributes {
     public static final String FILE_TIFF = "TIFF";
     public static final String FILE_JPG = "JPG";
 
-    /* TODO: Other types
+    /* Other types, when they are required.
     public static final String FILE_PNG = "PNG";
     public static final String FILE_BMP = "BMP";
     public static final String FILE_PDF = "PDF";
