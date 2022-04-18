@@ -30,7 +30,9 @@ public class TestFilteredErrors extends AuditTestTestBase {
         _testParams.put("ErrorsAsWarning","110,111,106");
         tr = runAttributesTest("src/test/images/WOtherTiffFails");
         Assert.assertNotEquals("unexpected system exception",3L,(long)tr.getOutcome());
-        Assert.assertTrue("Test failed, expected pass", tr.Passed());
+        Assert.assertTrue("Test passed or failed, expected warning", tr.Warnings());
+        Assert.assertFalse("Test passed, expected warn", tr.Passed());
+        Assert.assertFalse("Test failed, expected warn", tr.Failed());
     }
     @Test(expected=NumberFormatException.class)
     public void TestBadErrorWarning()
