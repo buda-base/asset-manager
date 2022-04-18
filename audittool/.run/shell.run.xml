@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="io.bdrc.audit.shell.shell" />
     <module name="shell" />
-    <option name="PROGRAM_PARAMETERS" value="-l . W1NLM2232" />
+    <option name="PROGRAM_PARAMETERS" value="-l . -i runList" />
     <option name="VM_PARAMETERS" value="-Dlog4j.configurationFile=$PROJECT_DIR$/audit-test-shell/target/classes/log4j2.properties" />
     <option name="WORKING_DIRECTORY" value="$USER_HOME$/prod/am125" />
     <extension name="coverage">
