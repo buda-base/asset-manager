@@ -44,6 +44,9 @@ public class TestResult {
     public Boolean Skipped() {
         return getOutcome().equals(Outcome.NOT_RUN);
     }
+    public Boolean Warnings() {
+        return getOutcome().equals(Outcome.WARN);
+    }
 
     private Integer _outcome;
 

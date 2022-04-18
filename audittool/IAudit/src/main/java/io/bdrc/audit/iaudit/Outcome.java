@@ -11,4 +11,7 @@ package io.bdrc.audit.iaudit;
     public static final Integer PASS = 1 ;
     public static final Integer FAIL = 2 ;
     public static final Integer SYS_EXC = 3 ;
+
+    // jimk asset-manager-162: allow warnings
+    public static final Integer WARN = 4;
 }

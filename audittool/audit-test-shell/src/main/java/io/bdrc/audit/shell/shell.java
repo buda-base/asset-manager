@@ -85,7 +85,7 @@ public class shell {
             }
 
             sysLogger.trace("Resolving properties");
-            Path resourceFile = resolveResourceFile(defaultPropertyFileName);
+            Path resourceFile = resolveResourceFile();
 
             // TODO: try /shell.properties class
 
@@ -233,6 +233,7 @@ public class shell {
         if (results.stream().allMatch(TestResult::Passed)) testLogController.RenameLogPass();
         else if (results.stream().anyMatch(TestResult::Failed)) testLogController.RenameLogFail();
         else if (results.stream().anyMatch(TestResult::Skipped)) testLogController.RenameLogWarn();
+        else if (results.stream().anyMatch(TestResult::Warnings)) testLogController.RenameLogWarn();
 
         // return the outcomes. Don't distinct, someone may want to do stats
         return results.stream().map(TestResult::getOutcome)
@@ -289,6 +290,11 @@ public class shell {
             else if (outcome.equals(Outcome.NOT_RUN))
             {
                 testResultLabel = "Not Run";
+                sysLogger.warn(resultLogFormat, testResultLabel, testDir, testDesc);
+            }
+            else if (outcome.equals(Outcome.WARN))
+            {
+                testResultLabel = "Warnings";
                 sysLogger.warn(resultLogFormat, testResultLabel, testDir, testDesc);
             }
             else
@@ -408,7 +414,7 @@ public class shell {
      * if -DatHome not given, looks up environment variable ATHOME
      * if that's empty, uses "user.dir"
      */
-    private static Path resolveResourceFile(String defaultFileName) {
+    private static Path resolveResourceFile() {
 
         String resHome = System.getProperty("atHome");
 
@@ -445,7 +451,7 @@ public class shell {
         }
 
         sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return Paths.get(resHome, defaultFileName);
+        return Paths.get(resHome, shell.defaultPropertyFileName);
     }
 
 //    /**
