@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IAudit/IAudit.iml" filepath="$PROJECT_DIR$/IAudit/IAudit.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audit-test-lib/TestLib.iml" filepath="$PROJECT_DIR$/audit-test-lib/TestLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/audit-test-lib-ws/TestLib.iml" filepath="$PROJECT_DIR$/audit-test-lib-ws/TestLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/audit-test-interface/audit-test-IAudit.iml" filepath="$PROJECT_DIR$/audit-test-interface/audit-test-IAudit.iml" />
       <module fileurl="file://$PROJECT_DIR$/audit-tool.iml" filepath="$PROJECT_DIR$/audit-tool.iml" />
       <module fileurl="file://$PROJECT_DIR$/audit-test-shell/shell.iml" filepath="$PROJECT_DIR$/audit-test-shell/shell.iml" />
