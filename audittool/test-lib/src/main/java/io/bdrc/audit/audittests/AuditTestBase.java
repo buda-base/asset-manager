@@ -56,9 +56,9 @@ public abstract class AuditTestBase implements IAuditTest {
 
         // filter out some errors.
         // For filtered errors, leave the state as is
-        if (!_passableErrors.contains(why)) {
-            _testResult.setOutcome(Outcome.FAIL);
-        }
+
+        // jimk asset-manager-162: Set warning when ErrorsAsWarnings set
+        _testResult.setOutcome(_passableErrors.contains(why) ? Outcome.WARN : Outcome.FAIL);
         _testResult.AddError(why, failedElement);
     }
 
@@ -72,7 +72,9 @@ public abstract class AuditTestBase implements IAuditTest {
     }
 
     public boolean IsTestFailed() {
-        return _testResult.getOutcome().equals(Outcome.FAIL);
+        return _testResult.getOutcome().equals(Outcome.FAIL)
+                || _testResult.getOutcome().equals(Outcome.WARN)
+                ;
     }
 
     public boolean IsTestPassed() {
