@@ -98,7 +98,8 @@ public class EXIFTest extends ImageGroupParents {
          */
         private void TestImages(final Path imageGroupParent) throws IOException {
 
-            Integer outcome = outcomeMap.get(getTestName());
+            String testName = getTestName();
+            Integer outcome = outcomeMap.get(testName);
 
             DirectoryStream.Filter<Path> filter =
                     entry -> (entry.toFile().isFile()
@@ -116,7 +117,7 @@ public class EXIFTest extends ImageGroupParents {
 
                         // map reduce pattern:
                         // map: read all the attributes
-                        ImageEXIFAttributes exifAttrs = new ImageEXIFAttributes(fileObject, getTestName());
+                        ImageEXIFAttributes exifAttrs = new ImageEXIFAttributes(fileObject, testName);
 
                         // reduce: validate, and transform into attribute beads
                         List<ImageExifBead> invalidExifAttrs = validateEXIF(exifAttrs);
