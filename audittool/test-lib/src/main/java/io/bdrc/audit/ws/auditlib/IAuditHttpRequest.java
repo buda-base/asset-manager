@@ -1,4 +1,4 @@
-package io.bdrc.audit.auditlib;
+package io.bdrc.audit.ws.auditlib;
 
 import org.apache.http.NameValuePair;
 
