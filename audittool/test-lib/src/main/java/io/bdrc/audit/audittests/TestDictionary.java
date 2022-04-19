@@ -75,11 +75,12 @@ public class TestDictionary {
 
             // jimk asset-manager-125 - run exif thumbnail tests
             put(EXIF_ARCHIVE_THUMBNAIL_NAME, new AuditTestConfig("Archive EXIF Thumbnail Test",
-                    Arrays.asList(ARC_GROUP_PARENT, "ArchiveEXIF"), EXIF_ARCHIVE_TEST_NAME, EXIFTest.class));
+                    Arrays.asList(ARC_GROUP_PARENT, "ArchiveEXIF"), EXIF_ARCHIVE_THUMBNAIL_NAME, EXIFTest.class));
 
             put(EXIF_IMAGE_THUMBNAIL_NAME, new AuditTestConfig("Image EXIF Thumbnail Test",
-                    Arrays.asList(DERIVED_GROUP_PARENT, "ImageEXIF"), EXIF_IMAGE_TEST_NAME, EXIFTest.class));
+                    Arrays.asList(DERIVED_GROUP_PARENT, "ImageEXIF"), EXIF_ARCHIVE_THUMBNAIL_NAME, EXIFTest.class));
 
+//            put(IMAGE_NAME_CORRECTNESS, new AuditTestConfig("Image file name correctness test"))
             // put(NO_IMAGES_TEST_NAME, new AuditTestConfig("No Images Except Scan Requests",
             //         Arrays.asList(DERIVED_GROUP_PARENT, ARC_GROUP_PARENT),NO_IMAGES_TEST_NAME,ImageGroupHasImages.class));
         }
