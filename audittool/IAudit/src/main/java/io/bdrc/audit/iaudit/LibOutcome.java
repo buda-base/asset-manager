@@ -23,5 +23,6 @@ public class LibOutcome {
     public static final Integer INVALID_IMAGE_EXIF              = 116 ;
     public static final Integer INVALID_ARCHIVE_THUMBNAIL       = 117 ;
     public static final Integer INVALID_IMAGE_THUMBNAIL         = 118 ;
+    public static final Integer INVALID_IMAGE_FILENAME_FORMAT   = 119 ;
 }
 
