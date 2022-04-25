@@ -2,17 +2,14 @@ package io.bdrc.audit.audittests;
 
 import io.bdrc.audit.iaudit.LibOutcome;
 import io.bdrc.audit.iaudit.Outcome;
+import io.bdrc.audit.iaudit.PropertyManager;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 /**
  * ImageFileNameFormatTest - guarantees an image name corresponds to the image group
@@ -38,20 +35,18 @@ public class ImageFileNameFormatTest extends ImageGroupParents {
         this(logger, TestDictionary.IMAGE_FILENAME_FORMAT);
     }
 
+    private final int _platformSequenceLength;
+
     public ImageFileNameFormatTest(Logger logger, String testName)
     {
         super(testName);
         sysLogger = logger;
+        _platformSequenceLength = PropertyManager.getInstance().getPropertyInt("FileSequence.SequenceLength");
     }
-
-    private  final Hashtable<String,String> _testParams = new Hashtable<>() {{
-        // this tests our test collateral
-        put(TestArgNames.DERIVED_GROUP_PARENT, "testImages");
-    }};
 
     @Override
     public void LaunchTest() {
-
+            TestWrapper(new ImageFileNameFormatTestOperation());
     }
 
     public class ImageFileNameFormatTestOperation implements AuditTestBase.ITestOperation {
@@ -98,28 +93,76 @@ public class ImageFileNameFormatTest extends ImageGroupParents {
 
         /**
          * Test the image files in a directory. See class dfn for filename correctness
-         * @param imageGroupParent Path to image group file container
+         * @param imageGroup Path to image group directory
          */
-        private void TestImages(final Path imageGroupParent) {
-
-            String[] igNames  = imageGroupParent.getFileName().toString().split("-");
+        private void TestImages(final Path imageGroup) {
+            String[] igNames = imageGroup.getFileName().toString().split("-");
 
             // Use after the split, if any
-            String targetIgName = igNames.length > 1 ? igNames[1] : igNames[0];
+            String targetIgName = igNames[igNames.length - 1];
 
-            DirectoryStream.Filter<Path> filter =
+            // filter in files that are not hidden and not json and not failing the test
+            DirectoryStream.Filter<Path> invalidImageFilter =
                     entry -> (entry.toFile().isFile()
                             && !(entry.toFile().isHidden()
-                            || entry.toString().endsWith("json")));
+                            || entry.toString().endsWith("json"))
+                            && !ImagePassesTest(entry.getFileName().toString(), targetIgName)
+
+                    );
+
+            try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(imageGroup, invalidImageFilter)) {
+
+                // iterate over directories in path
+                for (Path entry : pathDirectoryStream) {
+                    FailTest(LibOutcome.INVALID_IMAGE_FILENAME_FORMAT,entry.toString(), targetIgName);
+                }
+
+                // Because we have a "non-set" state
+                if (!IsTestFailed()) {
+                    PassTest();
+                }
+            } catch (DirectoryIteratorException | IOException die) {
+                sysLogger.error("Directory iteration error", die);
+                FailTest(Outcome.SYS_EXC, die.getCause().getLocalizedMessage());
 
 
-            sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
-                    getTestResult()
-                            .getErrors().size());
-            if (!IsTestFailed()) {
-                PassTest();
+                sysLogger.debug("Test outcome {} error count {}", getTestResult().getOutcome(),
+                        getTestResult()
+                                .getErrors().size());
+                if (!IsTestFailed()) {
+                    PassTest();
+                }
+
+
             }
 
+        }
+
+
+
+        /**
+         * ValidImageFileName
+         * @param imageFileName image file name (no path) to test
+         * @param targetIgName pattern that image file name must match
+         * @return truth value of:
+         * - imageFileName starts with targetIgName
+         * - the rest of the filename, without the 'targetIgName' must be digits (the same
+         *   as the FileSequence.Sequence length).
+         *   TBD if the suffix has to be limited, let's not for now
+         */
+        private  boolean ImagePassesTest( String imageFileName, final String targetIgName) {
+            boolean isOkFileName = imageFileName.startsWith(targetIgName);
+            String restOfFileName = FilenameUtils.getBaseName(StringUtils.remove(imageFileName,targetIgName));
+            boolean isOKSequenceLength = (restOfFileName.length() == _platformSequenceLength);
+            boolean isOkInteger;
+            try {
+                Integer.parseInt(restOfFileName);
+                isOkInteger = true;
+            } catch (NumberFormatException e) {
+                isOkInteger = false;
+            }
+
+            return isOkFileName && isOKSequenceLength && isOkInteger ;
         }
 
 

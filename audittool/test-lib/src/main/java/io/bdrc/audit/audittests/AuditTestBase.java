@@ -203,6 +203,8 @@ public abstract class AuditTestBase implements IAuditTest {
                         "Archive Image file %s contains thumbnail"));
                 put(LibOutcome.INVALID_IMAGE_THUMBNAIL, new TestMessageFormat(1,
                         "Archive Image file %s contains thumbnail"));
+                put(LibOutcome.INVALID_IMAGE_FILENAME_FORMAT, new TestMessageFormat(2,
+                        "Archive Image file %s is invalid. Requires %s followed by sequence and extension"));
 
             }};
 
