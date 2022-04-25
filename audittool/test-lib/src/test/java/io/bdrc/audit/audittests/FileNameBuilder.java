@@ -30,15 +30,15 @@ public class FileNameBuilder {
      * Build a set of folders which validate
      */
     public void BuildPassesOneSuffix() throws IOException {
-        BuildPassesFromBases("M1CKEY-%s%d", "I1CKEY",passingTemplate);
+        BuildPassesFromBases("M1CKEY-%s", "I1CKEY",passingTemplate);
     }
    public void BuildPassesTwoSuffix() throws IOException {
-        BuildPassesFromBases("M1CKEY-ICKEY-%s%d", "I1CKEY",passingTemplate);
+        BuildPassesFromBases("M1CKEY-ICKEY-%s", "I1CKEY",passingTemplate);
     }
 
     public void BuildFails() throws IOException {
         String failingTemplate = "X%s-fail%0,4d";
-        BuildPassesFromBases("DONTCARE-%s%d", "Really-dont-care", failingTemplate);
+        BuildPassesFromBases("DONTCARE-%s", "Really-dont-care", failingTemplate);
     }
 
     /**
@@ -51,12 +51,10 @@ public class FileNameBuilder {
                                      String fileNameFormatTemplate) throws IOException {
         for (int i = 0; i < 3; i++) {
             String targetFileName = String.format(fileNameFormatTemplate,fileBase,i);
-            Path igPath = Files.createDirectory(Paths.get(_imageGroupParentFolder, String.format(
-                    dirBaseFormatTemplate, targetFileName,i)));
+            Path igPath = Files.createDirectory(Paths.get(_imageGroupParentFolder,
+                    String.format(dirBaseFormatTemplate,targetFileName)));
             for (int fi = 1 ; fi < 5 ; fi++ ) {
-
-                // this literal is NOT the same as passingTemplate
-                Files.createFile(Paths.get(igPath.toString(),String.format("%s%0,4d.jpg",targetFileName,fi )));
+                Files.createFile(Paths.get(String.valueOf(igPath),String.format("%s%0,4d.jpg",targetFileName,fi )));
             }
         }
     }

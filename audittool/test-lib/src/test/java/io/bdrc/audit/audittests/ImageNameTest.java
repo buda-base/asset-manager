@@ -1,6 +1,7 @@
 package io.bdrc.audit.audittests;
 
 import io.bdrc.audit.iaudit.TestResult;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,8 +32,25 @@ public class ImageNameTest extends AuditTestTestBase {
     @Test
     public void SingleHyphenSucceeds() throws IOException {
         fnb.BuildPassesOneSuffix();
-        TestResult tr = RunTest(workRoot.toString());
+        TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
+        Assert.assertTrue(tr.Passed());
     }
+
+    @Test
+    public void DoubleHyphenSucceeds() throws IOException {
+        fnb.BuildPassesTwoSuffix();
+        TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
+        Assert.assertTrue(tr.Passed());
+    }
+
+    @Test
+    public void MalformedFails() throws IOException {
+        fnb.BuildFails();
+        TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
+        Assert.assertTrue(tr.Failed());
+    }
+
+
 
     private TestResult RunTest(String workRoot) {
         ImageFileNameFormatTest ifft = new ImageFileNameFormatTest(logger, "ImageFileFormatTest");
