@@ -23,10 +23,16 @@ public class PropertyManager {
 
 
     // Same as in shell.properties UserConfigPath key
-    private final String UserConfigPathKey = "UserConfigPath";
+    public final static String UserConfigPathKey = "UserConfigPath";
 
     // as in the config file, this is relative to user's home directory, if not an absolute path
-    private final String UserConfigPathValue = Paths.get(".config", "bdrc", "auditTool", "user.properties").toString();
+    public final static String UserConfigPathValue =
+            Paths.get(".config", "bdrc", "auditTool", "user.properties").toString();
+
+    /**
+     * Default env var for many files
+     */
+    public final static String UserHomeEnv = "user.home";
 
     /**
      * Load Properties from a stream
@@ -39,9 +45,7 @@ public class PropertyManager {
         if (resourceStream == null) return _instance;
         try {
             _Properties.load(resourceStream);
-            if (logger.isDebugEnabled()) {
-                DumpProperties();
-            }
+            DumpProperties("Loading from input stream");
         } catch (IOException e) {
             logger.error("Could not load resource stream {}.", e.getMessage());
         }
@@ -77,24 +81,26 @@ public class PropertyManager {
 
     public PropertyManager MergeUserConfig()
     {
-        Path configPath = PathObjectFromProperty(UserConfigPathKey, "user.home");
+        Path configPath = PathObjectFromProperty(UserConfigPathKey, UserHomeEnv);
         if (configPath == null) {
             return this;
         }
+        logger.trace("> Merging user config from property key {} {}", UserConfigPathKey, configPath);
         return MergeConfigGivenInProperty(configPath);
     }
 
     /**
      * Merges properties from a file
      *
-     * @param configPath  existing file containing properties
+     * @param configPath existing file containing properties
      * @return self
      */
     public PropertyManager MergeConfigGivenInProperty(Path configPath) {
 
         InputStream ins = null;
+        logger.trace("Loading from Input resource {} ", configPath);
         try {
-           ins = InputFileResource(configPath.toString());
+            ins = InputFileResource(configPath.toString());
         } catch (IOException e) {
             logger.warn(String.format("Couldn't open %s ", configPath), e);
         }
@@ -103,23 +109,32 @@ public class PropertyManager {
 
     /**
      * Read the in-core properties to derive a path
-     * @param configKey property key
+     *
+     * @param configKey      property key
      * @param pathRootEnvVar environment variable giving parent of configKey value
      * @return resulting Path if it exists, null otherwise
      */
     private Path PathObjectFromProperty(String configKey, String pathRootEnvVar)
     {
         String configPathValue = _Properties.getProperty(configKey);
-        if (StringUtils.isBlank(configPathValue)) return null;
+        return GetPathWithEnv(configPathValue, pathRootEnvVar);
+    }
 
-        Path configPath = toAbsolutePath(pathRootEnvVar, configPathValue);
+    public static Path GetPathWithEnv(final String configPathValue, String ... pathRootEnvVar) {
+        String resolvedEnv =
+                pathRootEnvVar == null || pathRootEnvVar.length == 0 ||  StringUtils.isEmpty(pathRootEnvVar[0]) ?
+                UserHomeEnv :
+                pathRootEnvVar[0];
+
+        if (StringUtils.isBlank(configPathValue)) return null;
+        Path configPath = toAbsolutePath(resolvedEnv, configPathValue);
 
         if (!Files.exists(configPath))
             return null;
         return configPath;
     }
 
-    public Path toAbsolutePath(final String pathRootEnvVar, final String configPathValue) {
+    public static Path toAbsolutePath(final String pathRootEnvVar, final String configPathValue) {
         Path configPath = Paths.get(configPathValue);
         if (!configPath.isAbsolute()) {
             String pathHome = Paths.get(System.getProperty(pathRootEnvVar)).toAbsolutePath().toString();
@@ -141,6 +156,7 @@ public class PropertyManager {
             StringReader sr = new StringReader(sw.toString());
             _Properties.load(sr);
             sw.close();
+            DumpProperties(String.format("----- External %d  Properties Merge", externalProperties.size() ));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,10 +171,8 @@ public class PropertyManager {
      * @param value resource
      * @return instance
      */
-    private PropertyManager MergeProperty(final String key, final String value) {
-        if (logger.isDebugEnabled()) DumpProperties();
+    public PropertyManager PutProperty(final String key, final String value) {
         _Properties.setProperty(key, value);
-        if (logger.isDebugEnabled()) DumpProperties();
         return _instance;
     }
 
@@ -198,9 +212,17 @@ public class PropertyManager {
         return this;
     }
 
-    private void DumpProperties() {
-        logger.debug(String.format("Existing properties with length %d", _Properties.size()));
-        _Properties.forEach((k, v) -> logger.debug("key :" + k + ":   value :" + v + ":"));
+    private void DumpProperties(String headerFooter) {
+
+        String header = StringUtils.isEmpty(headerFooter) ?  "--- BEGIN " : String.format("--- BEGIN %s",
+                headerFooter);
+        String footer = StringUtils.isEmpty(headerFooter) ?  "--- BEGIN " : String.format("--- END %s",
+                headerFooter);
+        logger.debug(header);
+        logger.debug("Existing properties with length {}", _Properties.size());
+        _Properties.forEach((k, v) -> logger.debug("key :{}: value :{}: ",k ,v ));
+        logger.debug(footer);
+
     }
 
     /**
@@ -221,7 +243,7 @@ public class PropertyManager {
     /**
      * No public access. Use accessors by type (getPropertyInt, getPropertyString)
      */
-    private Properties _Properties;
+    private final Properties _Properties;
 
     /**
      * Read integer resource from in core dictionary
@@ -231,10 +253,6 @@ public class PropertyManager {
      */
     public int getPropertyInt(String key)
     {
-        if (logger.isDebugEnabled()) {
-            DumpProperties();
-        }
-
         String resourceValue = _Properties.getProperty(key);
         int rc;
         try {
@@ -245,7 +263,6 @@ public class PropertyManager {
             logger.error(String.format("Could not parse resource %s string value %s", key, resourceValue));
             throw e;
         }
-
         return rc;
     }
 
@@ -257,26 +274,22 @@ public class PropertyManager {
      */
     public String getPropertyString(String key) {
 
-        if (logger.isDebugEnabled()) {
-            DumpProperties();
-        }
-
         String rc = _Properties.getProperty(key);
         if (StringUtils.isEmpty(rc)) {
             rc = "";
         }
-
         return rc;
     }
 
     /**
      * get a property's value and map it to a real file path
+     *
      * @param key property identifier
      * @return absolute path, relative to "user.dir", of the key's value
      */
     public Path getPropertyPath(String key) {
         String val = getPropertyString(key);
-        return toAbsolutePath("user.home",val);
+        return toAbsolutePath("user.home", val);
     }
 
     final private Logger logger;
@@ -305,6 +318,7 @@ public class PropertyManager {
 
     /**
      * Use the existing property manager instance or die
+     *
      * @return existing properties manager
      * @throws IllegalStateException if invoked before constructed
      */
