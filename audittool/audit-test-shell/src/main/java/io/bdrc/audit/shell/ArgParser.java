@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +26,9 @@ class ArgParser {
 
     private Boolean isParsed;
     private List<String> nonOptionArgs;
+
+
+    private List<String> definedOptions = new ArrayList<>();
 
     // These are class members because they are referenced outside the constructor
     private final String infileOptionShort = "i";
@@ -44,26 +48,36 @@ class ArgParser {
         final String logHomeLong = "log_home";
         final String helpLong = "help";
         final String versionLong = "version";
+        final String defineShort = "D";
+        final String defineLong = "Define";
 
         // Create the parser
         CommandLineParser clp = new DefaultParser();
 
         options.addOption("d", "debug", false, "Show debugging information");
 
+        options.addOption(Option.builder(defineShort)
+                .longOpt(defineLong)
+                .hasArg(true)
+                .valueSeparator(':')
+                .argName("Define")
+                .desc("-D property=value:property2=value2:... or -D property=value -D property2=value2 ...")
+                .build());
+
         options.addOption(Option.builder(infileOptionShort)
-                                  .longOpt(infileOptionLong)
-                                  .hasArg(true)
-                                  .desc("Input file, one Path to Work per line")
-                                  .build());
+                .longOpt(infileOptionLong)
+                .hasArg(true)
+                .desc("Input file, one Path to Work per line")
+                .build());
 
 //         instead of adding to the group, add to mainline options
         options.addOption(Option.builder(logHome)
-                                  .longOpt(logHomeLong)
-                                  .hasArg(true)
-                                  .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
-                                                ". Created if not exists ")
-                                  .required(false)
-                                  .build());
+                .longOpt(logHomeLong)
+                .hasArg(true)
+                .desc("Test Result log directory. Must be writable. Default is <UserHome>/audit-test-logs/" +
+                        ". Created if not exists ")
+                .required(false)
+                .build());
 
 
         options.addOption(Option.builder(versionShort)
@@ -80,17 +94,15 @@ class ArgParser {
                 .required(false)
                 .build());
 
-        try
-        {
+        try {
             cl = clp.parse(options, args);
             isParsed = true;
 
-            cl.getArgList().forEach(z -> logger.debug("Found arg :{}:",z));
+            cl.getArgList().forEach(z -> logger.debug("Found arg :{}:", z));
 
             // nonOptionArgs = RecurseParse(cl.getArgList());
-            nonOptionArgs = cl.getArgList() ;
-        } catch (ParseException exc)
-        {
+            nonOptionArgs = cl.getArgList();
+        } catch (ParseException exc) {
 
             // asset-manager-139
             logger.error("Failed to parse {}", exc.getMessage());
@@ -102,13 +114,16 @@ class ArgParser {
         }
 
         // sanity check. One of these must be true
-        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo())
-        {
+        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo()) {
             printHelp(options);
             isParsed = false;
         }
 
-
+        // jimk asset-manager-164 add options on command line
+        if (cl.hasOption(defineShort)) {
+            definedOptions = Arrays.asList(cl.getOptionValues(defineShort));
+            definedOptions.forEach(x -> logger.debug("Defined option {}", x));
+        }
         if (cl.hasOption("l")) {
             Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
             String ldpStr = logDirPath.toString();
@@ -123,6 +138,15 @@ class ArgParser {
         }
     }
 
+
+    /**
+     * Get list of options defined on the command line.
+     * @return everything defined with -D x or -D x:y:...
+     */
+    public List<String> getDefinedOptions() {
+        return definedOptions;
+    }
+
     /**
      * Test for input as argument or as a file
      *
@@ -132,7 +156,7 @@ class ArgParser {
         Boolean rc = cl.hasOption(infileOptionShort) || get_IfArgsCommandLine();
         logger.debug("hasOption {} !getReadStdin {} has_DirList net: {} ", cl.hasOption(infileOptionShort),
                 !getReadStdIn
-                                                                                                                     (),
+                        (),
                 rc);
 
         return rc;
@@ -144,7 +168,7 @@ class ArgParser {
     Boolean getReadStdIn() {
         logger.debug("non option args empty {}", nonOptionArgs.isEmpty());
         return (!nonOptionArgs.isEmpty()) && nonOptionArgs.get(0).equals
-                                                                          (infileOptionStdin);
+                (infileOptionStdin);
     }
 
     /**
@@ -153,7 +177,7 @@ class ArgParser {
     private Boolean get_IfArgsCommandLine() {
         logger.debug("get_IfArgsCommandLine non option args empty {}", nonOptionArgs.isEmpty());
         return !nonOptionArgs.isEmpty() && !nonOptionArgs.get(0).equals
-                                                                         (infileOptionStdin);
+                (infileOptionStdin);
     }
 
     /**
@@ -167,12 +191,12 @@ class ArgParser {
         List<String> returned = new LinkedList<>();
 
         // if we have an
-        if (!isParsed)
-        { return returned; }
+        if (!isParsed) {
+            return returned;
+        }
 
         // If an infile was specified, read it
-        if (cl.hasOption(infileOptionShort))
-        {
+        if (cl.hasOption(infileOptionShort)) {
             String argFile = cl.getOptionValue(infileOptionShort);
             try {
                 fileArgs =
@@ -182,21 +206,16 @@ class ArgParser {
                 returned = new ArrayList<>(fileArgs);
 
 
-            } catch (FileNotFoundException fnfe)
-            {
+            } catch (FileNotFoundException fnfe) {
                 logger.error("{} {}", argFile, " not found.");
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
                 throw e;
 
             }
-        }
-        else
-        {
+        } else {
 
-            if (!getReadStdIn())
-            {
+            if (!getReadStdIn()) {
                 returned = nonOptionArgs;
             }
 
@@ -206,6 +225,7 @@ class ArgParser {
 
     /**
      * Overload to test without doing anything
+     *
      * @return if we're not actually doing anything
      */
     public Boolean OnlyShowInfo()
@@ -228,7 +248,7 @@ class ArgParser {
         logger.debug("Version {}", version);
         if (cl.hasOption(versionShort)) {
             System.out.printf("Version %s\n", version);
-            rc = true ;
+            rc = true;
         }
         return rc;
     }
@@ -252,20 +272,14 @@ class ArgParser {
 
         boolean ok = false;
 
-        if (!Files.exists(pathToCreate))
-        {
-            try
-            {
+        if (!Files.exists(pathToCreate)) {
+            try {
                 Files.createDirectories(pathToCreate);
                 ok = Files.isWritable(pathToCreate);
-            } catch (IOException ignored)
-            {
+            } catch (IOException ignored) {
             }
-        }
-        else
-        {
-            if (Files.isDirectory(pathToCreate))
-            {
+        } else {
+            if (Files.isDirectory(pathToCreate)) {
                 ok = Files.isWritable(pathToCreate);
             }
         }
@@ -282,7 +296,6 @@ class ArgParser {
     }
 
     /**
-     *
      * @return if parsing was correct
      */
     public Boolean getParsed() {
