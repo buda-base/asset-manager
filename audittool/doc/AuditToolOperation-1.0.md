@@ -2,10 +2,11 @@
 ## Installation and Configuration
 Please refer to [Installation](Install-1.0.md) for details of installation.
 
-### Starting
+## Starting Audit Tool
 Start the audit tool with the `audit-tool` command. Release 1.0 does not require the configuration that 0.9 did.
 The arguments to audit tool are simply:
 ```psv
+❯ audit-tool -h
 usage: audit-tool [options] { - | PathToWork PathToWork ..... }
 where:
 
@@ -15,6 +16,8 @@ where:
                   whitespace
 [options] are:
  -d,--debug             Show debugging information
+ -D,--Define <Define>   -D property=value:property2=value2:... or -D
+                        property=value -D property2=value2 ...
  -h,--help              Usage
  -i,--inputFile <arg>   Input file, one Path to Work per line
  -l,--log_home <arg>    Test Result log directory. Must be writable.
@@ -24,7 +27,7 @@ where:
 ```
 
 The `-d` switch has no functionality as of release 1.0
-### Exit status
+## Exit status
 Release `V09. Rel 4` (6 Nov 2020) adds 'WARNING' semantics to test outcomes. Several tests require the existence of well-known directory names which contain image groups. You can set these names in the `shell.properties` files on a site-by-site basis.
 With this release, if those directories aren't found, the test will hold the "Not run" outcome, and the logs will log the tests results as a WARN, instead of an Error.
 The overall result of a batch of tests has new semantics as well. Formerly, a test run passed only if all tests passed. A WARNING result would have been determined to be the same as an ERROR. In this release, the overall run result is calculated:
@@ -36,6 +39,9 @@ This result is captured in the output file name of the run result: `{PASS|WARN|F
 However, the return code of the audittool program is still
 - 0 if no tests failed (some may have passed, some may have warned)
 - 1 if any test failed
+
+## Input
+
 ### Using input files
 The Java runtime in audit tool expects to find its input files (the -i flag, and the - flag) and arguments in the UTF-8 encoding. This is native on
 most of audit tool's supported platforms. Using redirection (the `>` or `|` operators)on Microsoft Windows Powershell  
@@ -44,9 +50,37 @@ Linux, so piping a output of a file to audit tool may not behave as expected.
 
 Correcting the encoding is outside of the scope of this document. For best results, do all pipe and file manipulation
 inside the `cmd` environment, or upgrade to PowerShell 6.
-### Outputs
 
-#### Run logs and work logs
+### Using Standard Input
+`_tbd_@Tseng:~$ audit-tool -` will read a pathname from standard input. You can pipe input to audit tool this way.
+
+## Input inputFile
+Given a file `shortWorks` which contains a list of paths to works,
+ ```
+/Users/_tbd_/mnt/Archive/W0FFY001
+/Users/_tbd_/mnt/Archive/W0FFY002
+/Users/_tbd_/mnt/Archive/W0FFY003
+```
+
+running `_tbd_@Tseng:iaAudit$ audit-tool -i shortWorks`
+will execute the tests on each folder in turn.
+
+
+### Pathname as argument
+to just pass paths to audit-tool on the command line, just invoke with the paths separated by commas:
+
+```bash
+_tbd_@Tseng:iaAudit$ audit-tool /Users/_tbd_/mnt/Archive/W0FFY001,/Users/_tbd_/mnt/Archive/W0FFY002,/Users/_tbd_/mnt/Archive/W0FFY003
+```
+
+
+### Audit tool tests
+Tests are found in a named library which the `audit-tool` script passes to the `auditool` main jar file.
+The initial set of tests is specified in [Image capture Test Requirements](https://docs.google.com/document/d/1TrjUdoLJd5N90d1vWloRqNrlC144-DPfLrClOLsbhVg/edit?usp=sharing)
+
+##Output
+
+### Run logs and work logs
 Audit tool creates two sets of logs:
 - Run logs, which capture one invocation of Audit tool. These are in _\<User home\>_/audit-tool-logs/. Two sets,
 csv, and log files are generated. _\<User home\>_ is the interactive user's home directory.
@@ -57,8 +91,8 @@ specified in the `-l | --log_home` argument.
 Note to windows users: You can change the default log home in the `log4j2.properties` file in the installer.
 That file contains a proposed Windows location.
 
-#### Per work logs
-##### File name
+### Per work logs
+#### File name
 
 Each work which is analyzed has its output written to a file _WorkName.YYYY-MM-DD-HH-MM_.csv in the work log location (se above.)
 _YYYY-MM-DD-HH-MM_ of course, stands for the run date and time.
@@ -81,6 +115,16 @@ The work log file contains the results for each test in sequence. Tests which ar
 logs are added after the overall test result.
 
 The work run log contains a blend of the summary and the detail loggers below, in `csv` format. A sample work log is:
+Note the detail record starts with three empty fields, 
+```shell
+id,test_name,outcome,error_number,error_test,detail_path
+W1KG13765,No Files in Root Folder,Passed,,,/Users/dev/tmp/pub/00/W1KG13765
+W1KG13765,Web Image Attributes,Failed,,,/Users/dev/tmp/pub/00/W1KG13765
+,,,110,Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader.,/Users/dev/tmp/pub/00/W1KG13765
+,,,110,Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader.,/Users/dev/tmp/pub/00/W1KG13765
+W1KG13765,No folders allowed in Image Group folders,Passed,/Users/dev/tmp/pub/00/W1KG13765
+```
+In table form, this is:
 
 | id        | test_name                                 | outcome | error_number                                                                           | error_test                                                                                                      | detail_path                     |
 |-----------|-------------------------------------------|---------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------------------------------|
@@ -139,6 +183,8 @@ and separating the path allows for easier data access.
 
 ## Principles of operation
 Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.
+
+## Configuration
 ### Property file
 
 `shell.properties`
@@ -150,13 +196,14 @@ folder names of parents of image groups.
 
 Values relating to logging and output appear here. You can configure the parent folder of log files, their formats and file names.
 
-## Overriding properties
+### Overriding properties
 
 + As a user, you can override `shell.properties` properties by creating a file `$HOME/.config/bdrc/auditTool/user.properties`
 + As a system administrator, you can override any property (even user properties) by defining them in the `[JavaOptions]`
 section of the `app/audit-tool.config` file.
 
-In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default.
+In this example, we're overriding the MaximumImageFileSize property to a value slightly smaller than the default. (this is not a recommended procedure.
+Since the Java environment is read first, any value in the `shell.properties` or `user.properties` file will override it)
 ```
 [JavaOptions]
 java-options=-Djpackage.app-version=1.0
@@ -165,36 +212,61 @@ java-options=-Xms256m
 java-options=-DMaximumImageFileSize=300K
 ```
 
-**Note** the evaluation is one-pass. You cannot override the
+**v1.0 Beta Note** The v1.0Beta-2022-04-25 version of audit tool introduced the -D (-Define) command line option. This
+allows users to define or override any option that is found in the profiles (shell.profile and user.profile). It also allows
+the user to specify an alternate profile to the standard user profile, by overriding the `UserConfigPath` value:
+
+```shell
+audit-tool ..... -D UserConfigPath=special/override
+```
+
+this will cause the file `$HOME/special/override` to be read in place of the standard user profile.
+Note that other variables defined on the command line will override values in the alternate profile.
+For example, if the file `$HOME/special/override` contains: `MaximumImageFileSize=100K` but the command:
+
+
+```shell
+audit-tool ..... -D UserConfigPath=special/override -D MaximumImageFileSize=300K
+```
+
+is given, the effective maximum image file size is 300K, as given in the command line.
+
+~~**Note** the evaluation is one-pass. You cannot override the
 default user.properties file on the command line. This will not cause the
 values of 'other_config.properties' to be read in. Command line
-properties are always read last.
+properties are always read last.~~
 
-```
-[JavaOptions]
-java-options=-Djpackage.app-version=1.0
-java-options=-Dfile.encoding=UTF-8
-java-options=-Xms256m
-java-options=-DUserConfigPath=wont.be.read.properties
-```
 
 Detailed examples are given in Appendix I.
 
+### Overriding test errors
+The user can override any error they wish (while still remaining mindful that some errors
+must be fixed when submitting works to BDRC or its partners). You do this by adding
+numeric values to `shell.properties ErrorsAsWarning` property.
+Please refer to the installation's `shell.properties` for the appropriate values.
+
+If a test **only** fails on a test whose number is in the ErrorsAsWarning List, the test result outcome will be set to WARN.
+Note that any test can have multiple failures - each failure is independent of the others. See especially the ImageAttribute tests
+
+
 ### Test Requirements
-The test requirements and functions are outside of the scope of this document. A draft requirements document of the tests
+The test requirements and functions are outside the scope of this document. A draft requirements document of the tests
 can be found at [Audit Tool Test Requirements](https://buda-base.github.io/asset-manager/req/tests/)
 
+<!--  jimk : not needed now
 ### Operation
 The Audit Tool shell jar (which `audit-tool` passes as the main jar file to java) can either run an internal set of tests,
 or can use an external jar file.  It runs all the tests in the library against all the directories given in the arguments.
 
 Please refer to [Using an external library](#Using-an-external-test-library) for instructions on how to use an external test library.
-### Test output
+--> 
+
+### Test output and format
 The tests themselves do not output results. The test framework allows the shell to iterate over the results and act on them.
 Initially, these are sent to log files, but we could send them to a database without changing any code, by reconfiguring the logging
 to send to a database.
 
-You can toggle on and off logging by changing comment status as described in the `log4j2.properties` file.
+audit-tool uses the `log4j` platform to control its logging. The user can review the `log4j2.properties` file in `$APPDIR`
 
 ### Test Internal logging
 To trace tests' internal logs, each test gets passed in an internal logger whose name
@@ -220,6 +292,7 @@ appender.testInternals.type=Null
 
 ```
 
+<!-- jimk - not supported yet
 ### Using an external test library
 Audit tool contains an internal library which contains various tests. To run a different library, you need to define two
 JVM options with the `-D` flag:
@@ -238,6 +311,156 @@ java-options=-Xms256m
 java-options=-DtestJar=/usr/local/bin/at09/audit-test-lib-someversion.jar
 java-options=-DtestDictionaryClassName=io.bdrc.am.at.audittests.TestDictionary
 ```
+-->
+
+# Appendix I
+## Property overriding example
+
+In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows
+runs that use:
+- the default property
+- a much smaller value, defined in `user.properties`
+- an override of that smaller value defined in the shell script.
+
+### Ex 1: No overrides 
+No `user.properties` file, `shell.properties` value of `400K` used. Tests pass
+
+```shell
+❯ ls -l ~/.config/bdrc/auditTool/user.properties
+gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
+❯ audit-tool -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+```
+
+## Ex 2: Using User.properties
+Here, the default is set to 40K, and the Image file size test fails.
+```shell
+❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=40K
+❯ audit-tool -l .   ../../Archive/W8LS68226
+starting -l . ../../Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
+ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
+Errors! returned:1: check logs
+```
+
+## Ex 3: Raising the user properties value
+Raised the user.properties value to 300K and the test passes
+
+```shell
+❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
+MaximumImageFileSize=300K
+❯ audit-tool -l .   ../../Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image file name format test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Size Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Sequence Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive EXIF Thumbnail Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image EXIF Thumbnail Test
+```
+# Ex 4: Overriding user.properties with command line arguments
+```shell
+❯ audit-tool -l . -D MaximumImageFileSize=50K  Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image file name format test
+ERROR Failed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Size Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Sequence Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive EXIF Thumbnail Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image EXIF Thumbnail Test
+```
+
+#Ex 5: Overriding user properties location
+Create a file with a MaximumImageFileSize:
+```shell
+❯ cat tmp.properties
+MaximumImageFileSize=22K
+```
+And reference it on the command line, with the key `UserConfigPath` 
+the value of `UserConfigPath` must either be an absolute path, or be with respect to the user's $HOME directory)
+
+```shell
+❯ audit-tool -l . -D UserConfigPath=dev/tmp/tmp.properties  Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image file name format test
+ERROR Failed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Size Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Sequence Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive EXIF Thumbnail Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image EXIF Thumbnail Test
+```
+We see that the the test fails the "File Size Test", and that the value that was tested was the value in the `tmp.properties` file (22K = 22528)
+
+```shell
+❯ cat FAIL-W8LS68226-2022-04-27-16-41.csv
+id,test_name,outcome,error_number,error_test,detail_path
+W8LS68226,Image file name format test,Passed,,,/Users/jimk/dev/tmp/Archive/W8LS68226
+W8LS68226,File Size Test,Failed,,,/Users/jimk/dev/tmp/Archive/W8LS68226
+,,,112,Image file /Users/jimk/dev/tmp/Archive/W8LS68226/images/W8LS68226-I8LS68228/I8LS682280016.tif size 27696 exceeds maximum of 22528,/Users/jimk/dev/tmp/Archive/W8LS68226
+,,,112,Image file /Users/jimk/dev/tmp/Archive/W8LS68226/images/W8LS68226-I8LS68228/I8LS682280017.tif size 33118 exceeds maximum of 22528,/Users/jimk/dev/tmp/Archive/W8LS68226
+,,,112,Image file /Users/jimk/dev/tmp/Archive/W8LS68226/images/W8LS68226-I8LS68228/I8LS682280029.tif size 29650 exceeds maximum of 22528,/Users/jimk/dev/tmp/Archive/W8LS68226
+,,,112,Image file /Users/jimk/dev/tmp/Archive/W8LS68226/images/W8LS68226-I8LS68228/I8LS682280015.tif size 32000 exceeds maximum of 22528,/Users/jimk/dev/tmp/Archive/W8LS68226
+```
+
+## Ex 5: Overriding the overridden config path
+For completeness, override the user properties. and override a property in it. In this case, first alter the `tmp.properties` file
+In this properties file, we've set the threshold to 22K, but changed the error to be only a warning.
+```shell
+❯ cat tmp.properties
+MaximumImageFileSize=22K
+ErrorsAsWarning=112
+```
+
+And in this command line, we've overridden the threshold in the `tmp.properties` on the command line. 
+
+```shell
+❯ audit-tool -l . -D UserConfigPath=dev/tmp/tmp.properties -D MaximumImageFileSize=25K  Archive/W8LS68226
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image file name format test
+WARN  Warnings  /Users/jimk/dev/tmp/Archive/W8LS68226           File Size Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No Files in Root Folder
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Web Image Attributes
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           File Sequence Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive Valid EXIF Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Archive EXIF Thumbnail Test
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           No folders allowed in Image Group folders
+INFO  Passed    /Users/jimk/dev/tmp/Archive/W8LS68226           Image EXIF Thumbnail Test
+```
+we see the test has only generated Warnings, and the size in the log file is 25K=25600:
+
+```shell
+❯ cat WARN-W8LS68226-2022-04-27-16-51.csv
+...
+W8LS68226,File Size Test,Warnings,,,/Users/jimk/dev/tmp/Archive/W8LS68226
+,,,112,Image file /Users/jimk/dev/tmp/Archive/W8LS68226/images/W8LS68226-I8LS68228/I8LS682280016.tif size 27696 exceeds maximum of 25600,/Users/jimk/dev/tmp/Archive/W8LS68226
+,,,112,Image file /Users/jimk/dev/tmp/Archive/W8LS68226/images/W8LS68226-I8LS68228/I8LS682280017.tif size 33118 exceeds maximum of 25600,/Users/jimk/dev/tmp/Archive/W8LS68226
+...
+```
+
+
+
 
 
 ## Test Developer's Guide
@@ -246,9 +469,9 @@ this material.
 ### Locating the tests
 #### Test Dictionary
 The shell assumes that the package `io.bdrc.am.audit.iaudit` is either:
- - in the shell jar file itself
- - on the class path
- - or specified with the `-DtestJar .... -DtestDictionaryClassName` (see 'Using an external test library' above)
+- in the shell jar file itself
+- on the class path
+- or specified with the `-DtestJar .... -DtestDictionaryClassName` (see 'Using an external test library' above)
 
 #### Test Config objects
 
@@ -335,83 +558,10 @@ The `TestResult.Passed()` method contains the overall outcome of the test.
 Test messages are retrieved by the `TestResults.getErrors()` method. It's a good idea to have the first error in the list name the container which failed the test, followed by all the specific failure instances for each file. The caller determines the logging disposition.
 
 
-# Appendix I
-## Property overriding example
-
-In this example, we test a work overriding the `MaximumImageFileSize` property. This example shows
-runs that use:
-- the default property
-- a much smaller value, defined in `user.properties`
-- an override of that smaller value defined in the shell script.
-
-Ex 1. No `user.properties` file, `shell.properties` value of `400K` used. Tests pass
-```shell
-❯ ls -l ~/.config/bdrc/auditTool/user.properties
-gls: cannot access '/Users/XXX/.config/bdrc/auditTool/user.properties': No such file or directory
-❯ audit-tool -l .   ../../Archive/W8LS68226
-starting -l . ../../Archive/W8LS68226
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
-```
-
-Ex 2. Using User.properties
-Here, the default is set to 40K, and the Image file size test fails.
-```shell
-❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
-MaximumImageFileSize=40K
-❯ audit-tool -l .   ../../Archive/W8LS68226
-starting -l . ../../Archive/W8LS68226
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
-ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
-Errors! returned:1: check logs
-```
-
-Ex 3: Raising the user properties value
-
-```shell
-❯ grep MaximumImage ~/.config/bdrc/auditTool/user.properties
-MaximumImageFileSize=300K
-❯ audit-tool -l .   ../../Archive/W8LS68226
-starting -l . ../../Archive/W8LS68226
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
-```
-Ex 4: Overriding user.properties with VM arguments
-
-In this example, we've defined a much smaller argument in a copy of the command file, and the test
-fails.
-```shell
-❯ grep Maximum ./use_vm_args_to_override.sh
-java -DMaximumImageFileSize=30K  -DatHome=${CONFIG_ATHOME} -Dlog4j.configurationFile=${LOG_PROPS} -jar ${shellJar}  $@
-❯ ./use_vm_args_to_override.sh -l .   ../../Archive/W8LS68226
-starting -l . ../../Archive/W8LS68226
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Archive EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No Files in Root Folder
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Image EXIF Test
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		Web Image Attributes
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		No folders allowed in Image Group folders
-INFO  Passed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Sequence Test
-ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
-Errors! returned:1: check logs
-```
 # Updates
 | Date       | Notes                                                                                                                                                                                                                                                                  |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 25 Apr 2022 | Integrated Jan 2021 packaging, and 18 April v1.0_beta1 features |
 | 4 Nov 2020 | Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.          |
 | &nbsp;     | Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.                                                                        |
 | &nbsp;     | The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded) |
