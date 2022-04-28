@@ -170,10 +170,15 @@ public class shell {
         if (cliOptions.size() > 0) {
             cliOptions.forEach(
                     optArg -> {
-                        String[] optArgKV = optArg.split("=");
-                        if (optArgKV.length == 2) {
-                            cliProperties.put(optArgKV[0], optArgKV[1]);
-                        }
+
+                        // support -D opt1=value1:opt2=value2 -D opt3=value3 -D opt4=value4
+                        String[] optArgMultiples = optArg.split(":");
+                        Arrays.asList(optArgMultiples).forEach(a -> {
+                            String[] optArgKV = a.split("=");
+                            if (optArgKV.length == 2) {
+                                cliProperties.put(optArgKV[0], optArgKV[1]);
+                            }
+                        });
                     });
         }
         return cliProperties;
