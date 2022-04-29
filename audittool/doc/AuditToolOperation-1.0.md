@@ -54,7 +54,7 @@ inside the `cmd` environment, or upgrade to PowerShell 6.
 ### Using Standard Input
 `_tbd_@Tseng:~$ audit-tool -` will read a pathname from standard input. You can pipe input to audit tool this way.
 
-## Input inputFile
+### Input inputFile
 Given a file `shortWorks` which contains a list of paths to works,
  ```
 /Users/_tbd_/mnt/Archive/W0FFY001
@@ -74,9 +74,56 @@ _tbd_@Tseng:iaAudit$ audit-tool /Users/_tbd_/mnt/Archive/W0FFY001,/Users/_tbd_/m
 ```
 
 
-### Audit tool tests
+
+## Audit tool tests
+### Test Library
 Tests are found in a named library which the `audit-tool` script passes to the `auditool` main jar file.
 The initial set of tests is specified in [Image capture Test Requirements](https://docs.google.com/document/d/1TrjUdoLJd5N90d1vWloRqNrlC144-DPfLrClOLsbhVg/edit?usp=sharing)
+
+A future release will allow dynamic specification of the test library.
+
+### Selecting individual tests
+Audit tool can be run using a subset of the tests available in the library. Use the **-T/-TestNames** option to specify the 
+desired tests. (If the **-T** flag is not given, all the available tests will be run). Multiple **-T** flags or colon(**:***) separated values can be given (see below).  The tests are 
+identified by short names.
+
+#### Querying for short names
+
+The **-Q/-QueryTests** option will list the available test short names:
+
+```shell
+$ audit-tool -Q
+EXIFArchiveThumbnail          	Image EXIF Thumbnail Test
+NoFoldersInImageGroups        	No folders allowed in Image Group folders
+EXIFArchiveTest               	Archive Valid EXIF Test
+EXIFArchiveThumbnail          	Archive EXIF Thumbnail Test
+FileSequence                  	File Sequence Test
+WebImageAttributes            	Web Image Attributes
+NoFilesInFolder               	No Files in Root Folder
+FileSizeTests                 	File Size Test
+EXIFImageTest                 	Image Valid EXIF Test
+ImageFileNameFormat           	Image file name format test
+```
+Use the values in the first column to designate the tests you want to run - the order on the command line does not
+affect test run ordering:
+
+```shell
+$ audit-tool -T ImageFileNameFormat:NoFilesInFolder -T NoFoldersInImageGroups -T FileSequence:EXIFImageThumbnail Archive/W8LS68226
+INFO  Passed	/Users/jimk/dev/tmp/Archive/W8LS68226		Image file name format test
+INFO  Passed	/Users/jimk/dev/tmp/Archive/W8LS68226		Image EXIF Thumbnail Test
+INFO  Passed	/Users/jimk/dev/tmp/Archive/W8LS68226		No Files in Root Folder
+INFO  Passed	/Users/jimk/dev/tmp/Archive/W8LS68226		No folders allowed in Image Group folders
+INFO  Passed	/Users/jimk/dev/tmp/Archive/W8LS68226		File Sequence Test
+```
+
+Invalid values will appear as warnings, but tests with valid names will still be run.
+
+```shell
+audit-tool -T BadTest1 -T FileSequence:BadTest2 Archive/W8LS68211
+WARN  Requested test BadTest1 not found in test library
+WARN  Requested test BadTest2 not found in test library
+INFO  Passed	/Users/jimk/dev/tmp/Archive/W8LS68226		File Sequence Test
+```
 
 ##Output
 

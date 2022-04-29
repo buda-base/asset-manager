@@ -37,6 +37,9 @@ class ArgParser {
     private final String queryTestsShort = "Q";
     private final Options options = new Options();
 
+    // when you need the opposite of this, created it
+    private static final boolean ARGS_UNIQUE_REQUIRED = true;
+
     /**
      * ArgParser. Returns values of arguments.
      *
@@ -70,9 +73,11 @@ class ArgParser {
                 .desc("-D property=value:property2=value2:... or -D property=value -D property2=value2 ...")
                 .build());
 
+        // jimk note this does not have an arg value separator.
         options.addOption(Option.builder(testShort)
                 .longOpt(testLong)
                 .hasArg(true)
+                .valueSeparator(colonArgValueSeparator)
                 .desc("List of tests to run. Tests must be shown in -Q Option. Format: -T test1:test2:... or -T " +
                         "test1 " +
                         "-T " +
@@ -141,6 +146,11 @@ class ArgParser {
 
         // sanity check. One of these must be true
         if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo() && !OnlyShowTestNames()) {
+
+            // special case - if a dir list is required and not present, complain about that
+            if (!has_DirList() && !(getReadStdIn() || OnlyShowInfo() ||OnlyShowTestNames())) {
+                logger.error("Selected options require one or more PathToWork.");
+            }
             printHelp(options);
             isParsed = false;
         }
@@ -148,14 +158,14 @@ class ArgParser {
         // jimk asset-manager-164 add options on command line
         if (cl.hasOption(defineShort)) {
             definedOptions = splitMultipleArguments(cl.getOptionValues(defineShort),
-                    colonArgValueSeparator);
+                    colonArgValueSeparator, ARGS_UNIQUE_REQUIRED );
             definedOptions.forEach(x -> logger.debug("Defined option :{}:", x));
         }
 
         // jimk asset-manager-165 add requested tests
         if (cl.hasOption(testShort)) {
             requestedTests = splitMultipleArguments(cl.getOptionValues(testShort),
-                    colonArgValueSeparator);
+                    colonArgValueSeparator, ARGS_UNIQUE_REQUIRED);
             requestedTests.forEach(x -> logger.debug("Requested test :{}:", x));
         }
         if (cl.hasOption("l")) {
@@ -172,16 +182,31 @@ class ArgParser {
         }
     }
 
-    private List<String> splitMultipleArguments(final String[] definedOptions, final char colonArgValueSeparator) {
+    /**
+     * for arguments which allow multiple values, expand the command line list to include them
+     *
+     * @param definedOptions the command line set of option values, zero or more of which have
+     *                       multiple values
+     * @param valueSeparator the value separator (should be the same as the option
+     * @param requiresUnique true if the resulting list should only contain distinct values. Eliminates duplicates
+     *                       in the output
+     * @return Expanded list of arguments
+     */
+    private List<String> splitMultipleArguments(final String[] definedOptions, final char valueSeparator,
+                                                boolean requiresUnique)
+    {
         List<String> splittedOptions = new LinkedList<>();
         Arrays.stream(definedOptions).forEach(o ->
-            Collections.addAll(splittedOptions, o.split(String.valueOf(colonArgValueSeparator))));
-        return splittedOptions;
+                Collections.addAll(splittedOptions, o.split(String.valueOf(valueSeparator))));
+
+        return requiresUnique ?  splittedOptions.stream().distinct().toList()
+                : splittedOptions;
     }
 
 
     /**
      * Get list of options defined on the command line.
+     *
      * @return everything defined with -D x or -D x:y:...
      */
     public List<String> getDefinedOptions() {
@@ -190,11 +215,13 @@ class ArgParser {
 
     /**
      * get requested tests
-     * @return
+     *
+     * @return tests specified with the -T/-TestNames flag.
      */
     public List<String> getRequestedTests() {
         return requestedTests;
     }
+
     /**
      * Test for input as argument or as a file
      *
@@ -281,7 +308,7 @@ class ArgParser {
         return cl.hasOption(helpShort) || cl.hasOption(versionShort);
     }
 
-    public Boolean OnlyShowTestNames () {
+    public Boolean OnlyShowTestNames() {
         return cl.hasOption(queryTestsShort);
     }
 
@@ -306,10 +333,12 @@ class ArgParser {
 
     private void printHelp(final Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("audit-tool [options] { - | PathToWork PathToWork ..... }\nwhere:\n" +
-                        "\t- read Paths To Works from standard input\n" +
-                        "\tPathToWork ... is a list of directories separated by whitespace\n" +
-                        "[options] are:",
+        formatter.printHelp("""
+                        audit-tool [options] { - | PathToWork PathToWork ..... }
+                        where:
+                        \t- read Paths To Works from standard input
+                        \tPathToWork ... is a list of directories separated by whitespace
+                        [options] are:""",
                 options);
     }
 
