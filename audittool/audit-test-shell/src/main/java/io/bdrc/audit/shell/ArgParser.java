@@ -35,6 +35,7 @@ class ArgParser {
     private final String infileOptionStdin = "-";
     private final String versionShort = "v";
     private final String helpShort = "h";
+    private final String queryTestsShort = "Q";
     private final Options options = new Options();
 
     /**
@@ -50,19 +51,26 @@ class ArgParser {
         final String versionLong = "version";
         final String defineShort = "D";
         final String defineLong = "Define";
+        final String testShort = "T";
+        final String testLong = "Tests";
+        final String queryTestsLong = "QueryTests";
+        final char colonArgValueSeparator = ':';
+
 
         // Create the parser
         CommandLineParser clp = new DefaultParser();
 
         options.addOption("d", "debug", false, "Show debugging information");
 
-        options.addOption(Option.builder(defineShort)
+        Option frelm = Option.builder(defineShort)
                 .longOpt(defineLong)
                 .hasArg(true)
-                .valueSeparator(':')
+                .numberOfArgs(45)
+                .valueSeparator(colonArgValueSeparator)
                 .argName("Define")
                 .desc("-D property=value:property2=value2:... or -D property=value -D property2=value2 ...")
-                .build());
+                .build();
+        options.addOption(frelm);
 
         options.addOption(Option.builder(infileOptionShort)
                 .longOpt(infileOptionLong)
@@ -94,6 +102,24 @@ class ArgParser {
                 .required(false)
                 .build());
 
+        options.addOption(Option.builder(queryTestsShort)
+                .longOpt(queryTestsLong)
+                .hasArg(false)
+                .desc("Query test names in library")
+                .valueSeparator(colonArgValueSeparator)
+                .required(false)
+                .build());
+
+        options.addOption(Option.builder(testShort)
+                .longOpt(testLong)
+                .hasArg(false)
+                .desc("List of tests to run. Tests must be shown in -Q Option. Format: -T test1:test2:... or -T " +
+                        "test1 " +
+                        "-T " +
+                        "test2 ...")
+                .required(false)
+                .build());
+
         try {
             cl = clp.parse(options, args);
             isParsed = true;
@@ -114,15 +140,19 @@ class ArgParser {
         }
 
         // sanity check. One of these must be true
-        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo()) {
+        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo() && !OnlyShowTestNames()) {
             printHelp(options);
             isParsed = false;
         }
 
         // jimk asset-manager-164 add options on command line
         if (cl.hasOption(defineShort)) {
-            definedOptions = Arrays.asList(cl.getOptionValues(defineShort));
+            definedOptions =  Arrays.asList(cl.getOptionValues(defineShort));
             definedOptions.forEach(x -> logger.debug("Defined option {}", x));
+        }
+
+        if (cl.hasOption(testShort)) {
+            List <String> requestedTests = Arrays.asList(cl.getOptionValues(testShort));
         }
         if (cl.hasOption("l")) {
             Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
@@ -233,6 +263,9 @@ class ArgParser {
         return cl.hasOption(helpShort) || cl.hasOption(versionShort);
     }
 
+    public Boolean OnlyShowTestNames () {
+        return cl.hasOption(queryTestsShort);
+    }
 
     /**
      * Parser has some options which return here only
@@ -285,6 +318,7 @@ class ArgParser {
         }
         return ok;
     }
+
 
     private String _logDirectory;
 

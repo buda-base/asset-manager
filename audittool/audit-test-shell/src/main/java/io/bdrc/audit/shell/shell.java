@@ -131,6 +131,12 @@ public class shell {
 
             assert td != null;
 
+            // jimk asset-manager-165 - query test names
+            if (argParser.OnlyShowTestNames()) {
+                td.forEach((k,v)  -> System.out.printf("%-30s\t%s\n", v.getKey(),v.getFullName()));
+                System.exit(SYS_OK);
+            }
+
             testLogController = BuildTestLog(argParser);
 
             if (argParser.has_DirList()) {
@@ -170,16 +176,14 @@ public class shell {
         if (cliOptions.size() > 0) {
             cliOptions.forEach(
                     optArg -> {
-
-                        // support -D opt1=value1:opt2=value2 -D opt3=value3 -D opt4=value4
-                        String[] optArgMultiples = optArg.split(":");
-                        Arrays.asList(optArgMultiples).forEach(a -> {
-                            String[] optArgKV = a.split("=");
+                            String[] optArgKV = optArg.split("=");
                             if (optArgKV.length == 2) {
                                 cliProperties.put(optArgKV[0], optArgKV[1]);
                             }
+                            else {
+                                sysLogger.warn(" Invalid option format {}", optArg);
+                            }
                         });
-                    });
         }
         return cliProperties;
     }
