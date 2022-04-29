@@ -12,10 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 
 class ArgParser {
 
@@ -29,6 +27,7 @@ class ArgParser {
 
 
     private List<String> definedOptions = new ArrayList<>();
+    private List<String> requestedTests = new ArrayList<>();
 
     // These are class members because they are referenced outside the constructor
     private final String infileOptionShort = "i";
@@ -62,23 +61,32 @@ class ArgParser {
 
         options.addOption("d", "debug", false, "Show debugging information");
 
-        Option frelm = Option.builder(defineShort)
+        // Lists of things
+        options.addOption(Option.builder(defineShort)
                 .longOpt(defineLong)
                 .hasArg(true)
-                .numberOfArgs(45)
                 .valueSeparator(colonArgValueSeparator)
                 .argName("Define")
                 .desc("-D property=value:property2=value2:... or -D property=value -D property2=value2 ...")
-                .build();
-        options.addOption(frelm);
+                .build());
 
+        options.addOption(Option.builder(testShort)
+                .longOpt(testLong)
+                .hasArg(true)
+                .desc("List of tests to run. Tests must be shown in -Q Option. Format: -T test1:test2:... or -T " +
+                        "test1 " +
+                        "-T " +
+                        "test2 ...")
+                .required(false)
+                .build());
+
+        // Other options
         options.addOption(Option.builder(infileOptionShort)
                 .longOpt(infileOptionLong)
                 .hasArg(true)
                 .desc("Input file, one Path to Work per line")
                 .build());
 
-//         instead of adding to the group, add to mainline options
         options.addOption(Option.builder(logHome)
                 .longOpt(logHomeLong)
                 .hasArg(true)
@@ -88,6 +96,7 @@ class ArgParser {
                 .build());
 
 
+        // Query and leave options
         options.addOption(Option.builder(versionShort)
                 .longOpt(versionLong)
                 .hasArg(false)
@@ -110,15 +119,6 @@ class ArgParser {
                 .required(false)
                 .build());
 
-        options.addOption(Option.builder(testShort)
-                .longOpt(testLong)
-                .hasArg(false)
-                .desc("List of tests to run. Tests must be shown in -Q Option. Format: -T test1:test2:... or -T " +
-                        "test1 " +
-                        "-T " +
-                        "test2 ...")
-                .required(false)
-                .build());
 
         try {
             cl = clp.parse(options, args);
@@ -147,12 +147,16 @@ class ArgParser {
 
         // jimk asset-manager-164 add options on command line
         if (cl.hasOption(defineShort)) {
-            definedOptions =  Arrays.asList(cl.getOptionValues(defineShort));
-            definedOptions.forEach(x -> logger.debug("Defined option {}", x));
+            definedOptions = splitMultipleArguments(cl.getOptionValues(defineShort),
+                    colonArgValueSeparator);
+            definedOptions.forEach(x -> logger.debug("Defined option :{}:", x));
         }
 
+        // jimk asset-manager-165 add requested tests
         if (cl.hasOption(testShort)) {
-            List <String> requestedTests = Arrays.asList(cl.getOptionValues(testShort));
+            requestedTests = splitMultipleArguments(cl.getOptionValues(testShort),
+                    colonArgValueSeparator);
+            requestedTests.forEach(x -> logger.debug("Requested test :{}:", x));
         }
         if (cl.hasOption("l")) {
             Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
@@ -168,6 +172,13 @@ class ArgParser {
         }
     }
 
+    private List<String> splitMultipleArguments(final String[] definedOptions, final char colonArgValueSeparator) {
+        List<String> splittedOptions = new LinkedList<>();
+        Arrays.stream(definedOptions).forEach(o ->
+            Collections.addAll(splittedOptions, o.split(String.valueOf(colonArgValueSeparator))));
+        return splittedOptions;
+    }
+
 
     /**
      * Get list of options defined on the command line.
@@ -177,6 +188,13 @@ class ArgParser {
         return definedOptions;
     }
 
+    /**
+     * get requested tests
+     * @return
+     */
+    public List<String> getRequestedTests() {
+        return requestedTests;
+    }
     /**
      * Test for input as argument or as a file
      *
