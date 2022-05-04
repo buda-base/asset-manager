@@ -3,7 +3,6 @@ package io.bdrc.audit.shell;
 import io.bdrc.audit.iaudit.*;
 import io.bdrc.audit.iaudit.message.TestMessage;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.core.config.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,16 +126,26 @@ public class shell {
 
             String tdClassName = shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
             sysLogger.debug("{} value of property :{}:", TEST_DICT_PROPERTY_NAME, tdClassName);
-            Hashtable<String, AuditTestConfig> td = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
+            Hashtable<String, AuditTestConfig> testDictionary = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
 
-            assert td != null;
+            assert testDictionary != null;
+
+            // jimk asset-manager-165 - query test names
+            if (argParser.OnlyShowTestNames()) {
+                testDictionary.forEach((k, v) -> System.out.printf("%-30s\t%s\n", v.getKey(), v.getFullName()));
+                System.exit(SYS_OK);
+            }
+
+            // jimk asset-manager-165 Add test names
+            Hashtable<String, AuditTestConfig> requestedTests = FilterTestNamesByRequested(testDictionary, argParser.getRequestedTests());
+
 
             testLogController = BuildTestLog(argParser);
 
             if (argParser.has_DirList()) {
                 for (String aTestDir : ResolvePaths(argParser.getDirs())) {
                     sysLogger.debug("arg =  {} ", aTestDir);
-                    allResults.addAll(RunTestsOnDir(shellProperties, td, aTestDir));
+                    allResults.addAll(RunTestsOnDir(shellProperties, requestedTests, aTestDir));
                 }
             }
 
@@ -146,7 +155,7 @@ public class shell {
                 try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
                     while (null != (curLine = f.readLine())) {
                         sysLogger.debug("readLoop got line {} ", curLine);
-                        allResults.addAll(RunTestsOnDir(shellProperties, td, curLine));
+                        allResults.addAll(RunTestsOnDir(shellProperties, requestedTests, curLine));
                     }
                 }
             }
@@ -163,6 +172,44 @@ public class shell {
         System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
 
+    /**
+     * Removes all test names from test dictionary except those that are requested.
+     * logs a warning for tests which are requested but not present
+     *
+     * @param testDictionary Input: Complete list of tests in the test jar
+     * @param requestedTests list of desired tests
+     * @return reduced testDictionary
+     */
+    private static Hashtable<String, AuditTestConfig> FilterTestNamesByRequested(Hashtable<String, AuditTestConfig> testDictionary,
+    final List<String> requestedTests)
+    {
+
+        Hashtable<String, AuditTestConfig> results =new Hashtable<>(testDictionary.size());
+
+        if (requestedTests == null || requestedTests.isEmpty()) {
+            return testDictionary;
+        }
+
+        List<Map.Entry<String, AuditTestConfig>> requested =
+                testDictionary
+                        .entrySet()
+                        .stream()
+                        .filter(x -> requestedTests.contains(x.getKey()))
+                        .toList();
+
+
+        requested.forEach(r -> results.put(r.getKey(), r.getValue()));
+
+        requestedTests.forEach(r -> {
+            if (!results.containsKey(r)) {
+                sysLogger.warn("Requested test {} not found in test library", r);
+            }
+        });
+        return results;
+
+
+    }
+
     private static Properties getCommandLineProperties(final ArgParser argParser) {
         // Merge properties given on the command line:
         List<String> cliOptions = argParser.getDefinedOptions();
@@ -170,15 +217,12 @@ public class shell {
         if (cliOptions.size() > 0) {
             cliOptions.forEach(
                     optArg -> {
-
-                        // support -D opt1=value1:opt2=value2 -D opt3=value3 -D opt4=value4
-                        String[] optArgMultiples = optArg.split(":");
-                        Arrays.asList(optArgMultiples).forEach(a -> {
-                            String[] optArgKV = a.split("=");
-                            if (optArgKV.length == 2) {
-                                cliProperties.put(optArgKV[0], optArgKV[1]);
-                            }
-                        });
+                        String[] optArgKV = optArg.split("=");
+                        if (optArgKV.length == 2) {
+                            cliProperties.put(optArgKV[0], optArgKV[1]);
+                        } else {
+                            sysLogger.warn(" Invalid option format {}", optArg);
+                        }
                     });
         }
         return cliProperties;
