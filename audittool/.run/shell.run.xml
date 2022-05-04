@@ -9,7 +9,7 @@
     <option name="WORKING_DIRECTORY" value="$USER_HOME$/prod/am125" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="io.bdrc.audit.shell.*" />
+        <option name="PATTERN" value="io.bdrc.audit.shell.diagnostics.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

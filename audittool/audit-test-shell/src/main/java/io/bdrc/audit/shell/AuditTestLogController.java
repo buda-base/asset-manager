@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * Creates a new appender for a specific work
+ * Creates a new appender for a specific work result. Not involved with either the summary, detail, or shell loggers
  */
 class AuditTestLogController {
 

@@ -1,5 +1,6 @@
 module io.bdrc.audit.shell {
     exports io.bdrc.audit.shell;
+    exports io.bdrc.audit.shell.diagnostics;
     requires io.bdrc.audit.IAudit;
     requires io.bdrc.audit.tests;
     requires org.apache.commons.io;

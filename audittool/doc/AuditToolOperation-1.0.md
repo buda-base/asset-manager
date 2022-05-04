@@ -182,7 +182,7 @@ and separating the path allows for easier data access.
 
 ### Tracing and diagnostic logs
 Audit tool creates a file, in the log directory's root, that blends the console output and diagnostic output.
-(See the `-l` flag) See [Tracing and Diagnostic Options](#tracing-and-diagnostic-options) for allowed values. The diagnostics
+(See the `-l` flag) See [Tracing and Diagnostic Options](#tracing-and-diagnostic-options) for allowed values. The diagnosticEntity
 are intended primarily to show the runtime environment more than the internal processing.
 
 #### Tracing and Diagnostic Options
