@@ -70,6 +70,8 @@ public class shell {
         testResultLogger = LoggerFactory.getLogger("testResultLogger");
 
         try {
+
+            // TODO: Rework sysLogger to respect --log_dir. Means that arg parsing logging goes only to console
             sysLogger.trace("Entering main");
             sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
@@ -116,13 +118,12 @@ public class shell {
             shellProperties = shellProperties.MergeUserConfig()
                     .MergeProperties(cliProps);
 
+            /* Now that we have merged all the properties, act on the ones we need */
             // If we're only printing up info or syntax, just bail. We need to wait until
             // all properties have been resolved to be able to get the version
             if (argParser.OnlyShowInfo(shellProperties.getPropertyString(AT_VERSION))) {
                 System.exit(SYS_OK);
             }
-
-
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
@@ -142,7 +143,8 @@ public class shell {
             // jimk asset-manager-165 Add test names
             Hashtable<String, AuditTestConfig> requestedTests = FilterTestNamesByRequested(testDictionary, argParser.getRequestedTests());
 
-            testLogController = BuildTestLog(argParser);
+            testLogController = new AuditTestLogController(argParser.getLogDirectory(), testResultLogger.getName(),
+                    TEST_LOGGER_HEADER );
 
             if (argParser.has_DirList()) {
                 for (String aTestDir : ResolvePaths(argParser.getDirs())) {
@@ -230,18 +232,7 @@ public class shell {
         return cliProperties;
     }
 
-    private static AuditTestLogController BuildTestLog(final ArgParser ap)
-    {
-        AuditTestLogController tlc;
-        String logDir = ap.getLogDirectory();
-        tlc = new AuditTestLogController();
-        tlc.setCsvHeader(shell.TEST_LOGGER_HEADER);
-        tlc.setTestResultLogger(shell.testResultLogger.getName());
 
-        tlc.setAppenderDirectory(logDir);
-
-        return tlc;
-    }
 
     /**
      * Set up, run all tests against a folder.
