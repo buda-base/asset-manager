@@ -2,7 +2,8 @@ package io.bdrc.audit.shell.diagnostics;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+
 
 /**
  * Quasi-entity to store values of diagnostic controls
@@ -12,7 +13,7 @@ public class DiagnosticEntity {
     /**
      * @return internal properties
      */
-    public Properties getProperties() {
+    public Map<String, String[]> getProperties() {
         return _properties;
     }
 
@@ -20,46 +21,26 @@ public class DiagnosticEntity {
      *
      * @param properties the diagnostic properties and values
      */
-    public void setProperties(final Properties properties) {
+    public void setProperties(final Map<String, String[]> properties) {
         _properties = properties;
     }
 
-    private Properties _properties;
-
-    /**
-     *
-     * @return the char value that separates any multiply valued properties
-     */
-    public String getMultiValueSeparator() {
-        return _multiValueSeparator;
-    }
-
-    /**
-     * Set the separator of property values which have multiple values
-     * @param multiValueSeparator character value separator
-     */
-    public void setMultiValueSeparator(final String multiValueSeparator) {
-        _multiValueSeparator = multiValueSeparator;
-    }
-
-    private String _multiValueSeparator ;
-
+    private Map<String, String[]> _properties;
     /**
      * Call with a reduced set of system properties
      * @param properties The properties related to diagnostics
      */
-    public DiagnosticEntity(Properties properties, String multiValueSeparator) {
-        setMultiValueSeparator(multiValueSeparator);
+    public DiagnosticEntity(Map<String, String[]> properties) {
         setProperties(properties);
     }
 
     /**
-     * Returns all the values of a key. If only one, is returned in the
-     * @param key
-     * @return list of the values in key. Caller determines length
+     * Returns a list of all the values of a key.
+     * @param key which property to search
+     * @return list of the values in key.
      */
     public List<String> getValues(String key) {
-        return Arrays.asList(getProperties().getProperty(key).split(getMultiValueSeparator()));
+        return Arrays.asList(getProperties().get(key));
     }
 
 }

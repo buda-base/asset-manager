@@ -91,7 +91,7 @@ public class shell {
             // First, /shell.properties
             // Second, the user properties (defined in the /shell.properties property UserConfigPath)
             // UNLESS the userConfigPath was given in the command line
-            // Third, the command line properties (defined by the -Dprop=value.
+            // Third, the command line properties (defined by the -Dprop=value)
             // If the command line properties contains the UserConfigPath, such as
             // -D UserConfigPath=some_other/path the properties in that path
 
@@ -112,13 +112,16 @@ public class shell {
                 cliProps.remove(PropertyManager.UserConfigPathKey);
             }
 
-            // finally, merge the (possibly overriden)
+            // finally, merge the (possibly overridden)
             shellProperties = shellProperties.MergeUserConfig()
                     .MergeProperties(cliProps);
 
+            // If we're only printing up info or syntax, just bail. We need to wait until
+            // all properties have been resolved to be able to get the version
             if (argParser.OnlyShowInfo(shellProperties.getPropertyString(AT_VERSION))) {
                 System.exit(SYS_OK);
             }
+
 
 
             // Replaced with class
@@ -131,14 +134,13 @@ public class shell {
             assert testDictionary != null;
 
             // jimk asset-manager-165 - query test names
-            if (argParser.OnlyShowTestNames()) {
+            if (argParser.HasOnlyShowTestNames()) {
                 testDictionary.forEach((k, v) -> System.out.printf("%-30s\t%s\n", v.getKey(), v.getFullName()));
                 System.exit(SYS_OK);
             }
 
             // jimk asset-manager-165 Add test names
             Hashtable<String, AuditTestConfig> requestedTests = FilterTestNamesByRequested(testDictionary, argParser.getRequestedTests());
-
 
             testLogController = BuildTestLog(argParser);
 
@@ -149,7 +151,7 @@ public class shell {
                 }
             }
 
-            // dont force mutually exclusive. Why not do both?
+            // don't force mutually exclusive. Why not do both?
             if (argParser.getReadStdIn()) {
                 String curLine;
                 try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
@@ -266,19 +268,19 @@ public class shell {
             if (testConfig == null) {
 
                 // sysLogger goes to a csv and a log file, so add the extra parameters.
-                // log4j wont care.
-                String errstr = String.format("No test config found for %s. Contact library provider.", testName);
-                sysLogger.error(errstr, errstr, "Failed");
-                results.add(new TestResult(Outcome.FAIL, errstr));
+                // log4j won't care.
+                String errorStr = String.format("No test config found for %s. Contact library provider.", testName);
+                sysLogger.error(errorStr, errorStr, "Failed");
+                results.add(new TestResult(Outcome.FAIL, errorStr));
                 continue;
             }
 
             // Is this test an  IAuditTest?
             Class<?> testClass = testConfig.getTestClass();
             if (!IAuditTest.class.isAssignableFrom(testClass)) {
-                String errstr = String.format("Test found for %s does not  implement IAudit", testName);
-                sysLogger.error(errstr, errstr, "Failed");
-                results.add(new TestResult(Outcome.FAIL, errstr));
+                String errorStr = String.format("Test found for %s does not  implement IAudit", testName);
+                sysLogger.error(errorStr, errorStr, "Failed");
+                results.add(new TestResult(Outcome.FAIL, errorStr));
                 continue;
             }
 
@@ -497,7 +499,7 @@ public class shell {
 
         }
 
-        sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
+        sysLogger.debug("Resource home is {} ", resHome, " is resource home path");
         return Paths.get(resHome, shell.defaultPropertyFileName);
     }
 

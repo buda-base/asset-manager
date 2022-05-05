@@ -13,5 +13,6 @@ module io.bdrc.audit.shell {
     // see https://stackoverflow.com/questions/53714010/log4j2-slf4j-and-java-11
     requires java.scripting;
     requires org.apache.logging.log4j;
+    requires com.google.common;
 
 }
