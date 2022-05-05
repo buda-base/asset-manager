@@ -199,7 +199,7 @@ class ArgParser {
         }
 
         // jimk asset-manager-169
-        if (HasOnlyShowDiag()) {
+        if (HasOnlyShowDiagSyntax()) {
             OnlyShowDiagSyntax();
         }
     }
@@ -327,14 +327,14 @@ class ArgParser {
      */
     public Boolean HasOnlyShowInfo()
     {
-        return cl.hasOption(helpShort) || cl.hasOption(versionShort) || HasOnlyShowDiag();
+        return cl.hasOption(helpShort) || cl.hasOption(versionShort) || HasOnlyShowDiagSyntax();
     }
 
     public Boolean HasOnlyShowTestNames() {
         return cl.hasOption(queryTestsShort);
     }
 
-    public Boolean HasOnlyShowDiag() {
+    public Boolean HasOnlyShowDiagSyntax() {
         return cl.hasOption(diagHelpShort);
     }
 
