@@ -97,14 +97,13 @@ public class PropertyManager {
      */
     public PropertyManager MergeConfigGivenInProperty(Path configPath) {
 
-        InputStream ins = null;
         logger.trace("Loading from Input resource {} ", configPath);
-        try {
-            ins = InputFileResource(configPath.toString());
+        try(InputStream ins = InputFileResource(configPath.toString())) {
+            return LoadProperties(ins);
         } catch (IOException e) {
             logger.warn(String.format("Couldn't open %s ", configPath), e);
         }
-        return LoadProperties(ins);
+        return this;
     }
 
     /**
@@ -183,8 +182,9 @@ public class PropertyManager {
      * @return modified instance
      */
     public PropertyManager MergeResourceFile(String resourcePath) throws IOException {
-        InputStream inputStream = InputFileResource(resourcePath);
-        LoadProperties(inputStream);
+        try (InputStream inputStream = InputFileResource(resourcePath)) {
+            LoadProperties(inputStream);
+        }
         return this;
     }
 

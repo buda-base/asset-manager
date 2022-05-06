@@ -3,6 +3,7 @@ package io.bdrc.audit.shell.diagnostics;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -17,21 +18,16 @@ public class DiagnosticEntity {
         return _properties;
     }
 
-    /**
-     *
-     * @param properties the diagnostic properties and values
-     */
-    public void setProperties(final Map<String, String[]> properties) {
-        _properties = properties;
-    }
+    private final Map<String, String[]> _properties ;
 
-    private Map<String, String[]> _properties;
     /**
      * Call with a reduced set of system properties
      * @param properties The properties related to diagnostics
      */
-    public DiagnosticEntity(Map<String, String[]> properties) {
-        setProperties(properties);
+    public DiagnosticEntity(Properties properties) {
+
+        // TODO: map the properties to the Map<String, String[]>
+
     }
 
     /**

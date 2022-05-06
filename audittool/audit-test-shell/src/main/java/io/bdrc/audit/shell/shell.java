@@ -2,6 +2,7 @@ package io.bdrc.audit.shell;
 
 import io.bdrc.audit.iaudit.*;
 import io.bdrc.audit.iaudit.message.TestMessage;
+import io.bdrc.audit.shell.diagnostics.DiagnosticService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,6 @@ public class shell {
             sysLogger.trace("Resolving properties");
             Path resourceFile = resolveResourceFile();
 
-            Properties cliProps = getCommandLineProperties(argParser);
 
             // TODO: try /shell.properties class
 
@@ -97,14 +97,22 @@ public class shell {
             // If the command line properties contains the UserConfigPath, such as
             // -D UserConfigPath=some_other/path the properties in that path
 
+            String resFilePathString = resourceFile.toAbsolutePath().toString();
+
             PropertyManager shellProperties =
                     PropertyManager.PropertyManagerBuilder()
                             .MergeProperties(System.getProperties())
-                            .MergeResourceFile(resourceFile.toAbsolutePath().toString());
+                            .MergeResourceFile(resFilePathString);
+
+            // jmk asset-manager-169 - record where base properties came from.Diagnostics will use this
+            shellProperties.PutProperty(DiagnosticService.BASE_RESOURCE_FILE_KEY,resFilePathString );
 
             // Some special processing. If the command line overrides the default user properties file, set that
             // property now (the default resource file sets it above
             // Then, override it with other command line properties
+
+            Properties cliProps = getCommandLineProperties(argParser);
+
             if (cliProps.containsKey(PropertyManager.UserConfigPathKey)) {
                 shellProperties.PutProperty(PropertyManager.UserConfigPathKey,
 
@@ -124,6 +132,10 @@ public class shell {
             if (argParser.OnlyShowInfo(shellProperties.getPropertyString(AT_VERSION))) {
                 System.exit(SYS_OK);
             }
+
+            DiagnosticService ds = new DiagnosticService(sysLogger);
+            ProcessDiagnosticDirectives(args, shellProperties) ;
+
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
@@ -175,6 +187,7 @@ public class shell {
         sysLogger.trace("Exiting any failed {}", anyFailed);
         System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
+
 
     /**
      * Removes all test names from test dictionary except those that are requested.

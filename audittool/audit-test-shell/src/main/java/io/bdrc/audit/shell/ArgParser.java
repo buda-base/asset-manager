@@ -198,11 +198,16 @@ class ArgParser {
             }
         }
 
-        // jimk asset-manager-169
+        // region jimk asset-manager-169
         if (HasOnlyShowDiagSyntax()) {
             OnlyShowDiagSyntax();
         }
+
+        // endregion
+
+
     }
+
 
     /**
      * for arguments which allow multiple values, expand the command line list to include them
