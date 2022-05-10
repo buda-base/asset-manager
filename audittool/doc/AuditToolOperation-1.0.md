@@ -229,20 +229,40 @@ and separating the path allows for easier data access.
 
 ### Tracing and diagnostic logs
 Audit tool creates a file, in the log directory's root, that blends the console output and diagnostic output.
-(See the `-l` flag) See [Tracing and Diagnostic Options](#tracing-and-diagnostic-options) for allowed values. The diagnosticEntity
-are intended primarily to show the runtime environment more than the internal processing.
+(See the `-l` flag) See [Tracing and Diagnostic Options](#tracing-and-diagnostic-options) for allowed values.
 
 #### Tracing and Diagnostic Options
 Use the -D (-Define) command flag to define diagnostic options at run time. Arguments specified by the `-D` flag take the form:
 `-D key=value` You can use either the form `-D key=value -D key1=value1 ...` 
 or `-D key=value:key2=value2....`or both.    The **keys** which AuditTool recognizes are:
 
-| Key                | allowed values         | Description                                                                                                                                                                                                                                         |
-|--------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Diagnostics        | params,properties, jvm | params:Prints the command line.<br/>properties:Prints all the properties that Audit Tool uses, along with their definition location (`shell.properties`, `user.properties` or command line)<br/> JVM: Prints all system properties and JVM options. |
-| DiagnosticFileName | valid file path        | Location of the diagnostic console. If the directory is not an absolute path, it is relative to the value of the log default directory (the `-log_home` value or the default, `~/audit/-test-logs`)                                                 |
-| AppendDiagnostic   | true,false             | If the file given in the `AppendDiagnostic` exists, append to it, otherwise overwrite it.                                                                                                                                                           |
+| Key                | allowed values    | Description                                                                                                                                                                                                                                                                     |
+|--------------------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Diagnostics        | params,properties | params:Prints the command line.<br/>properties:Prints all the properties that Audit Tool uses, along with their definition location (`shell.properties`, `user.properties` or command line). this includes all the system-wide JVM (Java Virtual Machine) environment variables |
+| DiagnosticFileName | valid file path   | Location of the diagnostic console. If the directory is not an absolute path, it is relative to the value of the log default directory (the `-log_home` value or the default, `~/audit/-test-logs`)                                                                             |
+| AppendDiagnostic   | true,false        | If the file given in the `AppendDiagnostic` exists, append to it, otherwise overwrite it.                                                                                                                                                                                       |
 
+When the diagnostic log prints properties, it prints them in the order they were loaded, and shows the source which loaded them.
+
+```shell
+❯ grep Source himmelfarb.log
+Source:constructor based properties      properties:#
+Source:system properties         properties:#system properties
+Source:base resources    properties:# audit-test-shell properties
+Source:/Users/jimk/.config/bdrc/auditTool/user.properties        properties:# audit-test-shell properties
+Source:command line properties   properties:#command line properties
+
+```
+
+You would read up from the bottom to find the last override of a property:
+Ex, to find the effective `MaximumImageFileSize` from the log:
+
+```shell
+❯ grep MaximumImage himmelfarb.log
+MaximumImageFileSize=400K
+MaximumImageFileSize=300K
+```
+The last one in the log is 300K, which is the effective one. 
 ## Principles of operation
 Audit tool's initial release runs every test in the test library tests against a complete work. There is no provision yet for running a test against a single image group or  subdirectory of a work.
 

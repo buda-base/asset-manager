@@ -1,5 +1,6 @@
 package io.bdrc.audit.iaudit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Hashtable;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Property Manager Reads properties from a file, and allows merging
@@ -47,29 +46,16 @@ public class PropertyManager {
 
         if (resourceStream == null) return _instance;
         try {
+
+            // We need this input stream twice, so vopy into buffer:
+            // byte[] resourceBuffer = IOUtils.toByteArray(resourceStream);
+//            String resourceBuffer = Arrays.toString(IOUtils.toByteArray(resourceStream));
             _Properties.load(resourceStream);
-            LogResourceAdd(resourceStream, comment);
+            logPropertyLoading(resourceStream, comment);
         } catch (IOException e) {
             logger.error("Could not load resource stream {}.", e.getMessage());
         }
         return _instance;
-    }
-
-    /**
-     * Adds a set of properties in an input stream into a log
-     * @param resourceStream source properties
-     * @param comment key for log
-     */
-    private void LogResourceAdd(final InputStream resourceStream, final String comment)  {
-
-        try {
-            String resources = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
-            _loadedProperties.put(comment, resources);
-        } catch (IOException e) {
-            logger.error("Couldn''t dump resource {}\n{}\n{}",
-                    comment, e.getMessage(),
-                    e.getStackTrace());
-        }
     }
 
     private InputStream InputFileResource(String filePath) throws IOException {
@@ -79,9 +65,11 @@ public class PropertyManager {
             // absolute, but on Linux it is.
             String cr = new File(filePath).getCanonicalPath();
             File external = new File(cr);
-            return new FileInputStream(external);
+            return new ByteArrayInputStream(FileUtils.readFileToByteArray(external));
+            // return new FileInputStream(external);
         } catch (IOException e) {
-            logger.warn("Couldn't open Input File Resource {} error {}", filePath, e.getMessage());
+            logger.error("Couldn't open Input File Resource {} error {} stack:{}", filePath, e.getMessage(),
+                    e.getStackTrace());
         }
         return null;
     }
@@ -183,7 +171,12 @@ public class PropertyManager {
             {
                 LoadProperties(sr, comment);
             }
-            DumpProperties(String.format("----- External %d  Properties Merge", externalProperties.size()));
+// jimk asset-manager-169 done only on diagnostics
+
+// DumpProperties(String.format("----- External %d
+// Properties Merge", externalProperties
+// .size
+// ()));
         }
         //region Old style
 /*        StringWriter sw = new StringWriter();
@@ -240,17 +233,12 @@ public class PropertyManager {
         return this;
     }
 
-    private void DumpProperties(String headerFooter) {
-
-        String header = StringUtils.isEmpty(headerFooter) ?  "--- BEGIN " : String.format("--- BEGIN %s",
-                headerFooter);
-        String footer = StringUtils.isEmpty(headerFooter) ?  "--- BEGIN " : String.format("--- END %s",
-                headerFooter);
-        logger.debug(header);
-        logger.debug("Existing properties with length {}", _Properties.size());
-        _Properties.forEach((k, v) -> logger.debug("key :{}: value :{}: ",k ,v ));
-        logger.debug(footer);
-
+    /**
+     * DUmp the properties to the specified logger (the local logger is used for something else
+     * @param logger diagnostic target
+     */
+    public void DumpProperties(Logger logger) {
+        _loadedProperties.forEach(s  -> logger.info("Source:{}\t properties:{}\n", s[0], s[1]));
     }
 
     /**
@@ -276,7 +264,7 @@ public class PropertyManager {
     /**
      * Adds loaded properties,with a tag, in order they were loaded:
      */
-    private final Hashtable<String, String> _loadedProperties = new Hashtable<>();
+    private final List<String[]> _loadedProperties = new ArrayList<>();
 
 
     final private Logger logger;
@@ -297,12 +285,12 @@ public class PropertyManager {
     /**
      * Load a set of properties into a log of property sets
      * @param properties Properties to log
-     * @param key identifier
+     * @param comment identifier
      */
-    private void logPropertyLoading(final Properties properties, final String key)  {
+    private void logPropertyLoading(final Properties properties, final String comment)  {
         try (StringWriter sw = new StringWriter()) {
-            properties.store(sw, key);
-            logPropertyLoading(sw,key);
+            properties.store(sw,"");
+            logPropertyLoading(sw.toString(),comment);
         }
         catch (IOException ioe) {
             logger.error("Could not store properties - io error {}",ioe.getMessage());
@@ -310,13 +298,36 @@ public class PropertyManager {
     }
 
     /**
-     * Loads a set of properties in a string writer (from external properties, say)
-     * @param storedProps text of properties
-     * @param key comment / identifier
+     * Adds a set of properties in an input stream into a log
+     * @param resourceStream source properties
+     * @param comment key for log
      */
-    private void logPropertyLoading(StringWriter storedProps, final String key) {
-        _loadedProperties.put(key, storedProps.toString());
+    private void logPropertyLoading(final InputStream resourceStream, final String comment)  {
+
+        try {
+            if (resourceStream.markSupported()) {
+                resourceStream.reset();
+            }
+            String resources = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+            _loadedProperties.add(new String[]{comment, resources});
+        } catch (IOException e) {
+            logger.error("Couldn''t dump resource {}\n{}\n{}",
+                    comment, e.getMessage(),
+                    e.getStackTrace());
+        }
     }
+
+
+    /**
+     * Loads a set of properties in a string
+     * @param storedProps text of properties
+     * @param comment comment / identifier
+     */
+
+    private void logPropertyLoading(String storedProps, final String comment) {
+        _loadedProperties.add(new String[]{comment, storedProps}); //.replace('\n','|')
+    }
+
 
     /**
      * Builder pattern

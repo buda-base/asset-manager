@@ -1,9 +1,12 @@
 package io.bdrc.audit.iaudit;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.junit.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -71,10 +74,9 @@ public class PropertyManagerTest {
 
         RestoreEnvironment();
         // Set up a string for properties
-
-        // TODO:  dont use deprecated
         StringReader sr = new StringReader("HardWired.prop1 = value 1\nHardwired.prop2 = value 2");
-        inStream = IOUtils.toInputStream(IOUtils.toString(sr));
+        InputStream inStream = new ReaderInputStream(sr, Charset.defaultCharset());
+
 
         Path loadedUserConfigPath =
                 PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass()).getPropertyPath(UserConfigPathKey);

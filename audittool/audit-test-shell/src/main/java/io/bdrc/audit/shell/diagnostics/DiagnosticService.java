@@ -2,9 +2,9 @@ package io.bdrc.audit.shell.diagnostics;
 
 import com.google.common.collect.ImmutableMap;
 import io.bdrc.audit.iaudit.PropertyManager;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.slf4j.Logger;
 
@@ -22,8 +22,7 @@ public class DiagnosticService {
     private final static String DIAG_DIRECTIVE = "Diagnostics";
     private final static String DIAG_KWD_PARAM = "params";
     private final static String DIAG_KWD_PROPS = "properties";
-    private final static String DIAG_KWD_ENV = "env";
-    private final static String[] DIAG_KEYWORDS = {DIAG_KWD_PARAM, DIAG_KWD_PROPS, DIAG_KWD_ENV};
+    private final static String[] DIAG_KEYWORDS = {DIAG_KWD_PARAM, DIAG_KWD_PROPS};
     private final static String DIAG_FILE_NAME_DIRECTIVE = "DiagnosticFileName";
     private final static String DIAG_FILE_APPEND_DIRECTIVE = "AppendDiagnostic";
 
@@ -37,8 +36,8 @@ public class DiagnosticService {
 
     /**
      * The diagnostic syntax is - the keys of this map are the relevant keywords, the arrays
-     * are their possible values. The arguments arent parsed. Only recognized values
-     * are used - othe values are ignored.
+     * are their possible values. The arguments aren't parsed. Only recognized values
+     * are used  - other values are ignored.
      * Callers can, but need not, use case-insensitive parsing
      */
     private final static Map<String, String[]> _diagSyntax = ImmutableMap.<String, String[]>builder()
@@ -46,10 +45,6 @@ public class DiagnosticService {
             .put(DIAG_FILE_NAME_DIRECTIVE, new String[]{"<any file path>"})
             .put(DIAG_FILE_APPEND_DIRECTIVE, new String[]{"true,false"})
             .build();
-
-    public Logger getLogger() {
-        return _logger;
-    }
 
     public void setLogger(final Logger logger) {
         _logger = logger;
@@ -98,26 +93,21 @@ public class DiagnosticService {
         try {
             Boolean showParams = diagsHasKeyword(_diag, DIAG_KWD_PARAM);
             Boolean showProperties = diagsHasKeyword(_diag, DIAG_KWD_PROPS);
-            Boolean showEnv = diagsHasKeyword(_diag, DIAG_KWD_ENV);
-            String headerTemplate = "---------\t{}\t-------------";
+            String headerTemplate = "---------   {}     -------------";
+            String footerTemplate = "------------------ END -----------------------------";
 
             if (showParams) {
                 StringBuilder sb = new StringBuilder();
                 _logger.info(headerTemplate, "command line");
                 Arrays.stream(args).forEach(s -> sb.append(String.format("%s ", s)));
                 _logger.info(sb.toString());
+                _logger.info(footerTemplate);
             }
             if (showProperties) {
                 _logger.info(headerTemplate, "audit-tool properties");
+                _propertyRepo.DumpProperties(_logger);
+                _logger.info(footerTemplate);
 
-                // Parse out the properties:
-                // base properties
-                // user properties
-
-            }
-            if (showEnv) {
-                _logger.info(headerTemplate, "audit tool environment");
-                System.getProperties().forEach((k, v) -> _logger.info("{}\t{}", k, v));
             }
         } finally {
             stopLogAppender(diagAppender);
@@ -126,7 +116,7 @@ public class DiagnosticService {
     }
 
     /**
-     * returns the case insensitive match value of a diagnostice keyword parameter
+     * returns the case-insensitive match value of a diagnostics keyword parameter
      * in the diagnostic directive
      *
      * @param diag         the complete diagnostic directive
@@ -159,12 +149,10 @@ public class DiagnosticService {
         String diagFileName = diagFileNames.get(0);
 
         // TODO: Get this to append to a specific logger, not all loggers
-        //https://stackoverflow.com/questions/15441477/how-to-add-log4j2-appenders-at-runtime-programmatically
-        org.apache.logging.log4j.core.Logger coreLogger
-                = (org.apache.logging.log4j.core.Logger) _logger;
 
+        //https://stackoverflow.com/questions/15441477/how-to-add-log4j2-appenders-at-runtime-programmatically
         Appender fileAppender = FileAppender.newBuilder()
-                .setName("File")
+                .setName("DiagFile")
                 .withFileName(diagFileName)
                 .withAppend(appendCurrent)
                 .setLayout(PatternLayout.newBuilder()
@@ -173,19 +161,19 @@ public class DiagnosticService {
                 .build();
 
         fileAppender.start();
-        coreLogger.addAppender(fileAppender);
+        getCoreLogger(_logger).addAppender(fileAppender);
         return fileAppender;
+    }
+
+    private org.apache.logging.log4j.core.Logger getCoreLogger(org.slf4j.Logger logger) {
+        return (org.apache.logging.log4j.core.Logger) LogManager.getLogger(logger.getName());
     }
 
     private void stopLogAppender(Appender appender) {
 
         if (appender == null) return;
-
-        //https://stackoverflow.com/questions/15441477/how-to-add-log4j2-appenders-at-runtime-programmatically
-        org.apache.logging.log4j.core.Logger coreLogger
-                = (org.apache.logging.log4j.core.Logger) _logger;
         appender.stop();
-        coreLogger.removeAppender(appender);
+        getCoreLogger(_logger).removeAppender(appender);
 
     }
 }
