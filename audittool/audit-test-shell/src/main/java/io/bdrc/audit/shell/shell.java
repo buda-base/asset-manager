@@ -61,6 +61,7 @@ public class shell {
 
     private static AuditTestLogController testLogController;
     private final static String defaultPropertyFileName = "shell.properties";
+    private final static String  propertyValueMultipleSeparator = ",";
 
     public static void main(String[] args) {
         List<Integer> allResults = new ArrayList<>();
@@ -101,8 +102,8 @@ public class shell {
 
             PropertyManager shellProperties =
                     PropertyManager.PropertyManagerBuilder()
-                            .MergeProperties(System.getProperties())
-                            .MergeResourceFile(resFilePathString);
+                            .MergeProperties(System.getProperties(), "system properties")
+                            .MergeResourceFile(resFilePathString,"base resources");
 
             // jmk asset-manager-169 - record where base properties came from.Diagnostics will use this
             shellProperties.PutProperty(DiagnosticService.BASE_RESOURCE_FILE_KEY,resFilePathString );
@@ -124,7 +125,7 @@ public class shell {
 
             // finally, merge the (possibly overridden)
             shellProperties = shellProperties.MergeUserConfig()
-                    .MergeProperties(cliProps);
+                    .MergeProperties(cliProps, "command line properties");
 
             /* Now that we have merged all the properties, act on the ones we need */
             // If we're only printing up info or syntax, just bail. We need to wait until
@@ -133,8 +134,8 @@ public class shell {
                 System.exit(SYS_OK);
             }
 
-            DiagnosticService ds = new DiagnosticService(sysLogger);
-            ProcessDiagnosticDirectives(args, shellProperties) ;
+            DiagnosticService ds = new DiagnosticService(sysLogger,shellProperties,propertyValueMultipleSeparator);
+            ds.ProcessDiagnosticDirectives(args) ;
 
 
             // Replaced with class

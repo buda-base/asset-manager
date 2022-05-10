@@ -77,7 +77,7 @@ public class TestFileSequence extends AuditTestTestBase {
             {
                 put("FileSequence.SequenceLength", "42");
             }
-        });
+        }, "random properties");
 
 
         File fileRoot = _IGPfileSequenceBuilder.BuildMissingFiles(24, 3, 1);

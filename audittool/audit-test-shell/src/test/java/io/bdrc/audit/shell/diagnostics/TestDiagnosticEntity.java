@@ -3,22 +3,27 @@ package io.bdrc.audit.shell.diagnostics;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.*;
 
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DiagnosticEntityTest {
 
-    Map<String, String[]> _standardProperties ;
+    Properties _standardProperties ;
 
     @BeforeEach
     void setUp() {
-        _standardProperties = ImmutableMap.<String, String[]>builder()
-                .put("prop1", new String[]{"value1"})
-                .put("prop2", new String[]{"value21","value22","value23"})
-                .put("prop3", new String[]{"value31","value32","value33"})
-                .build();
+        _standardProperties = new Properties() {{
+                put("prop1","value1");
+                put("prop2","value21,value22,value23");
+                put("prop3","value31,value32,value33");
+                put("prop4","");
+
+        }};
     }
 
     @AfterEach
@@ -28,18 +33,12 @@ class DiagnosticEntityTest {
     @Test
     @DisplayName("Get All Map<String, String[]>")
     void testOutputIsInput() {
-        DiagnosticEntity diagnosticEntity = new DiagnosticEntity(_standardProperties);
-        Map<String, String[]> properties = diagnosticEntity.getProperties();
-        assertEquals(properties, _standardProperties);
-    }
+        DiagnosticEntity diagnosticEntity = new DiagnosticEntity(_standardProperties,",");
 
-    @Test
-    @DisplayName("Replaced properties match")
-    void ReplacedPropertiesMatch() {
-        DiagnosticEntity diagnosticEntity = new DiagnosticEntity(ImmutableMap.<String, String[]> builder()
-                .put("heapify", new String[]{"hammify"}).build());
-        diagnosticEntity.setProperties(_standardProperties);
-        assertEquals(diagnosticEntity.getProperties(), _standardProperties, "properties mismatch");
+        _standardProperties.forEach( (k,v) -> {
+            assertTrue(diagnosticEntity.containsKey(k));
+            assertEquals(Arrays.asList(v.toString().split(",")), diagnosticEntity.get(k));
+        });
     }
 
     @Test

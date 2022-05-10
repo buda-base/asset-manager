@@ -5,9 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Hashtable;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -40,16 +43,33 @@ public class PropertyManager {
      * @param resourceStream any kind of input stream - string, file, etc
      * @return self, with state change
      */
-    public PropertyManager LoadProperties(InputStream resourceStream) {
+    public PropertyManager LoadProperties(InputStream resourceStream, String comment) {
 
         if (resourceStream == null) return _instance;
         try {
             _Properties.load(resourceStream);
-            DumpProperties("Loading from input stream");
+            LogResourceAdd(resourceStream, comment);
         } catch (IOException e) {
             logger.error("Could not load resource stream {}.", e.getMessage());
         }
         return _instance;
+    }
+
+    /**
+     * Adds a set of properties in an input stream into a log
+     * @param resourceStream source properties
+     * @param comment key for log
+     */
+    private void LogResourceAdd(final InputStream resourceStream, final String comment)  {
+
+        try {
+            String resources = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+            _loadedProperties.put(comment, resources);
+        } catch (IOException e) {
+            logger.error("Couldn''t dump resource {}\n{}\n{}",
+                    comment, e.getMessage(),
+                    e.getStackTrace());
+        }
     }
 
     private InputStream InputFileResource(String filePath) throws IOException {
@@ -99,7 +119,7 @@ public class PropertyManager {
 
         logger.trace("Loading from Input resource {} ", configPath);
         try(InputStream ins = InputFileResource(configPath.toString())) {
-            return LoadProperties(ins);
+            return LoadProperties(ins, configPath.toString());
         } catch (IOException e) {
             logger.warn(String.format("Couldn't open %s ", configPath), e);
         }
@@ -146,10 +166,27 @@ public class PropertyManager {
      * Load an arbitrary set of properties. Most often used to load
      * the java system properties. See shell.java
      *
+     * @param externalProperties property set to merge
+     * @param comment Key for logging parameters
      * @return same object, with state changed
      */
-    public PropertyManager MergeProperties(Properties externalProperties) {
-        StringWriter sw = new StringWriter();
+    public PropertyManager MergeProperties(Properties externalProperties, String comment) throws IOException {
+
+        try (StringWriter sw = new StringWriter()
+        ) {
+
+            // Dump the external properties into a string writer
+            externalProperties.store(sw, comment);
+
+            // read from the string into an input stream
+            try (InputStream sr = new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8)))
+            {
+                LoadProperties(sr, comment);
+            }
+            DumpProperties(String.format("----- External %d  Properties Merge", externalProperties.size()));
+        }
+        //region Old style
+/*        StringWriter sw = new StringWriter();
         try {
             externalProperties.store(sw, "system properties");
             StringReader sr = new StringReader(sw.toString());
@@ -159,6 +196,8 @@ public class PropertyManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+ */
+        //endregion
 
         return this;
     }
@@ -181,9 +220,9 @@ public class PropertyManager {
      * @param resourcePath Path on file stream
      * @return modified instance
      */
-    public PropertyManager MergeResourceFile(String resourcePath) throws IOException {
+    public PropertyManager MergeResourceFile(String resourcePath, String comment) throws IOException {
         try (InputStream inputStream = InputFileResource(resourcePath)) {
-            LoadProperties(inputStream);
+            LoadProperties(inputStream, comment);
         }
         return this;
     }
@@ -197,18 +236,7 @@ public class PropertyManager {
      */
     public PropertyManager MergeClassResource(String resourcePath, Class<?> clazz) {
         InputStream ins = InputJarResource(resourcePath, clazz);
-        LoadProperties(ins);
-        return this;
-    }
-
-    /**
-     * If you have a raw stream
-     *
-     * @param ins input stream
-     * @return modified this
-     */
-    public PropertyManager MergeInputStream(InputStream ins) {
-        LoadProperties(ins);
+        LoadProperties(ins, clazz.getName());
         return this;
     }
 
@@ -244,6 +272,77 @@ public class PropertyManager {
      * No public access. Use accessors by type (getPropertyInt, getPropertyString)
      */
     private final Properties _Properties;
+
+    /**
+     * Adds loaded properties,with a tag, in order they were loaded:
+     */
+    private final Hashtable<String, String> _loadedProperties = new Hashtable<>();
+
+
+    final private Logger logger;
+
+    private static PropertyManager _instance;
+
+    // region builder methods
+
+    /**
+     * Constructor - loads default properties from this class
+     */
+    private PropertyManager()  {
+        logger = LoggerFactory.getLogger(getClass());
+        _Properties = BuildDefaultProperties();
+        logPropertyLoading(_Properties, "constructor based properties");
+    }
+
+    /**
+     * Load a set of properties into a log of property sets
+     * @param properties Properties to log
+     * @param key identifier
+     */
+    private void logPropertyLoading(final Properties properties, final String key)  {
+        try (StringWriter sw = new StringWriter()) {
+            properties.store(sw, key);
+            logPropertyLoading(sw,key);
+        }
+        catch (IOException ioe) {
+            logger.error("Could not store properties - io error {}",ioe.getMessage());
+        }
+    }
+
+    /**
+     * Loads a set of properties in a string writer (from external properties, say)
+     * @param storedProps text of properties
+     * @param key comment / identifier
+     */
+    private void logPropertyLoading(StringWriter storedProps, final String key) {
+        _loadedProperties.put(key, storedProps.toString());
+    }
+
+    /**
+     * Builder pattern
+     *
+     * @return a PropertyManager instance with internal defaults loaded
+     */
+    public static PropertyManager PropertyManagerBuilder()  {
+        _instance = new PropertyManager();
+        return _instance;
+    }
+
+    /**
+     * Use the existing property manager instance or die
+     *
+     * @return existing properties manager
+     * @throws IllegalStateException if invoked before constructed
+     */
+    public static PropertyManager getInstance() throws IllegalStateException {
+        if (_instance == null) {
+            throw new IllegalStateException("Property Manager invoked before construction. Contact BDRC support");
+        }
+        return _instance;
+    }
+    // endregion
+    // region Property access
+
 
     /**
      * Read integer resource from in core dictionary
@@ -291,43 +390,5 @@ public class PropertyManager {
         String val = getPropertyString(key);
         return toAbsolutePath("user.home", val);
     }
-
-    final private Logger logger;
-
-    private static PropertyManager _instance;
-
-    // region builder methods
-
-    /**
-     * Constructor - loads default properties from this class
-     */
-    private PropertyManager() {
-        logger = LoggerFactory.getLogger(getClass());
-        _Properties = BuildDefaultProperties();
-    }
-
-    /**
-     * Builder pattern
-     *
-     * @return a PropertyManager instance with internal defaults loaded
-     */
-    public static PropertyManager PropertyManagerBuilder() {
-        _instance = new PropertyManager();
-        return _instance;
-    }
-
-    /**
-     * Use the existing property manager instance or die
-     *
-     * @return existing properties manager
-     * @throws IllegalStateException if invoked before constructed
-     */
-    public static PropertyManager getInstance() throws IllegalStateException {
-        if (_instance == null) {
-            throw new IllegalStateException("Property Manager invoked before construction. Contact BDRC support");
-        }
-        return _instance;
-    }
-
     // endregion
 }
