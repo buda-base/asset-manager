@@ -1,4 +1,4 @@
-package io.bdrc.audit.shell;
+package io.bdrc.audit.log;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.io.FilenameUtils;
@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Creates a new appender for a specific work result. Not involved with either the summary, detail, or shell loggers
  */
-class AuditTestLogController {
+public class AuditTestLogController {
 
     private static final String EACHWORKAPPENDER = "PerWorkAppender";
     private static String DEFAULTLOGDIR;
@@ -141,7 +141,7 @@ class AuditTestLogController {
     // endregion
 
     //region public methods
-    void ChangeAppender(final String appenderFileName) {
+    public void ChangeAppender(final String appenderFileName) {
 
         Map<String, Appender> existingAppenders = _testResultLogger.getAppenders();
         Appender curAppender;
@@ -188,17 +188,17 @@ class AuditTestLogController {
     /**
      * Rename the log file to indicate test passed
      */
-    void RenameLogPass() throws IOException {
+    public void RenameLogPass() throws IOException {
         RenameFile("passPrefix");
 
     }
 
-    void RenameLogFail() throws IOException
+    public void RenameLogFail() throws IOException
     {
         RenameFile("failPrefix");
     }
 
-    void RenameLogWarn() throws IOException
+    public void RenameLogWarn() throws IOException
     {
         RenameFile("warnPrefix");
     }

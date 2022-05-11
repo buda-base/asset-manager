@@ -47,7 +47,7 @@ public class PropertyManager {
         if (resourceStream == null) return _instance;
         try {
 
-            // We need this input stream twice, so vopy into buffer:
+            // We need this input stream twice, so copy into buffer:
             // byte[] resourceBuffer = IOUtils.toByteArray(resourceStream);
 //            String resourceBuffer = Arrays.toString(IOUtils.toByteArray(resourceStream));
             _Properties.load(resourceStream);
