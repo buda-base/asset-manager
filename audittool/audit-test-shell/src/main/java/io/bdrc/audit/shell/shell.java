@@ -2,6 +2,7 @@ package io.bdrc.audit.shell;
 
 import io.bdrc.audit.iaudit.*;
 import io.bdrc.audit.iaudit.message.TestMessage;
+import io.bdrc.audit.shell.diagnostics.DiagnosticService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,7 @@ public class shell {
 
     private static AuditTestLogController testLogController;
     private final static String defaultPropertyFileName = "shell.properties";
+    private final static String  propertyValueMultipleSeparator = ",";
 
     public static void main(String[] args) {
         List<Integer> allResults = new ArrayList<>();
@@ -70,6 +72,8 @@ public class shell {
         testResultLogger = LoggerFactory.getLogger("testResultLogger");
 
         try {
+
+            // TODO: Rework sysLogger to respect --log_dir. Means that arg parsing logging goes only to console
             sysLogger.trace("Entering main");
             sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
@@ -83,7 +87,6 @@ public class shell {
             sysLogger.trace("Resolving properties");
             Path resourceFile = resolveResourceFile();
 
-            Properties cliProps = getCommandLineProperties(argParser);
 
             // TODO: try /shell.properties class
 
@@ -91,18 +94,26 @@ public class shell {
             // First, /shell.properties
             // Second, the user properties (defined in the /shell.properties property UserConfigPath)
             // UNLESS the userConfigPath was given in the command line
-            // Third, the command line properties (defined by the -Dprop=value.
+            // Third, the command line properties (defined by the -Dprop=value)
             // If the command line properties contains the UserConfigPath, such as
             // -D UserConfigPath=some_other/path the properties in that path
 
+            String resFilePathString = resourceFile.toAbsolutePath().toString();
+
             PropertyManager shellProperties =
                     PropertyManager.PropertyManagerBuilder()
-                            .MergeProperties(System.getProperties())
-                            .MergeResourceFile(resourceFile.toAbsolutePath().toString());
+                            .MergeProperties(System.getProperties(), "system properties")
+                            .MergeResourceFile(resFilePathString,"base resources");
+
+            // jmk asset-manager-169 - record where base properties came from.Diagnostics will use this
+            shellProperties.PutProperty(DiagnosticService.BASE_RESOURCE_FILE_KEY,resFilePathString );
 
             // Some special processing. If the command line overrides the default user properties file, set that
             // property now (the default resource file sets it above
             // Then, override it with other command line properties
+
+            Properties cliProps = getCommandLineProperties(argParser);
+
             if (cliProps.containsKey(PropertyManager.UserConfigPathKey)) {
                 shellProperties.PutProperty(PropertyManager.UserConfigPathKey,
 
@@ -112,13 +123,19 @@ public class shell {
                 cliProps.remove(PropertyManager.UserConfigPathKey);
             }
 
-            // finally, merge the (possibly overriden)
+            // finally, merge the (possibly overridden)
             shellProperties = shellProperties.MergeUserConfig()
-                    .MergeProperties(cliProps);
+                    .MergeProperties(cliProps, "command line properties");
 
+            /* Now that we have merged all the properties, act on the ones we need */
+            // If we're only printing up info or syntax, just bail. We need to wait until
+            // all properties have been resolved to be able to get the version
             if (argParser.OnlyShowInfo(shellProperties.getPropertyString(AT_VERSION))) {
                 System.exit(SYS_OK);
             }
+
+            DiagnosticService ds = new DiagnosticService(sysLogger,shellProperties,propertyValueMultipleSeparator);
+            ds.ProcessDiagnosticDirectives(args) ;
 
 
             // Replaced with class
@@ -131,7 +148,7 @@ public class shell {
             assert testDictionary != null;
 
             // jimk asset-manager-165 - query test names
-            if (argParser.OnlyShowTestNames()) {
+            if (argParser.HasOnlyShowTestNames()) {
                 testDictionary.forEach((k, v) -> System.out.printf("%-30s\t%s\n", v.getKey(), v.getFullName()));
                 System.exit(SYS_OK);
             }
@@ -139,8 +156,8 @@ public class shell {
             // jimk asset-manager-165 Add test names
             Hashtable<String, AuditTestConfig> requestedTests = FilterTestNamesByRequested(testDictionary, argParser.getRequestedTests());
 
-
-            testLogController = BuildTestLog(argParser);
+            testLogController = new AuditTestLogController(argParser.getLogDirectory(), testResultLogger.getName(),
+                    TEST_LOGGER_HEADER );
 
             if (argParser.has_DirList()) {
                 for (String aTestDir : ResolvePaths(argParser.getDirs())) {
@@ -149,7 +166,7 @@ public class shell {
                 }
             }
 
-            // dont force mutually exclusive. Why not do both?
+            // don't force mutually exclusive. Why not do both?
             if (argParser.getReadStdIn()) {
                 String curLine;
                 try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
@@ -171,6 +188,7 @@ public class shell {
         sysLogger.trace("Exiting any failed {}", anyFailed);
         System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
+
 
     /**
      * Removes all test names from test dictionary except those that are requested.
@@ -228,18 +246,7 @@ public class shell {
         return cliProperties;
     }
 
-    private static AuditTestLogController BuildTestLog(final ArgParser ap)
-    {
-        AuditTestLogController tlc;
-        String logDir = ap.getLogDirectory();
-        tlc = new AuditTestLogController();
-        tlc.setCsvHeader(shell.TEST_LOGGER_HEADER);
-        tlc.setTestResultLogger(shell.testResultLogger.getName());
 
-        tlc.setAppenderDirectory(logDir);
-
-        return tlc;
-    }
 
     /**
      * Set up, run all tests against a folder.
@@ -266,19 +273,19 @@ public class shell {
             if (testConfig == null) {
 
                 // sysLogger goes to a csv and a log file, so add the extra parameters.
-                // log4j wont care.
-                String errstr = String.format("No test config found for %s. Contact library provider.", testName);
-                sysLogger.error(errstr, errstr, "Failed");
-                results.add(new TestResult(Outcome.FAIL, errstr));
+                // log4j won't care.
+                String errorStr = String.format("No test config found for %s. Contact library provider.", testName);
+                sysLogger.error(errorStr, errorStr, "Failed");
+                results.add(new TestResult(Outcome.FAIL, errorStr));
                 continue;
             }
 
             // Is this test an  IAuditTest?
             Class<?> testClass = testConfig.getTestClass();
             if (!IAuditTest.class.isAssignableFrom(testClass)) {
-                String errstr = String.format("Test found for %s does not  implement IAudit", testName);
-                sysLogger.error(errstr, errstr, "Failed");
-                results.add(new TestResult(Outcome.FAIL, errstr));
+                String errorStr = String.format("Test found for %s does not  implement IAudit", testName);
+                sysLogger.error(errorStr, errorStr, "Failed");
+                results.add(new TestResult(Outcome.FAIL, errorStr));
                 continue;
             }
 
@@ -497,7 +504,7 @@ public class shell {
 
         }
 
-        sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
+        sysLogger.debug("Resource home is {} ", resHome, " is resource home path");
         return Paths.get(resHome, shell.defaultPropertyFileName);
     }
 

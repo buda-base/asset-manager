@@ -2,6 +2,7 @@ package io.bdrc.audit.shell;
 
 // https://commons.apache.org/proper/commons-cli/usage.html
 
+import io.bdrc.audit.shell.diagnostics.DiagnosticService;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 
 class ArgParser {
 
@@ -34,6 +34,7 @@ class ArgParser {
     private final String infileOptionStdin = "-";
     private final String versionShort = "v";
     private final String helpShort = "h";
+    private final String diagHelpShort = "d";
     private final String queryTestsShort = "Q";
     private final Options options = new Options();
 
@@ -56,13 +57,14 @@ class ArgParser {
         final String testShort = "T";
         final String testLong = "Tests";
         final String queryTestsLong = "QueryTests";
+        final String diagHelpLong = "helpDiag";
         final char colonArgValueSeparator = ':';
 
 
         // Create the parser
         CommandLineParser clp = new DefaultParser();
 
-        options.addOption("d", "debug", false, "Show debugging information");
+        // options.addOption("d", "debug", false, "Show debugging information");
 
         // Lists of things
         options.addOption(Option.builder(defineShort)
@@ -124,11 +126,18 @@ class ArgParser {
                 .required(false)
                 .build());
 
+        options.addOption(Option.builder(diagHelpShort)
+                .longOpt(diagHelpLong)
+                .hasArg(false)
+                .required(false)
+                .desc("Prints detailed help for diagnostics")
+                .build()
+        );
+
 
         try {
             cl = clp.parse(options, args);
             isParsed = true;
-
             cl.getArgList().forEach(z -> logger.debug("Found arg :{}:", z));
 
             // nonOptionArgs = RecurseParse(cl.getArgList());
@@ -137,18 +146,25 @@ class ArgParser {
 
             // asset-manager-139
             logger.error("Failed to parse {}", exc.getMessage());
-
             printHelp(options);
             isParsed = false;
             return;
-
         }
 
         // sanity check. One of these must be true
-        if (!has_DirList() && !getReadStdIn() && !OnlyShowInfo() && !OnlyShowTestNames()) {
+        if (!has_DirList()
+                && !getReadStdIn()
+                && !HasOnlyShowInfo()
+                && !HasOnlyShowTestNames()) {
 
             // special case - if a dir list is required and not present, complain about that
-            if (!has_DirList() && !(getReadStdIn() || OnlyShowInfo() ||OnlyShowTestNames())) {
+            if (!has_DirList()
+                    && !(
+                    getReadStdIn()
+                            || HasOnlyShowInfo()
+                            || HasOnlyShowTestNames()
+                        )
+            ) {
                 logger.error("Selected options require one or more PathToWork.");
             }
             printHelp(options);
@@ -158,7 +174,7 @@ class ArgParser {
         // jimk asset-manager-164 add options on command line
         if (cl.hasOption(defineShort)) {
             definedOptions = splitMultipleArguments(cl.getOptionValues(defineShort),
-                    colonArgValueSeparator, ARGS_UNIQUE_REQUIRED );
+                    colonArgValueSeparator, ARGS_UNIQUE_REQUIRED);
             definedOptions.forEach(x -> logger.debug("Defined option :{}:", x));
         }
 
@@ -168,19 +184,30 @@ class ArgParser {
                     colonArgValueSeparator, ARGS_UNIQUE_REQUIRED);
             requestedTests.forEach(x -> logger.debug("Requested test :{}:", x));
         }
-        if (cl.hasOption("l")) {
-            Path logDirPath = Paths.get(cl.getOptionValue("l")).toAbsolutePath();
+
+        // set up log directory
+        if (cl.hasOption(logHome)) {
+            Path logDirPath = Paths.get(cl.getOptionValue(logHome)).toAbsolutePath();
             String ldpStr = logDirPath.toString();
 
             // Log home directory must be writable. Create it now, evaluate result
             if (!madeWritableDir(logDirPath)) {
-                printHelp(options);
                 logger.error("User supplied path {} cannot be created. Using default", ldpStr);
             } else {
                 _logDirectory = ldpStr;
             }
         }
+
+        // region jimk asset-manager-169
+        if (HasOnlyShowDiagSyntax()) {
+            OnlyShowDiagSyntax();
+        }
+
+        // endregion
+
+
     }
+
 
     /**
      * for arguments which allow multiple values, expand the command line list to include them
@@ -199,7 +226,7 @@ class ArgParser {
         Arrays.stream(definedOptions).forEach(o ->
                 Collections.addAll(splittedOptions, o.split(String.valueOf(valueSeparator))));
 
-        return requiresUnique ?  splittedOptions.stream().distinct().toList()
+        return requiresUnique ? splittedOptions.stream().distinct().toList()
                 : splittedOptions;
     }
 
@@ -303,13 +330,17 @@ class ArgParser {
      *
      * @return if we're not actually doing anything
      */
-    public Boolean OnlyShowInfo()
+    public Boolean HasOnlyShowInfo()
     {
-        return cl.hasOption(helpShort) || cl.hasOption(versionShort);
+        return cl.hasOption(helpShort) || cl.hasOption(versionShort) || HasOnlyShowDiagSyntax();
     }
 
-    public Boolean OnlyShowTestNames() {
+    public Boolean HasOnlyShowTestNames() {
         return cl.hasOption(queryTestsShort);
+    }
+
+    public Boolean HasOnlyShowDiagSyntax() {
+        return cl.hasOption(diagHelpShort);
     }
 
     /**
@@ -331,13 +362,33 @@ class ArgParser {
         return rc;
     }
 
+
+    /**
+     * Show diagnostic help
+     *
+     */
+    private void OnlyShowDiagSyntax() {
+        Map<String, String[]> syntax = DiagnosticService.getDiagServiceSyntax();
+        System.out.println("Diagnostic Options");
+
+        syntax.forEach((key, value) -> {
+            StringBuilder sb = new StringBuilder();
+            Arrays.stream(value).forEach(y -> sb.append(String.format("%s,", y)));
+
+            // elide trailing separator
+            String allValues = sb.substring(0, sb.length() - 1);
+            System.out.printf("arg: %-25sallowed value(s):\t%s\n"
+                    , key, allValues);
+        });
+    }
+
     private void printHelp(final Options options) {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("""
+        new HelpFormatter().printHelp("""
                         audit-tool [options] { - | PathToWork PathToWork ..... }
                         where:
                         \t- read Paths To Works from standard input
                         \tPathToWork ... is a list of directories separated by whitespace
+                                                
                         [options] are:""",
                 options);
     }
@@ -365,7 +416,6 @@ class ArgParser {
         }
         return ok;
     }
-
 
     private String _logDirectory;
 

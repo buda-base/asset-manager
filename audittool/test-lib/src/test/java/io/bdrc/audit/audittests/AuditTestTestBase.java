@@ -32,7 +32,7 @@ class AuditTestTestBase {
         try {
             Path rp = Paths.get("src/test/resources/testResource.properties").toAbsolutePath();
             if (Files.exists(rp)) {
-                propertyManager.MergeResourceFile(rp.toString());
+                propertyManager.MergeResourceFile(rp.toString(),"test base base class");
             }
         } catch (IOException e) {
             e.printStackTrace();

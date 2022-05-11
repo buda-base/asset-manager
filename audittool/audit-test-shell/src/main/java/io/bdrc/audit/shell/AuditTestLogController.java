@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * Creates a new appender for a specific work
+ * Creates a new appender for a specific work result. Not involved with either the summary, detail, or shell loggers
  */
 class AuditTestLogController {
 
@@ -114,13 +114,29 @@ class AuditTestLogController {
     //endregion
 
     // region Constructor
-    public AuditTestLogController() {
+
+    /**
+     * Create a test result log controller. Independent of system and shell logger
+     *
+     * @param logDirectory     directory to place log in
+     * @param loggerName       the logger to redirect (Note caller can be using slf4j logs, but this implementation
+     *                         uses log4j logs. So the name is just the bridge between the two frameworks.
+     * @param testLoggerHeader csv or tsv format for test result
+     */
+    public AuditTestLogController(final String logDirectory, String loggerName,
+                                  String testLoggerHeader)
+    {
 
         this._loggerContext = (LoggerContext) LogManager.getContext(false);
         // Set the default to where the logger puts its files. See log4j2.properties.
         // Should be fully qualified.
         DEFAULTLOGDIR = GetLog4jPropertyFromContext(_loggerContext, "logRoot");
         setAppenderDirectory(Paths.get(DEFAULTLOGDIR).toAbsolutePath().toString());
+
+        this.setCsvHeader(testLoggerHeader);
+        this.setTestResultLogger(loggerName);
+
+        this.setAppenderDirectory(logDirectory);
     }
     // endregion
 
@@ -208,10 +224,10 @@ class AuditTestLogController {
 
         try {
             Path appenderPath = Paths.get(GetFileAppender().getFileName());
-            
+
             // Stop the appender before moving its file
             GetFileAppender().stop();
-            
+
             String appenderDirName = appenderPath.getParent().toString();
 
             // Create the dest file path from the folder, the prefix and the file name
@@ -224,7 +240,7 @@ class AuditTestLogController {
             String destExt = FilenameUtils.getExtension(destFileName);
             Path finalDestPath = tryDestPath;
             int trySeq = 1;
-            
+
             while (Files.exists(finalDestPath)) {
                 finalDestPath = Paths.get(appenderDirName,
                         String.format("%s-%02d.%s", destBase, trySeq++, destExt));
