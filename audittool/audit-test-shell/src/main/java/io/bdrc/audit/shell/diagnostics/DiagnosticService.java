@@ -2,6 +2,7 @@ package io.bdrc.audit.shell.diagnostics;
 
 import com.google.common.collect.ImmutableMap;
 import io.bdrc.audit.iaudit.PropertyManager;
+import io.bdrc.audit.log.CoreLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.appender.FileAppender;
@@ -161,19 +162,15 @@ public class DiagnosticService {
                 .build();
 
         fileAppender.start();
-        getCoreLogger(_logger).addAppender(fileAppender);
+        CoreLogger.getCoreLogger(_logger).addAppender(fileAppender);
         return fileAppender;
-    }
-
-    private org.apache.logging.log4j.core.Logger getCoreLogger(org.slf4j.Logger logger) {
-        return (org.apache.logging.log4j.core.Logger) LogManager.getLogger(logger.getName());
     }
 
     private void stopLogAppender(Appender appender) {
 
         if (appender == null) return;
         appender.stop();
-        getCoreLogger(_logger).removeAppender(appender);
+        CoreLogger.getCoreLogger(_logger).removeAppender(appender);
 
     }
 }

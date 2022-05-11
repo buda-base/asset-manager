@@ -2,6 +2,8 @@ package io.bdrc.audit.shell;
 
 import io.bdrc.audit.iaudit.*;
 import io.bdrc.audit.iaudit.message.TestMessage;
+import io.bdrc.audit.log.AuditLogController;
+import io.bdrc.audit.log.AuditTestLogController;
 import io.bdrc.audit.shell.diagnostics.DiagnosticService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -67,10 +69,6 @@ public class shell {
         List<Integer> allResults = new ArrayList<>();
 
 
-        sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
-        detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
-        testResultLogger = LoggerFactory.getLogger("testResultLogger");
-
         try {
 
             // TODO: Rework sysLogger to respect --log_dir. Means that arg parsing logging goes only to console
@@ -79,10 +77,15 @@ public class shell {
             ArgParser argParser = new ArgParser(args);
 
             if (!argParser.getParsed()) {
-                sysLogger.trace("Invalid arguments");
                 System.out.println("Exiting on Invalid arguments");
                 System.exit(SYS_ERR);
             }
+
+            AuditLogController.setLogDirectory( argParser.getLogDirectory());
+
+            sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
+            detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+            testResultLogger = LoggerFactory.getLogger("testResultLogger");
 
             sysLogger.trace("Resolving properties");
             Path resourceFile = resolveResourceFile();

@@ -4,6 +4,7 @@ package io.bdrc.audit.shell;
 
 import io.bdrc.audit.shell.diagnostics.DiagnosticService;
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +164,7 @@ class ArgParser {
                     getReadStdIn()
                             || HasOnlyShowInfo()
                             || HasOnlyShowTestNames()
-                        )
+            )
             ) {
                 logger.error("Selected options require one or more PathToWork.");
             }
@@ -365,7 +366,6 @@ class ArgParser {
 
     /**
      * Show diagnostic help
-     *
      */
     private void OnlyShowDiagSyntax() {
         Map<String, String[]> syntax = DiagnosticService.getDiagServiceSyntax();
@@ -420,10 +420,10 @@ class ArgParser {
     private String _logDirectory;
 
     /**
-     * @return Command line value of -l argument
+     * @return Command line value of -l argument, empty string if not given
      */
     String getLogDirectory() {
-        return _logDirectory;
+        return StringUtils.isEmpty(_logDirectory) ? StringUtils.EMPTY : _logDirectory;
     }
 
     /**
