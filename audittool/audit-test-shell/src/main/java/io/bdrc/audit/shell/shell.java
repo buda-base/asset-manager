@@ -70,10 +70,6 @@ public class shell {
 
 
         try {
-
-            // TODO: Rework sysLogger to respect --log_dir. Means that arg parsing logging goes only to console
-            sysLogger.trace("Entering main");
-            sysLogger.trace("Parsing args");
             ArgParser argParser = new ArgParser(args);
 
             if (!argParser.getParsed()) {
@@ -300,7 +296,6 @@ public class shell {
 
             // extract the property values the test needs
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
-
 
             results.add(TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testName, testDesc, propertyArgs,
                     aTestDir));
