@@ -5,8 +5,6 @@ package io.bdrc.audit.shell;
 import io.bdrc.audit.shell.diagnostics.DiagnosticService;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.util.*;
 class ArgParser {
 
     /* Persist the options */
-    private final Logger logger = LoggerFactory.getLogger("sys");
 
     private CommandLine cl;
 
@@ -139,14 +136,13 @@ class ArgParser {
         try {
             cl = clp.parse(options, args);
             isParsed = true;
-            cl.getArgList().forEach(z -> logger.debug("Found arg :{}:", z));
 
             // nonOptionArgs = RecurseParse(cl.getArgList());
             nonOptionArgs = cl.getArgList();
         } catch (ParseException exc) {
 
             // asset-manager-139
-            logger.error("Failed to parse {}", exc.getMessage());
+            System.err.printf("Failed to parse %s\n", exc.getMessage());
             printHelp(options);
             isParsed = false;
             return;
@@ -166,7 +162,7 @@ class ArgParser {
                             || HasOnlyShowTestNames()
             )
             ) {
-                logger.error("Selected options require one or more PathToWork.");
+                System.err.println("Selected options require one or more PathToWork.");
             }
             printHelp(options);
             isParsed = false;
@@ -176,14 +172,12 @@ class ArgParser {
         if (cl.hasOption(defineShort)) {
             definedOptions = splitMultipleArguments(cl.getOptionValues(defineShort),
                     colonArgValueSeparator, ARGS_UNIQUE_REQUIRED);
-            definedOptions.forEach(x -> logger.debug("Defined option :{}:", x));
         }
 
         // jimk asset-manager-165 add requested tests
         if (cl.hasOption(testShort)) {
             requestedTests = splitMultipleArguments(cl.getOptionValues(testShort),
                     colonArgValueSeparator, ARGS_UNIQUE_REQUIRED);
-            requestedTests.forEach(x -> logger.debug("Requested test :{}:", x));
         }
 
         // set up log directory
@@ -193,7 +187,7 @@ class ArgParser {
 
             // Log home directory must be writable. Create it now, evaluate result
             if (!madeWritableDir(logDirPath)) {
-                logger.error("User supplied path {} cannot be created. Using default", ldpStr);
+                System.out.printf("User supplied path %s cannot be created. Using default\n", ldpStr);
             } else {
                 _logDirectory = ldpStr;
             }
@@ -256,20 +250,13 @@ class ArgParser {
      * @return true when the infile option is set or a list of directories is given on the command line.
      */
     Boolean has_DirList() {
-        Boolean rc = cl.hasOption(infileOptionShort) || get_IfArgsCommandLine();
-        logger.debug("hasOption {} !getReadStdin {} has_DirList net: {} ", cl.hasOption(infileOptionShort),
-                !getReadStdIn
-                        (),
-                rc);
-
-        return rc;
+        return cl.hasOption(infileOptionShort) || get_IfArgsCommandLine();
     }
 
     /**
      * @return If the user has specified reading from standard input
      */
     Boolean getReadStdIn() {
-        logger.debug("non option args empty {}", nonOptionArgs.isEmpty());
         return (!nonOptionArgs.isEmpty()) && nonOptionArgs.get(0).equals
                 (infileOptionStdin);
     }
@@ -278,7 +265,6 @@ class ArgParser {
      * @return If the user has specified reading from standard input
      */
     private Boolean get_IfArgsCommandLine() {
-        logger.debug("get_IfArgsCommandLine non option args empty {}", nonOptionArgs.isEmpty());
         return !nonOptionArgs.isEmpty() && !nonOptionArgs.get(0).equals
                 (infileOptionStdin);
     }
@@ -310,7 +296,7 @@ class ArgParser {
 
 
             } catch (FileNotFoundException fnfe) {
-                logger.error("{} {}", argFile, " not found.");
+                System.err.printf("%s  not found.\n", argFile);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw e;
@@ -355,7 +341,6 @@ class ArgParser {
         }
 
         // Always show this in debug
-        logger.debug("Version {}", version);
         if (cl.hasOption(versionShort)) {
             System.out.printf("Version %s\n", version);
             rc = true;
@@ -377,7 +362,7 @@ class ArgParser {
 
             // elide trailing separator
             String allValues = sb.substring(0, sb.length() - 1);
-            System.out.printf("arg: %-25sallowed value(s):\t%s\n"
+            System.out.printf("arg: %-25s allowed value(s):\t%s\n"
                     , key, allValues);
         });
     }

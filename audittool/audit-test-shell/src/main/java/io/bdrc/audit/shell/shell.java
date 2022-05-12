@@ -66,7 +66,6 @@ public class shell {
     private final static String  propertyValueMultipleSeparator = ",";
 
     public static void main(String[] args) {
-        List<Integer> allResults = new ArrayList<>();
 
 
         try {
@@ -158,6 +157,8 @@ public class shell {
             testLogController = new AuditTestLogController(argParser.getLogDirectory(), testResultLogger.getName(),
                     TEST_LOGGER_HEADER );
 
+            List<Integer> allResults = new ArrayList<>();
+
             if (argParser.has_DirList()) {
                 for (String aTestDir : ResolvePaths(argParser.getDirs())) {
                     sysLogger.debug("arg =  {} ", aTestDir);
@@ -175,6 +176,10 @@ public class shell {
                     }
                 }
             }
+            Stream<Integer> rs = allResults.stream();
+            boolean anyFailed = rs.anyMatch(x -> x.equals(Outcome.FAIL));
+            sysLogger.trace("Exiting any failed {}", anyFailed);
+            System.exit(anyFailed ? SYS_ERR : SYS_OK);
 
         } catch (Exception e) {
             System.out.printf("Exiting on exception %s\n", e.getMessage());
@@ -182,10 +187,6 @@ public class shell {
             System.exit(SYS_ERR);
         }
 
-        Stream<Integer> rs = allResults.stream();
-        boolean anyFailed = rs.anyMatch(x -> x.equals(Outcome.FAIL));
-        sysLogger.trace("Exiting any failed {}", anyFailed);
-        System.exit(anyFailed ? SYS_ERR : SYS_OK);
     }
 
 
