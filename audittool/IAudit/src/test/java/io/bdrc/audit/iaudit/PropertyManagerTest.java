@@ -1,9 +1,12 @@
 package io.bdrc.audit.iaudit;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.ReaderInputStream;
 import org.junit.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -40,32 +43,30 @@ public class PropertyManagerTest {
     private final String defaultTestProperty = "hibbidy.hobbidy.ima.freemstalizer";
     private final String UserConfigPathKey = "UserConfigPath";
     private String loadedUserConfigPath ;
-    private final HashMap<String, String> userPropertyMap = new HashMap<String, String>() {{
+    private final HashMap<String, String> userPropertyMap = new HashMap<>() {{
         put("user.property.1", "u.p.2value");
         put("user.property.2", "u.p.2value");
     }};
 
-    private final HashMap<String, String> commandLinePropertySourceMap = new HashMap<String, String>() {{
+    private final HashMap<String, String> commandLinePropertySourceMap = new HashMap<>() {{
         put("sys.property.1", "s.p.2value");
         put("sys.property.2", "s.p.2value");
     }};
     private final String propertyFilePath;
 
-    private static Properties savedEnvironmentProperties = new Properties();
+    private static final Properties savedEnvironmentProperties = new Properties();
     @BeforeClass
     public static void SaveEnvironment()
     {
         // call by reference, so need to copy
         savedEnvironmentProperties.clear();
-        System.getProperties().forEach(savedEnvironmentProperties::put);
+        savedEnvironmentProperties.putAll(System.getProperties());
     }
 
     @AfterClass
     public static void RestoreEnvironment() {
         System.setProperties(new Properties());
-        savedEnvironmentProperties.forEach((key, value) -> {
-            System.setProperty(key.toString(), value.toString());
-        });
+        savedEnvironmentProperties.forEach((key, value) -> System.setProperty(key.toString(), value.toString()));
     }
 
     @Before
@@ -74,7 +75,8 @@ public class PropertyManagerTest {
         RestoreEnvironment();
         // Set up a string for properties
         StringReader sr = new StringReader("HardWired.prop1 = value 1\nHardwired.prop2 = value 2");
-        inStream = IOUtils.toInputStream(IOUtils.toString(sr));
+        InputStream inStream = new ReaderInputStream(sr, Charset.defaultCharset());
+
 
         Path loadedUserConfigPath =
                 PropertyManager.PropertyManagerBuilder().MergeClassResource(propertyFilePath, getClass()).getPropertyPath(UserConfigPathKey);
@@ -154,7 +156,7 @@ public class PropertyManagerTest {
 
         LoadTestSystemProperties();
 
-        pm.MergeProperties(System.getProperties());
+        pm.MergeProperties(System.getProperties(), "System Properties");
 
         // confirm properties we care about, should already be in System properties
         confirmLoadedProperties(pm, commandLinePropertySourceMap);
@@ -203,7 +205,7 @@ public class PropertyManagerTest {
 
         // Add the override
         System.setProperty( defaultTestProperty,expectedDefaultPropertyValue);
-        pm.MergeProperties(System.getProperties());
+        pm.MergeProperties(System.getProperties(), "system properties");
 
         // should be there now
         assertEquals(pm.getPropertyString(defaultTestProperty),expectedDefaultPropertyValue);
@@ -214,7 +216,7 @@ public class PropertyManagerTest {
         confirmEmptyProperties(pm, commandLinePropertySourceMap);
 
         LoadTestSystemProperties();
-        pm.MergeProperties(System.getProperties());
+        pm.MergeProperties(System.getProperties(), "system properties");
         confirmLoadedProperties(pm, commandLinePropertySourceMap);
     }
 

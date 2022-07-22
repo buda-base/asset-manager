@@ -36,16 +36,14 @@ public class FileSequence extends ImageGroupParents {
 
     /**
      * Constructor for variant test name
-     * @param logger
-     * @param testName
+     *
+     * @param logger   log4j logger for this class
+     * @param testName key of test in database
      */
     public FileSequence(Logger logger, String testName) {
         super(testName);
         sysLogger = logger;
-        _sequenceLength = getSequenceSubstringLength();
-
     }
-
 
 
     /**
@@ -64,9 +62,9 @@ public class FileSequence extends ImageGroupParents {
 
             // Create directory filter
             DirectoryStream.Filter<Path> dirFilter =
-                    entry ->        !entry.toFile().isHidden()
-                              &&    entry.toFile().isDirectory()
-                              &&    _imageGroupParents.contains(entry.getFileName().toString()) ;
+                    entry -> !entry.toFile().isHidden()
+                            && entry.toFile().isDirectory()
+                            && _imageGroupParents.contains(entry.getFileName().toString());
 
             try (DirectoryStream<Path> pathDirectoryStream = Files.newDirectoryStream(dir, dirFilter)) {
 
@@ -77,7 +75,7 @@ public class FileSequence extends ImageGroupParents {
 
                     // reiterate no files in image group parent test
                     if (!failFile(dir, entry)) {
-                            sequenceImageGroupParent(sequenceLength, entry);
+                        sequenceImageGroupParent(sequenceLength, entry);
                     }
                 }
 
@@ -92,9 +90,7 @@ public class FileSequence extends ImageGroupParents {
                 sysLogger.error("Number Format error", nfe);
                 FailTest(Outcome.SYS_EXC, nfe.getCause().getLocalizedMessage());
 
-            }
-            catch (NoSuchFileException nsfe)
-            {
+            } catch (NoSuchFileException nsfe) {
                 String badPath = nsfe.getFile();
                 sysLogger.error("No such file {}", badPath);
                 FailTest(LibOutcome.ROOT_NOT_FOUND, badPath);
@@ -125,7 +121,7 @@ public class FileSequence extends ImageGroupParents {
          * @param imageGroupParent the directory we're testing
          * @throws IOException on system failures
          */
-        private void sequenceImageGroupParent(final int sequenceLength,  final Path imageGroupParent) throws IOException
+        private void sequenceImageGroupParent(final int sequenceLength, final Path imageGroupParent) throws IOException
         {
             // asset-manager #29 don't count json files in image groups
             DirectoryStream.Filter<Path> dirFilter =
@@ -134,16 +130,16 @@ public class FileSequence extends ImageGroupParents {
             // asset-manager #23 don't count directories in image groups
             // asset-manager #29 don't count json files in image groups
             DirectoryStream.Filter<Path> filesInImageGroupFilter =
-                    entry ->    !entry.toFile().isHidden()
-                            &&  !entry.toFile().isDirectory()
-                            &&  !entry.toString().endsWith("json");
+                    entry -> !entry.toFile().isHidden()
+                            && !entry.toFile().isDirectory()
+                            && !entry.toString().endsWith("json");
 
             for (Path anImageGroup : Files.newDirectoryStream(imageGroupParent, dirFilter)) {
                 boolean firstFolderFailure = false;
                 if (failFile(imageGroupParent, anImageGroup)) {
                     continue;
                 }
-                sysLogger.debug("ImageGroup {}", anImageGroup.toString());
+                sysLogger.debug("ImageGroup {}", anImageGroup);
 
                 TreeMap<Integer, String> filenames = new TreeMap<>();
 
@@ -153,7 +149,8 @@ public class FileSequence extends ImageGroupParents {
 
                     // BUG: Dont parse by sequence length. Requirements call for parsing backward from last .
                     // to first non int, up to field length.
-                    String fileSequence = trailingDigits(thisFileName,sequenceLength);
+                    String fileSequence = trailingDigits(thisFileName, sequenceLength);
+                    sysLogger.debug(fileSequence);
 
                     int thisFileIndex = 0;
                     try {
@@ -205,62 +202,66 @@ public class FileSequence extends ImageGroupParents {
         /**
          * Scan a string from the end to the beginning until either 'maxTrailing' digits are found, or a non-digit
          * is found. Returns the String of those digits.
-         * @param source source string
+         *
+         * @param source      source string
          * @param maxTrailing maximum number to look back
          * @return the integer represented by up to the last 'maxTrailing' digits in the string. Stops when a non-digit
          */
         private String trailingDigits(String source, int maxTrailing) {
-            int beginScan = source.length() -1;
+            int beginScan = source.length() - 1;
 
-            while((maxTrailing-- > 0) && (beginScan >= 0) && Character.isDigit(source.charAt(beginScan))) {
+            while ((maxTrailing-- > 0) && (beginScan >= 0) && Character.isDigit(source.charAt(beginScan))) {
                 beginScan--;
             }
 
             return source.substring(++beginScan);
         }
+
         private void GenerateFileMissingMessages(final TreeMap<Integer, String> filenames) {
             Integer curEntry = 0;
             for (Map.Entry<Integer, String> entry : filenames.entrySet()) {
+
+                // jimk asset-manager-158 - one fail report per fail block
+
                 Integer k = entry.getKey();
-                while (++curEntry < k) {
-                    FailTest(LibOutcome.FILE_SEQUENCE, String.format("File Sequence %4d missing", curEntry));
+                if (++curEntry < k) {
+                    FailTest(LibOutcome.FILE_SEQUENCE, String.format("File Sequence %d ... %d missing", curEntry,
+                            k - 1));
+                    curEntry = k;
                 }
             }
         }
     }
 
 
-    @Override
-    public void LaunchTest() {
+        @Override
+        public void LaunchTest() {
 
-        // have base class tests here?
-        // Yes, under the doctrine of One responsibility
-        RunBaseTests();
-        if (IsTestFailed()) {
-            return;
+            // have base class tests here?
+            // Yes, under the doctrine of One responsibility
+            RunBaseTests();
+            if (IsTestFailed()) {
+                return;
+            }
+            TestWrapper(new FileSequenceOperation());
         }
-        TestWrapper(new FileSequenceOperation());
-    }
 
-    /**
-     * Get Sequence length from base class properties
-     *
-     * @return the number of digits at the end of the file name which
-     * represent the sequence
-     */
-    private int getSequenceSubstringLength() {
-        if (_sequenceLength == 0) {
-            _sequenceLength = PropertyManager.PropertyManagerBuilder().MergeClassResource("/auditTool.properties",
-                    getClass()).getPropertyInt(this.getClass().getSimpleName() + ".SequenceLength");
+        /**
+         * Get Sequence length from base class properties
+         *
+         * @return the number of digits at the end of the file name which
+         * represent the sequence
+         */
+        private int getSequenceSubstringLength() {
+            if (_sequenceLength == 0) {
+                _sequenceLength = PropertyManager.getInstance().getPropertyInt(this.getClass().getSimpleName() + ".SequenceLength");
+            }
+            return _sequenceLength;
         }
-        return _sequenceLength;
+
+        //endregion
+        // region fields
+        private int _sequenceLength;
+        // endregion
+
     }
-
-
-
-    //endregion
-    // region fields
-    private int _sequenceLength;
-    // endregion
-
-}

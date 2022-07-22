@@ -10,11 +10,11 @@ import static io.bdrc.audit.audittests.TestArgNames.DERIVED_GROUP_PARENT;
 
 public class TestFilteredErrors extends AuditTestTestBase {
 
-    private  final Hashtable<String,String> _testParams = new Hashtable<String,String>() {{
+    private  final Hashtable<String,String> _testParams = new Hashtable<>() {{
         // This value is for published images
         // put(DERIVED_GROUP_PARENT,  "images");
         // this tests our collateral
-        put(DERIVED_GROUP_PARENT,  "testImages");
+        put(DERIVED_GROUP_PARENT, "testImages");
     }};
 
 
@@ -30,7 +30,9 @@ public class TestFilteredErrors extends AuditTestTestBase {
         _testParams.put("ErrorsAsWarning","110,111,106");
         tr = runAttributesTest("src/test/images/WOtherTiffFails");
         Assert.assertNotEquals("unexpected system exception",3L,(long)tr.getOutcome());
-        Assert.assertTrue("Test failed, expected pass", tr.Passed());
+        Assert.assertTrue("Test passed or failed, expected warning", tr.Warnings());
+        Assert.assertFalse("Test passed, expected warn", tr.Passed());
+        Assert.assertFalse("Test failed, expected warn", tr.Failed());
     }
     @Test(expected=NumberFormatException.class)
     public void TestBadErrorWarning()
@@ -60,7 +62,6 @@ public class TestFilteredErrors extends AuditTestTestBase {
     private ImageAttributeTests runTest(String path, Hashtable<String,String> testParams ) {
         ImageAttributeTests st = new ImageAttributeTests();
 
-        // Hmm TODO: Needs to consume properties differently
         st.setParams(path, testParams);
         st.LaunchTest();
 

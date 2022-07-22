@@ -1,6 +1,7 @@
-package io.bdrc.audit.shell;
+package io.bdrc.audit.log;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -20,9 +21,9 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * Creates a new appender for a specific work
+ * Creates a new appender for a specific work result. Not involved with either the summary, detail, or shell loggers
  */
-class AuditTestLogController {
+public class AuditTestLogController {
 
     private static final String EACHWORKAPPENDER = "PerWorkAppender";
     private static String DEFAULTLOGDIR;
@@ -73,9 +74,10 @@ class AuditTestLogController {
 
     /**
      * Sets the appender directory
+     *
      * @param appenderDirectory relative or absolute path spec
      */
-    void setAppenderDirectory( String appenderDirectory) {
+    void setAppenderDirectory(String appenderDirectory) {
 
         _appenderDirectory = Paths.get(StringUtils.isEmpty(appenderDirectory) ? DEFAULTLOGDIR : appenderDirectory).toFile()
                 .getAbsolutePath();
@@ -112,23 +114,38 @@ class AuditTestLogController {
     //endregion
 
     // region Constructor
-    public AuditTestLogController() {
+
+    /**
+     * Create a test result log controller. Independent of system and shell logger
+     *
+     * @param logDirectory     directory to place log in
+     * @param loggerName       the logger to redirect (Note caller can be using slf4j logs, but this implementation
+     *                         uses log4j logs. So the name is just the bridge between the two frameworks.
+     * @param testLoggerHeader csv or tsv format for test result
+     */
+    public AuditTestLogController(final String logDirectory, String loggerName,
+                                  String testLoggerHeader)
+    {
 
         this._loggerContext = (LoggerContext) LogManager.getContext(false);
         // Set the default to where the logger puts its files. See log4j2.properties.
         // Should be fully qualified.
         DEFAULTLOGDIR = GetLog4jPropertyFromContext(_loggerContext, "logRoot");
         setAppenderDirectory(Paths.get(DEFAULTLOGDIR).toAbsolutePath().toString());
+
+        this.setCsvHeader(testLoggerHeader);
+        this.setTestResultLogger(loggerName);
+
+        this.setAppenderDirectory(logDirectory);
     }
     // endregion
 
     //region public methods
-    void ChangeAppender(final String appenderFileName) {
+    public void ChangeAppender(final String appenderFileName) {
 
         Map<String, Appender> existingAppenders = _testResultLogger.getAppenders();
         Appender curAppender;
-        if (existingAppenders.containsKey(EACHWORKAPPENDER))
-        {
+        if (existingAppenders.containsKey(EACHWORKAPPENDER)) {
             curAppender = existingAppenders.get(EACHWORKAPPENDER);
             // what if I dont stop this
             // will the log go to all the other appenders?
@@ -142,14 +159,14 @@ class AuditTestLogController {
 
         File af = Paths.get(_appenderDirectory, appenderFileName).toFile();
 
-        SetFileAppender( FileAppender.newBuilder()
-                                  .withAppend(false)
-                                  .withFileName(af.getAbsolutePath())
-                                  .setConfiguration(_loggerContext.getConfiguration())
-                                  .setName(EACHWORKAPPENDER)
-                                  .setLayout(getLayout())
+        SetFileAppender(FileAppender.newBuilder()
+                .withAppend(false)
+                .withFileName(af.getAbsolutePath())
+                .setConfiguration(_loggerContext.getConfiguration())
+                .setName(EACHWORKAPPENDER)
+                .setLayout(getLayout())
 
-                                  .build());
+                .build());
 
 // I think it's just .setConfiguration(_loggerContext.getConfiguration()) that casts  upward to abstract.
         // This one above compiles and runs
@@ -157,7 +174,6 @@ class AuditTestLogController {
 //                                  .setLayout(getLayout())
 //                                  .setName(EACHWORKAPPENDER)
 //                                  .setConfiguration(_loggerContext.getConfiguration()).build();
-
 
 
         _loggerContext.getConfiguration().addLoggerAppender(_testResultLogger, _fileAppender);
@@ -172,17 +188,17 @@ class AuditTestLogController {
     /**
      * Rename the log file to indicate test passed
      */
-    void RenameLogPass() throws IOException {
+    public void RenameLogPass() throws IOException {
         RenameFile("passPrefix");
 
     }
 
-    void RenameLogFail() throws IOException
+    public void RenameLogFail() throws IOException
     {
         RenameFile("failPrefix");
     }
 
-    void RenameLogWarn() throws IOException
+    public void RenameLogWarn() throws IOException
     {
         RenameFile("warnPrefix");
     }
@@ -194,39 +210,50 @@ class AuditTestLogController {
     /**
      * Rename the file using a the value of a log4j2.property
      * as the prefix
+     *
      * @param propertyKey name of log4j2 property
      */
     private void RenameFile(String propertyKey) throws IOException
     {
-        String prefixValue = GetLog4jPropertyFromContext(this._loggerContext,propertyKey);
+        String prefixValue = GetLog4jPropertyFromContext(this._loggerContext, propertyKey);
 
         // nothing to do
-        if (StringUtils.isEmpty(prefixValue))
-        {
+        if (StringUtils.isEmpty(prefixValue)) {
             return;
         }
-        Path appenderPath= Paths.get(GetFileAppender().getFileName());
-        String appenderDirName = appenderPath.getParent().toString();
 
-        // Create the dest file path from the folder, the prefix and the file name
-        String destFileName = prefixValue + appenderPath.getFileName().toString();
-        Path destPath = Paths.get(appenderDirName,destFileName);
+        try {
+            Path appenderPath = Paths.get(GetFileAppender().getFileName());
 
-        try
-        {
+            // Stop the appender before moving its file
             GetFileAppender().stop();
-            Files.move(appenderPath, destPath);
-        }
-        catch (IOException ioeek)
-        {
-            throw ioeek;
-        }
-        catch (Exception eek)
-        {
+
+            String appenderDirName = appenderPath.getParent().toString();
+
+            // Create the dest file path from the folder, the prefix and the file name
+            String destFileName = prefixValue + appenderPath.getFileName().toString();
+
+            // jimk asset-manager-152: dont overwrite existing log file.
+            // Try to create sequences (file name)-0[1-x].csv
+            Path tryDestPath = Paths.get(appenderDirName, destFileName);
+            String destBase = FilenameUtils.getBaseName(destFileName);
+            String destExt = FilenameUtils.getExtension(destFileName);
+            Path finalDestPath = tryDestPath;
+            int trySeq = 1;
+
+            while (Files.exists(finalDestPath)) {
+                finalDestPath = Paths.get(appenderDirName,
+                        String.format("%s-%02d.%s", destBase, trySeq++, destExt));
+            }
+            Files.move(appenderPath, finalDestPath);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception eek) {
             // the log stream could be borked here.
         }
 
     }
+
     /**
      * @param lc          Logger context
      * @param propertyKey property to fetch
@@ -249,7 +276,7 @@ class AuditTestLogController {
     private Layout<String> BuildDefaultLayout(LoggerContext loggerContext)
     {
         return new CsvParameterLayout(loggerContext.getConfiguration(), Charset.defaultCharset(),
-                CSVFormat.DEFAULT.withDelimiter(',').withQuote('"'),
+                CSVFormat.DEFAULT,
                 getCsvHeader(), "");
     }
 

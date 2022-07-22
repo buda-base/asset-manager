@@ -1,6 +1,6 @@
 # Audit Tool 0.9 Operation
 ## Installation and Configuration
-Please refer to [Installation](Install.md) for details of installation.
+Please refer to [Installation](Install-1.0.md) for details of installation.
 
 Please see the section
 ## Operation
@@ -82,18 +82,18 @@ logs are added after the overall test result.
 
 The work run log contains a blend of the summary and the detail loggers below, in `csv` format. A sample work log is:
 
-|id|test_name|outcome|error_number|error_test|detail_path|
-|---|---|---|---|---|---|
-|W1KG13765|No Files in Root Folder|Passed| | |/Users/dev/tmp/pub/00/W1KG13765|
-|W1KG13765|Web Image Attributes|Failed|/Users/dev/tmp/pub/00/W1KG13765| | |
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510075.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-| | | |110|Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510101.tif has no suitable reader.|/Users/dev/tmp/pub/00/W1KG13765|
-|W1KG13765|No folders allowed in Image Group folders|Passed|/Users/dev/tmp/pub/00/W1KG13765| | |
-|W1KG13765|File Sequence Test|Failed|/Users/dev/tmp/pub/00/W1KG13765 | | |
-| | |106|Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test.|/Users/dev/tmp/pub/00/W1KG13765
-| | |105|Sequence File dimensions does not end in an integer: ends with  not found|/Users/dev/tmp/pub/00/W1KG13765
+| id        | test_name                                 | outcome | error_number                                                                           | error_test                                                                                                      | detail_path                     |
+|-----------|-------------------------------------------|---------|----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------------------------------|
+| W1KG13765 | No Files in Root Folder                   | Passed  |                                                                                        |                                                                                                                 | /Users/dev/tmp/pub/00/W1KG13765 |
+| W1KG13765 | Web Image Attributes                      | Failed  | /Users/dev/tmp/pub/00/W1KG13765                                                        |                                                                                                                 |                                 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510049.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510061.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510075.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+|           |                                           |         | 110                                                                                    | Image file /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951/I1KG149510101.tif has no suitable reader. | /Users/dev/tmp/pub/00/W1KG13765 |
+| W1KG13765 | No folders allowed in Image Group folders | Passed  | /Users/dev/tmp/pub/00/W1KG13765                                                        |                                                                                                                 |                                 |
+| W1KG13765 | File Sequence Test                        | Failed  | /Users/dev/tmp/pub/00/W1KG13765                                                        |                                                                                                                 |                                 |
+|           |                                           | 106     | Folder /Users/dev/tmp/pub/00/W1KG13765/images/W1KG13765-I1KG14951 fails sequence test. | /Users/dev/tmp/pub/00/W1KG13765                                                                                 |                                 |
+|           |                                           | 105     | Sequence File dimensions does not end in an integer: ends with  not found              | /Users/dev/tmp/pub/00/W1KG13765                                                                                 |                                 |
 
 ### Run logs
 Audit Tool log outputs are in subdirectories of `audit-tool-logs` of the user's home directory. You can change the base
@@ -242,7 +242,7 @@ in their Jar, and provide Test configuration objects. The test configuration obj
 to a test's name, friendly description, class which implements the test (which, again, can be in any package in the library)
 .
 
-![AuditTestConfig](.AuditToolOperation_images/AuditTestConfig.png)
+![AuditTestConfig](images/AuditTestConfig.png)
 
 #### `AuditTestConfig` constructor
 ```
@@ -286,12 +286,12 @@ To package a test you implement one of these and add it to your TestDictionary.
 ##### Parameters
 The constructor takes these parameters
 
-name|type|description
-----|----|----
-fullName|`String`|Free form text
-argNames|`List<String>`|List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs`
-shortName|`String`|Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value
-clazz|`Class<?>`|Any class object which implements the `IAuditTest` interface.
+| name      | type           | description                                                                                                                                               |
+|-----------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| fullName  | `String`       | Free form text                                                                                                                                            |
+| argNames  | `List<String>` | List of argument names. The caller of the test provides a List of Strings which are K=V pairs. This is a poor man's implementation of Python's `**kwargs` |
+| shortName | `String`       | Short mnemonic, for use in scripting. Should not contain spaces. Usually, this is the TestDictionary. key for which this object is the value              |
+| clazz     | `Class<?>`     | Any class object which implements the `IAuditTest` interface.                                                                                             |
 
 #### Running a test
 A full production instance is available in `audit-test-shell/src/main/java/io/bdrc/am/audit/shell/shell.java`
@@ -395,9 +395,9 @@ ERROR Failed	/Users/jimk/dev/tmp/at/test/../../Archive/W8LS68226		File Size Test
 Errors! returned:1: check logs
 ```
 # Updates
-Date|Notes
----|---
-4 Nov 2020| Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.
- &nbsp;| Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.
- &nbsp;| The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded)  
- 2021-05-14|Add overrides of properties
+| Date       | Notes                                                                                                                                                                                                                                                                  |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 4 Nov 2020 | Add Warning semantics. For some tests, if a required directory does not exist, the test should not fail. (For example, the `ImageSizeTest` test requires the folder `image` to exist.If it does not, the test cannot be said to fail, since it was never run.          |
+| &nbsp;     | Cases where this occurs generate a test result of WARN. Files which would have been renamed PASS or FAIL are now renamed WARN--... in the case when some tests succeeded and some had warnings.                                                                        |
+| &nbsp;     | The return code of `audittool` also accommodates this extension. If any test failed outright, the return code from `audittool` is 1. If all tests succeeded, or some tests succeeded, while some generated warnings, `audittool` returns 0 (as if all tests succeeded) |
+| 2021-05-14 | Add overrides of properties                                                                                                                                                                                                                                            |

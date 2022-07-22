@@ -56,9 +56,9 @@ public abstract class AuditTestBase implements IAuditTest {
 
         // filter out some errors.
         // For filtered errors, leave the state as is
-        if (!_passableErrors.contains(why)) {
-            _testResult.setOutcome(Outcome.FAIL);
-        }
+
+        // jimk asset-manager-162: Set warning when ErrorsAsWarnings set
+        _testResult.setOutcome(_passableErrors.contains(why) ? Outcome.WARN : Outcome.FAIL);
         _testResult.AddError(why, failedElement);
     }
 
@@ -72,7 +72,9 @@ public abstract class AuditTestBase implements IAuditTest {
     }
 
     public boolean IsTestFailed() {
-        return _testResult.getOutcome().equals(Outcome.FAIL);
+        return _testResult.getOutcome().equals(Outcome.FAIL)
+                || _testResult.getOutcome().equals(Outcome.WARN)
+                ;
     }
 
     public boolean IsTestPassed() {
@@ -175,7 +177,7 @@ public abstract class AuditTestBase implements IAuditTest {
      * in AuditTestBase constructor. It's central so that each test can share other test outcomes
      */
     private static final Hashtable<Integer, TestMessageFormat> libTestMessages =
-            new Hashtable<Integer, TestMessageFormat>() {{
+            new Hashtable<>() {{
                 put(LibOutcome.ROOT_NOT_FOUND, new TestMessageFormat(1, "Path %s is not a directory or does not" +
                         " exist."));
                 put(LibOutcome.FILES_IN_MAIN_FOLDER, new TestMessageFormat(2, "Root folder %s contains file %s"));
@@ -194,9 +196,15 @@ public abstract class AuditTestBase implements IAuditTest {
                 put(LibOutcome.BAD_FILE_SIZE_ARG, new TestMessageFormat(1, "Invalid file size argument %s. Requires " +
                         "n[K|M|G]"));
                 put(LibOutcome.INVALID_ARCHIVE_EXIF, new TestMessageFormat(2,
-                        "Image file %s contains invalid EXIF tags: %s"));
+                        "Archive Image file %s contains invalid EXIF tags: %s"));
                 put(LibOutcome.INVALID_IMAGE_EXIF, new TestMessageFormat(2,
                         "Image file %s contains invalid EXIF tags: %s"));
+                put(LibOutcome.INVALID_ARCHIVE_THUMBNAIL, new TestMessageFormat(1,
+                        "Archive Image file %s contains thumbnail"));
+                put(LibOutcome.INVALID_IMAGE_THUMBNAIL, new TestMessageFormat(1,
+                        "Archive Image file %s contains thumbnail"));
+                put(LibOutcome.INVALID_IMAGE_FILENAME_FORMAT, new TestMessageFormat(2,
+                        "Archive Image file %s is invalid. Requires %s followed by sequence and extension"));
 
             }};
 

@@ -5,12 +5,13 @@ Version 1.0 is built and packaged under the most current LTS (Long Term Support)
 
 - No requirement for pre-installed Java - Audit-tool provides its own JRE (Java Runtime Engine), at JRE 17.3
 - No need to configure a new install.
-- Much simpler configuration: shell and Powershell scripts are no longer required.
--
+- Much simpler configuration: shell and Powershell scripts are no longer required. See [Configuration](#Configuration) for
+details on upgrading.
+- 
 ## Version Information
 Use these values of VER and REL where they appear below
 - Current VER is 1.0
-- Current REL is alpha
+- Current REL is beta
 
 ## Supported Platforms
 
@@ -38,47 +39,47 @@ Download:
 ### Windows installations
 
 #### Run the launcher `audit-tool-1.0.exe`
-![Windows Install Intro](../images/2022/01/windows-install-intro.png)
+![Windows Install Intro](images/2022/01/windows-install-intro.png)
 
 If audit tool was installed when you launched, you have an opportunity to choose your action:
 
-![Change or Repair](../images/2022/01/change-or-repair.png)
+![Change or Repair](images/2022/01/change-or-repair.png)
 
 You can choose your installation directory:
 
-![Choose directory](../images/2022/01/choose-directory.png)
+![Choose directory](images/2022/01/choose-directory.png)
 
 **Note** if you choose the default installation directory, `audit-tool` will be available to all users of the computer on which it is installed.
 
-![Install prompt](../images/2022/01/install-prompt.png)
+![Install prompt](images/2022/01/install-prompt.png)
 #### Setting path
 audit-tool still needs to be launched from a console window (such as [Windows Terminal](https://www.microsoft.com/en-US/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab) or  [Fluent Terminal](https://www.microsoft.com/en-us/p/fluent-terminal/9p2krlmfxf9t?activetab=pivot:overviewtab) ).
 You may find it helpful to add its location to your PATH.
 
 Settings (You can reach this with the shortcut WindowsKey+Pause) --> find
 
-![environment](../images/2022/01/environment.png)
+![environment](images/2022/01/environment.png)
 Edit Environment variables
 
-![Personal Environment variables](../images/2022/01/personal-environment-variables.png)
+![Personal Environment variables](images/2022/01/personal-environment-variables.png)
 
 Select 'Path' and click 'Edit' as shown here:
 
-![ClickPath](../images/2022/01/clickpath.png)
+![ClickPath](images/2022/01/clickpath.png)
 You'll see each line. Add the line of the installation directory.
 
-![Environment setting](../images/2022/01/environment-setting.png)
+![Environment setting](images/2022/01/environment-setting.png)
 
 You will see a table of your environment variables.
 
 Add the last line (the default installation is shown as an example)
 
-![Adding install directory](../images/2022/01/adding-install-directory.png)
+![Adding install directory](images/2022/01/adding-install-directory.png)
 
 ### MacOS installation
 Open the downloaded package:
 
-![Installation](../images/2022/01/installer.png)
+![Installation](images/2022/01/installer.png)
 
 and drag 'audit-tool.app' to '/Applications'
 
@@ -86,15 +87,15 @@ and drag 'audit-tool.app' to '/Applications'
 
 Values in this table are referred to in the instruction as `{Property}`. (eg, `{Package name}`)
 
-Property|Value
----|---
-Application name  |  `audit-tool`
-Application version  |  `1.0-alpha`
-Package name   |  `audit-v1`
-Package-Release|  1
-Package File name  |  `audit-v1_1.0-alpha-1_amd64.deb`
-Install location  |  `/opt/audit-v1`
-Executable  |  `/opt/audit-v1/bin/audit-tool`
+| Property            | Value                            |
+|---------------------|----------------------------------|
+| Application name    | `audit-tool`                     |
+| Application version | `1.0-alpha`                      |
+| Package name        | `audit-v1`                       |
+| Package-Release     | 1                                |
+| Package File name   | `audit-v1_1.0-alpha-1_amd64.deb` |
+| Install location    | `/opt/audit-v1`                  |
+| Executable          | `/opt/audit-v1/bin/audit-tool`   |
 
 Download: TODO: web loc `audit-v1_1.0-alpha-1_amd64.deb` into `some_folder`
 Install: `sudo apt install -f some_folder/audit-v1_1.0-alpha-1_amd64.deb`
@@ -144,14 +145,25 @@ This section applies to all platforms.
 
 This configuration replaces the `AT_HOME` and `CONFIG_ATHOME` settings of prior releases. Users with write permission can simply edit the `app/` files:
 
-File|Purpose
----|---
-audit-tool.cfg  | Generated list of complete properties to launch the application. Changes to this list are unsupported  
-shell.properties  | Parameters for tests (such as names of directories, limits and error overrides)
-log4j2.properties  | Logging control
+| File              | Purpose                                                                                               |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| audit-tool.cfg    | Generated list of complete properties to launch the application. Changes to this list are unsupported |
+| shell.properties  | Parameters for tests (such as names of directories, limits and error overrides)                       |
+| log4j2.properties | Logging control                                                                                       |
 
-Detailed configuration is described in [AuditToolOperation-1.0-alpha.md](./AuditToolOperation-1.0-alpha.md)
+Detailed configuration is described in [AuditToolOperation-1.0.md](AuditToolOperation-1.0.md)
 
+## Guidelines for Upgrading from v0.9
+### Command line properties
+Review any customizations you have made to the audit tool script (`audittool.sh` on Mac and Debian/ `audittool.ps1` on Windows) and move them into
+the installation directory's `app/audit-tool.config`, in the `[JavaOptions]` section.
+
+### shell properties
+If you've made sitewide changes to properties in 0.9, be sure to merge them into the installation's `app/shell.properties` file.
+**Do not overwrite `shell.properties`. It may have new properties that v0.9 does not**
+
+### user properties
+Individual user properties (in the `user.properties` file) do not require update. The other user configuration scripts are no longer used.
 ## Guidelines for Updating an existing installation
 Installation overwrites any prior installations.
 It is advisable to save existing configurations in the `app/` folder of the install and **carefully* merge them into a new install.

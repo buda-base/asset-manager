@@ -2,6 +2,10 @@ package io.bdrc.audit.shell;
 
 import io.bdrc.audit.iaudit.*;
 import io.bdrc.audit.iaudit.message.TestMessage;
+import io.bdrc.audit.log.AuditLogController;
+import io.bdrc.audit.log.AuditTestLogController;
+import io.bdrc.audit.shell.diagnostics.DiagnosticService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,15 +13,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,108 +50,203 @@ public class shell {
      * Property key to find class name of test dictionary
      */
     private static final String TEST_DICT_PROPERTY_NAME = "testDictionaryClassName";
+    private static final String AT_VERSION = "auditToolVersion";
     private static final String TEST_LOGGER_HEADER = "id,test_name,outcome,error_number,error_test,detail_path\n";
 
     // should get thing2 whose name is io.bdrc.am.audit.shell.shell
-    private final static Logger sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
-    private final static Logger detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
-    private final static Logger testResultLogger = LoggerFactory.getLogger("testResultLogger");
+    private static Logger sysLogger;
+    private static Logger detailLogger;
+    private static Logger testResultLogger;
 
     private final static int SYS_OK = 0;
     private final static int SYS_ERR = 1;
 
     private static AuditTestLogController testLogController;
     private final static String defaultPropertyFileName = "shell.properties";
+    private final static String  propertyValueMultipleSeparator = ",";
 
     public static void main(String[] args) {
-        List<Integer> allResults = new ArrayList<>();
-        try
-        {
-            sysLogger.trace("Entering main");
-            sysLogger.trace("Parsing args");
+
+
+        try {
             ArgParser argParser = new ArgParser(args);
 
+            if (!argParser.getParsed()) {
+                System.out.println("Exiting on Invalid arguments");
+                System.exit(SYS_ERR);
+            }
+
+            AuditLogController.setLogDirectory( argParser.getLogDirectory());
+
+            sysLogger = LoggerFactory.getLogger("sys"); // shellLogger.name=shellLogger //("root");
+            detailLogger = LoggerFactory.getLogger("detailLogger"); //("root");
+            testResultLogger = LoggerFactory.getLogger("testResultLogger");
+
             sysLogger.trace("Resolving properties");
-            Path resourceFile = resolveResourceFile(defaultPropertyFileName);
+            Path resourceFile = resolveResourceFile();
+
 
             // TODO: try /shell.properties class
 
             // Property loading:
             // First, /shell.properties
             // Second, the user properties (defined in the /shell.properties property UserConfigPath)
-            // Third, the command line properties (defined by the -Dprop=value.
+            // UNLESS the userConfigPath was given in the command line
+            // Third, the command line properties (defined by the -Dprop=value)
             // If the command line properties contains the UserConfigPath, such as
-            // -DUserConfigPath=someother/path the properties in that path are reloaded.
-            //    PropertyManager.PropertyManagerBuilder().
-            //    .toString())
-//            PropertyManager shellProperties =
-//                    PropertyManager.PropertyManagerBuilder().MergeClassResource(defaultPropertyFileName,
-//                            shell.class.getClass())
-//
+            // -D UserConfigPath=some_other/path the properties in that path
+
+            String resFilePathString = resourceFile.toAbsolutePath().toString();
+
             PropertyManager shellProperties =
-                    PropertyManager.PropertyManagerBuilder().MergeResourceFile(resourceFile.toAbsolutePath().toString())
-                    .MergeUserConfig()
-                    .MergeProperties(System.getProperties());
+                    PropertyManager.PropertyManagerBuilder()
+                            .MergeProperties(System.getProperties(), "system properties")
+                            .MergeResourceFile(resFilePathString,"base resources");
+
+            // jmk asset-manager-169 - record where base properties came from.Diagnostics will use this
+            shellProperties.PutProperty(DiagnosticService.BASE_RESOURCE_FILE_KEY,resFilePathString );
+
+            // Some special processing. If the command line overrides the default user properties file, set that
+            // property now (the default resource file sets it above
+            // Then, override it with other command line properties
+
+            Properties cliProps = getCommandLineProperties(argParser);
+
+            if (cliProps.containsKey(PropertyManager.UserConfigPathKey)) {
+                shellProperties.PutProperty(PropertyManager.UserConfigPathKey,
+
+                        // Ouch - can't put a Path object into the system environment
+                        String.valueOf(PropertyManager.GetPathWithEnv(
+                                cliProps.getProperty(PropertyManager.UserConfigPathKey))));
+                cliProps.remove(PropertyManager.UserConfigPathKey);
+            }
+
+            // finally, merge the (possibly overridden)
+            shellProperties = shellProperties.MergeUserConfig()
+                    .MergeProperties(cliProps, "command line properties");
+
+            /* Now that we have merged all the properties, act on the ones we need */
+            // If we're only printing up info or syntax, just bail. We need to wait until
+            // all properties have been resolved to be able to get the version
+            if (argParser.OnlyShowInfo(shellProperties.getPropertyString(AT_VERSION))) {
+                System.exit(SYS_OK);
+            }
+
+            DiagnosticService ds = new DiagnosticService(sysLogger,shellProperties,propertyValueMultipleSeparator);
+            ds.ProcessDiagnosticDirectives(args) ;
+
 
             // Replaced with class
             TestJarLoader testJarLoader = new TestJarLoader();
 
             String tdClassName = shellProperties.getPropertyString(TEST_DICT_PROPERTY_NAME);
             sysLogger.debug("{} value of property :{}:", TEST_DICT_PROPERTY_NAME, tdClassName);
-            Hashtable<String, AuditTestConfig> td = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
+            Hashtable<String, AuditTestConfig> testDictionary = testJarLoader.LoadDictionaryFromProperty("testJar", tdClassName);
 
-            assert td != null;
+            assert testDictionary != null;
 
-            testLogController = BuildTestLog(argParser);
+            // jimk asset-manager-165 - query test names
+            if (argParser.HasOnlyShowTestNames()) {
+                testDictionary.forEach((k, v) -> System.out.printf("%-30s\t%s\n", v.getKey(), v.getFullName()));
+                System.exit(SYS_OK);
+            }
 
-            if (argParser.has_Dirlist())
-            {
-                for (String aTestDir : ResolvePaths(argParser.getDirs()))
-                {
+            // jimk asset-manager-165 Add test names
+            Hashtable<String, AuditTestConfig> requestedTests = FilterTestNamesByRequested(testDictionary, argParser.getRequestedTests());
+
+            testLogController = new AuditTestLogController(argParser.getLogDirectory(), testResultLogger.getName(),
+                    TEST_LOGGER_HEADER );
+
+            List<Integer> allResults = new ArrayList<>();
+
+            if (argParser.has_DirList()) {
+                for (String aTestDir : ResolvePaths(argParser.getDirs())) {
                     sysLogger.debug("arg =  {} ", aTestDir);
-                    allResults.addAll(RunTestsOnDir(shellProperties, td, aTestDir));
+                    allResults.addAll(RunTestsOnDir(shellProperties, requestedTests, aTestDir));
                 }
             }
 
-            // dont force mutually exclusive. Why not do both?
-            if (argParser.getReadStdIn())
-            {
+            // don't force mutually exclusive. Why not do both?
+            if (argParser.getReadStdIn()) {
                 String curLine;
-                try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in)))
-                {
-                    while (null != (curLine = f.readLine()))
-                    {
+                try (BufferedReader f = new BufferedReader(new InputStreamReader(System.in))) {
+                    while (null != (curLine = f.readLine())) {
                         sysLogger.debug("readLoop got line {} ", curLine);
-                        allResults.addAll(RunTestsOnDir(shellProperties, td, curLine));
+                        allResults.addAll(RunTestsOnDir(shellProperties, requestedTests, curLine));
                     }
                 }
             }
+            Stream<Integer> rs = allResults.stream();
+            boolean anyFailed = rs.anyMatch(x -> x.equals(Outcome.FAIL));
+            sysLogger.trace("Exiting any failed {}", anyFailed);
+            System.exit(anyFailed ? SYS_ERR : SYS_OK);
 
-        } catch (Exception e)
-        {
-            System.out.println("Exiting on exception " + e.getMessage());
+        } catch (Exception e) {
+            System.out.printf("Exiting on exception %s\n", e.getMessage());
             sysLogger.error(e.toString(), e, "Exiting on Exception", "Fail");
             System.exit(SYS_ERR);
         }
 
-        Stream<Integer> rs = allResults.stream();
-        boolean anyFailed = rs.anyMatch(x -> x.equals(Outcome.FAIL));
-        sysLogger.trace("Exiting any failed {}", anyFailed);
-        System.exit(anyFailed ? SYS_ERR : SYS_OK  );
     }
 
-    private static AuditTestLogController BuildTestLog(final ArgParser ap)
+
+    /**
+     * Removes all test names from test dictionary except those that are requested.
+     * logs a warning for tests which are requested but not present
+     *
+     * @param testDictionary Input: Complete list of tests in the test jar
+     * @param requestedTests list of desired tests
+     * @return reduced testDictionary
+     */
+    private static Hashtable<String, AuditTestConfig> FilterTestNamesByRequested(Hashtable<String, AuditTestConfig> testDictionary,
+    final List<String> requestedTests)
     {
-        AuditTestLogController tlc;
-        String logDir = ap.getLogDirectory();
-        tlc = new AuditTestLogController();
-        tlc.setCsvHeader(shell.TEST_LOGGER_HEADER);
-        tlc.setTestResultLogger(shell.testResultLogger.getName());
 
-        tlc.setAppenderDirectory(logDir);
+        Hashtable<String, AuditTestConfig> results =new Hashtable<>(testDictionary.size());
 
-        return tlc;
+        if (requestedTests == null || requestedTests.isEmpty()) {
+            return testDictionary;
+        }
+
+        List<Map.Entry<String, AuditTestConfig>> requested =
+                testDictionary
+                        .entrySet()
+                        .stream()
+                        .filter(x -> requestedTests.contains(x.getKey()))
+                        .toList();
+
+
+        requested.forEach(r -> results.put(r.getKey(), r.getValue()));
+
+        requestedTests.forEach(r -> {
+            if (!results.containsKey(r)) {
+                sysLogger.warn("Requested test {} not found in test library", r);
+            }
+        });
+        return results;
+
+
     }
+
+    private static Properties getCommandLineProperties(final ArgParser argParser) {
+        // Merge properties given on the command line:
+        List<String> cliOptions = argParser.getDefinedOptions();
+        Properties cliProperties = new Properties();
+        if (cliOptions.size() > 0) {
+            cliOptions.forEach(
+                    optArg -> {
+                        String[] optArgKV = optArg.split("=");
+                        if (optArgKV.length == 2) {
+                            cliProperties.put(optArgKV[0], optArgKV[1]);
+                        } else {
+                            sysLogger.warn(" Invalid option format {}", optArg);
+                        }
+                    });
+        }
+        return cliProperties;
+    }
+
+
 
     /**
      * Set up, run all tests against a folder.
@@ -160,7 +257,7 @@ public class shell {
      * @return If all the tests passed or not
      */
     private static List<Integer> RunTestsOnDir(final PropertyManager shellProperties,
-                                         final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
+                                               final Hashtable<String, AuditTestConfig> testSet, final String aTestDir)
             throws IOException
     {
 
@@ -168,30 +265,27 @@ public class shell {
         testLogController.ChangeAppender(BuildTestLogFileName(aTestDir));
 
         List<TestResult> results = new ArrayList<>();
-        for (String testName : testSet.keySet())
-        {
+        for (String testName : testSet.keySet()) {
 
             AuditTestConfig testConfig = testSet.get(testName);
 
             // Do we have a value at all?
-            if (testConfig == null)
-            {
+            if (testConfig == null) {
 
                 // sysLogger goes to a csv and a log file, so add the extra parameters.
-                // log4j wont care.
-                String errstr = String.format("No test config found for %s. Contact library provider.", testName);
-                sysLogger.error(errstr, errstr, "Failed");
-                results.add(new TestResult(Outcome.FAIL,errstr));
+                // log4j won't care.
+                String errorStr = String.format("No test config found for %s. Contact library provider.", testName);
+                sysLogger.error(errorStr, errorStr, "Failed");
+                results.add(new TestResult(Outcome.FAIL, errorStr));
                 continue;
             }
 
             // Is this test an  IAuditTest?
             Class<?> testClass = testConfig.getTestClass();
-            if (!IAuditTest.class.isAssignableFrom(testClass))
-            {
-                String errstr = String.format("Test found for %s does not  implement IAudit", testName);
-                sysLogger.error(errstr,errstr, "Failed");
-                results.add(new TestResult(Outcome.FAIL,errstr));
+            if (!IAuditTest.class.isAssignableFrom(testClass)) {
+                String errorStr = String.format("Test found for %s does not  implement IAudit", testName);
+                sysLogger.error(errorStr, errorStr, "Failed");
+                results.add(new TestResult(Outcome.FAIL, errorStr));
                 continue;
             }
 
@@ -204,7 +298,6 @@ public class shell {
             // extract the property values the test needs
             Hashtable<String, String> propertyArgs = ResolveArgNames(testConfig.getArgNames(), shellProperties);
 
-
             results.add(TestOnDirPassed((Class<IAuditTest>) testClass, testLogger, testName, testDesc, propertyArgs,
                     aTestDir));
         }
@@ -212,6 +305,7 @@ public class shell {
         if (results.stream().allMatch(TestResult::Passed)) testLogController.RenameLogPass();
         else if (results.stream().anyMatch(TestResult::Failed)) testLogController.RenameLogFail();
         else if (results.stream().anyMatch(TestResult::Skipped)) testLogController.RenameLogWarn();
+        else if (results.stream().anyMatch(TestResult::Warnings)) testLogController.RenameLogWarn();
 
         // return the outcomes. Don't distinct, someone may want to do stats
         return results.stream().map(TestResult::getOutcome)
@@ -226,8 +320,8 @@ public class shell {
      */
     private static String BuildTestLogFileName(final String aTestDir) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("-yyyy-MM-dd-kk-mm")
-                                        .withLocale(Locale.getDefault())
-                                        .withZone(ZoneId.systemDefault());
+                .withLocale(Locale.getDefault())
+                .withZone(ZoneId.systemDefault());
 
         String fileDate = dtf.format(Instant.now());
         return Paths.get(aTestDir).getFileName().toString() + fileDate + ".csv";
@@ -243,8 +337,7 @@ public class shell {
         sysLogger.debug("Invoking {}. Params :{}:", testDesc, testDir);
 
         TestResult tr = null;
-        try
-        {
+        try {
             tr = RunTest(testLogger, testName, testClass, testDir, propertyArgs);
 
             // String resultLogFormat = "Result:%10s\tFolder:%20s\tTest:%30s";
@@ -252,28 +345,24 @@ public class shell {
 
             String workName = Paths.get(testDir).getFileName().toString();
 
-            String testResultLabel ;
+            String testResultLabel;
 
             Integer outcome = tr.getOutcome();
-            if (outcome.equals(Outcome.SYS_EXC) || outcome.equals(Outcome.FAIL))
-            {
+            if (outcome.equals(Outcome.SYS_EXC) || outcome.equals(Outcome.FAIL)) {
                 testResultLabel = "Failed";
                 sysLogger.error(resultLogFormat, testResultLabel, testDir, testDesc);
-            }
-            else if (outcome.equals(Outcome.PASS))
-            {
-                testResultLabel =  "Passed";
+            } else if (outcome.equals(Outcome.PASS)) {
+                testResultLabel = "Passed";
                 sysLogger.info(resultLogFormat, testResultLabel, testDir, testDesc);
-            }
-            else if (outcome.equals(Outcome.NOT_RUN))
-            {
+            } else if (outcome.equals(Outcome.NOT_RUN)) {
                 testResultLabel = "Not Run";
                 sysLogger.warn(resultLogFormat, testResultLabel, testDir, testDesc);
-            }
-            else
-            {
+            } else if (outcome.equals(Outcome.WARN)) {
+                testResultLabel = "Warnings";
+                sysLogger.warn(resultLogFormat, testResultLabel, testDir, testDesc);
+            } else {
                 testResultLabel = String.format("Unknown result status %d", tr.getOutcome());
-                sysLogger.error(resultLogFormat, testResultLabel , testDir, testDesc);
+                sysLogger.error(resultLogFormat, testResultLabel, testDir, testDesc);
             }
 
             // Test result logger doesn't have levels
@@ -283,16 +372,12 @@ public class shell {
             testResultLogger.info("ignoredCSV", workName, testDesc, testResultLabel, null, null, testDir);
             String errorFormat = "{}:{}:{}";
 
-            for (TestMessage tm : tr.getErrors())
-            {
-                if (outcome.equals(Outcome.NOT_RUN) ) {
+            for (TestMessage tm : tr.getErrors()) {
+                if (outcome.equals(Outcome.NOT_RUN)) {
                     detailLogger.warn(errorFormat, tm.getOutcome().toString(), tm.getMessage(), testDir);
-                }
-                else if (outcome.equals(Outcome.PASS))
-                {
+                } else if (outcome.equals(Outcome.PASS)) {
                     detailLogger.info(errorFormat, tm.getOutcome().toString(), tm.getMessage(), testDir);
-                }
-                else {
+                } else {
                     detailLogger.error(errorFormat, tm.getOutcome().toString(), tm.getMessage(), testDir);
                 }
 
@@ -301,9 +386,8 @@ public class shell {
                 testResultLogger.info("ignoredCSV", null, null, null, tm.getOutcome().toString(), tm.getMessage(),
                         testDir);
             }
-        } catch (Exception e)
-        {
-            System.out.println(String.format("%s %s", testDir, testClass.getCanonicalName()));
+        } catch (Exception e) {
+            System.out.printf("%s %s\n", testDir, testClass.getCanonicalName());
             e.printStackTrace();
         }
 
@@ -325,8 +409,7 @@ public class shell {
 
         // Add global parameters
         String errorsAsWarning = pm.getPropertyString("ErrorsAsWarning");
-        if ((errorsAsWarning != null) && !errorsAsWarning.isEmpty())
-        {
+        if ((errorsAsWarning != null) && !errorsAsWarning.isEmpty()) {
             argValues.put("ErrorsAsWarning", errorsAsWarning);
         }
 
@@ -354,25 +437,24 @@ public class shell {
      * @param params     array of additional parameters. Caller has to prepare it for each test. (Needs more structure)
      */
     private static TestResult RunTest(Logger testLogger, final String testName,
-                                      Class<IAuditTest> testClass, Object... params) {
+                                      Class<IAuditTest> testClass, Object... params)
+    {
 
         String className = testClass.getCanonicalName();
 
         TestResult tr = new TestResult();
-        try
-        {
+        try {
             // All instances are required to have a Logger, String constructor for the shell
             // Unit tests don't always use it.
             Constructor<IAuditTest> ctor = testClass.getConstructor(Logger.class, String.class);
-            IAuditTest inst = ctor.newInstance(testLogger,testName);
+            IAuditTest inst = ctor.newInstance(testLogger, testName);
 
-            inst.setParams( params);
+            inst.setParams(params);
             inst.LaunchTest();
 
             tr = inst.getTestResult();
 
-        } catch (Exception eek)
-        {
+        } catch (Exception eek) {
             testLogger.error(" Exception {} when running test {}", eek, className);
             tr.setOutcome(Outcome.FAIL);
             tr.AddError(Outcome.SYS_EXC, eek.toString());
@@ -387,23 +469,42 @@ public class shell {
      * if -DatHome not given, looks up environment variable ATHOME
      * if that's empty, uses "user.dir"
      */
-    private static Path resolveResourceFile(String defaultFileName) {
+    private static Path resolveResourceFile() {
 
         String resHome = System.getProperty("atHome");
 
-        if ((resHome == null) || resHome.isEmpty())
-        {
+        if (StringUtils.isEmpty(resHome)) {
             sysLogger.debug("resolveResourceFile: atHome empty.");
             resHome = System.getenv("ATHOME");
             sysLogger.debug("resolveResourceFile: getenv ATHOME {}", resHome);
         }
-        if ((resHome == null) || resHome.isEmpty())
-        {
-            resHome = System.getProperty("user.dir");
-            sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
+
+        // asset-manager-34. Need to get the directory the jar is running
+        // in if there is no atHome (e.g. if debugging)
+        if (StringUtils.isEmpty(resHome)) {
+            try {
+                resHome = shell.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI()
+                        .getPath();
+                sysLogger.debug("path from class: {}", resHome);
+            } catch (URISyntaxException e) {
+                sysLogger.debug("Invalid URI from java URL {}", e);
+                // don care, just keep going
+            }
+
+            // if all else fails
+            if (StringUtils.isEmpty(resHome)) {
+                resHome = System.getProperty("user.dir");
+                sysLogger.debug("resolveResourceFile: getenv user.dir {}", resHome);
+            }
+
         }
-        sysLogger.debug("Reshome is {} ", resHome, " is resource home path");
-        return Paths.get(resHome, defaultFileName);
+
+        sysLogger.debug("Resource home is {} ", resHome, " is resource home path");
+        return Paths.get(resHome, shell.defaultPropertyFileName);
     }
 
 //    /**
