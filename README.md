@@ -19,7 +19,7 @@ Audit tool is a maven project. Although it is open source, BDRC cannot support d
 - clone the repository
 - `$cd  <repository>`
 - `mkdocs serve` to test locally
-- `mkdocs gh-deploy` to push to [Asset Manager Github page](https://buda-base.github.io/asset-manager)
+- `mkdocs gh-deploy` to push to [Github Asset Manager Pages](https://buda-base.github.io/asset-manager)
 
 ## Copyright and License
    Copyright 2019-2022 Buddhist Digital Resource Center
