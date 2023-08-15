@@ -56,6 +56,16 @@ public class FileNameBuilder {
             for (int fi = 1 ; fi < 5 ; fi++ ) {
                 Files.createFile(Paths.get(String.valueOf(igPath),String.format("%s%0,4d.jpg",targetFileName,fi )));
             }
+
+            // jimk asset-manager-177. Files with underscores and dashes should pass
+            for (int fi = 6 ; fi < 10 ; fi++ ) {
+                Files.createFile(Paths.get(String.valueOf(igPath),String.format("%s-%0,4d.jpg",targetFileName,fi )));
+            }
+
+            for (int fi = 11 ; fi < 15 ; fi++ ) {
+                Files.createFile(Paths.get(String.valueOf(igPath),String.format("%s_%0,4d.jpg",targetFileName,fi )));
+            }
+
         }
     }
 }
