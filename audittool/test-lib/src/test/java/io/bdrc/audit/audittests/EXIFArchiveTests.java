@@ -52,6 +52,11 @@ public class EXIFArchiveTests extends AuditTestTestBase {
         runEXIFTest("src/test/images/EXIF.Bad_dirs",TestDictionary.EXIF_IMAGE_TEST_NAME);
 
     }
+    @Test
+    public void WhatsInThisTest() {
+        runEXIFTest("src/test/images/EXIF/makePass",TestDictionary.EXIF_IMAGE_TEST_NAME);
+
+    }
 
     public void MixedRotationAndNoTagsFails(String testName, Integer expectedOutcome) {
 
