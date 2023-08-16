@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.version>1.0-beta-1</project.version>
+        <project.version>1.0</project.version>
 
     </properties>
     <groupId>io.bdrc.audit</groupId>
     <artifactId>audit-tool</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-beta</version>
+    <version>1.0</version>
     <modules>
         <!-- groupId elements of children -->
         <module>IAudit</module>

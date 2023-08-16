@@ -9,13 +9,15 @@
      <parent>
          <artifactId>audit-tool</artifactId>
          <groupId>io.bdrc.audit</groupId>
-         <version>1.0-beta-1</version>
+         <version>1.0</version>
      </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>test-lib</artifactId>
-    <packaging>jar</packaging>
     <name>test-lib</name>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+
 <!--    <build>-->
 <!--        <plugins>-->
 <!--            <plugin>-->
