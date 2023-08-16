@@ -5,6 +5,12 @@ The java build platform **maven** is required.
 - MacOS:`brew install mvn`
 - Debian `sudo apt install maven`
 - Windows - No installation process, a sample installation is shown at (phoenixNAP)[https://phoenixnap.com/kb/install-maven-windows]
+  You will also need these - install in order:
+  - Windows Java:  See [Oracle JDK 17 downloads](https://www.oracle.com/java/technologies/downloads/#jdk17-windows)
+  - Windows .NET `winget install Microsoft.DotNet.SDK.6`
+  - Windows WIX toolkit `dotnet tool install --global wix`. Then close your terminal window and open another one, to
+use the `wix` that is on the changed path.
+  - 
 ## Build
 All versions of Audit tool can be built using maven. The relevant hierarchy is 
 
@@ -69,9 +75,11 @@ jpackage @src/main/script/jpackage_${platform}.conf
 where `${platform}` is one of `{debian|win|MacOS}` and matches the system you are running on.
 (`jpackage` only builds executables for the platforms it runs on)
 
-**MacOS note**
+**MacOS note: Installing your newly build config**
 The process of building an exportable app on MAC is extremely tedious, and only performed on releases where we 
 know the intended audience cannot build it.  Happily, Macs **will** run application installers that were created 
 on their own machine. So to build your own update on MAC, have Java (17 recommended) and maven installed, run `mvn package`
 as shown above, and then run the above building steps. The jpackage command takes about 15 - 20 sec to run. When it completes,
 you should see ![the_audit_tool install dialog](.BUILDING_images/jpackage_success.png)
+
+**Important** be sure to save away any config customizations
