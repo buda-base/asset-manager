@@ -18,7 +18,7 @@ public class FileNameBuilder {
 
     private final String igPassTemplate = "MICKEY-%s";
     private final String igBaseName = "I1CKEY";
-    private final String stringFormatToken = "%s";
+
 
     /**
      * Constructor
@@ -47,12 +47,11 @@ public class FileNameBuilder {
      * @throws IOException when BuildPasses cant build
      */
    public void BuildUsingSep(String sepString) throws IOException {
-       String decimalFormatToken = "%0,4d";
 
        // These are inserted as literals to build a format string
-       final String sb = stringFormatToken +
+       final String sb = "%s" +
                sepString +
-               decimalFormatToken;
+               "%0,4d";
         BuildPassesFromBases( igPassTemplate, igBaseName, sb);
     }
 
