@@ -36,6 +36,11 @@ Download:
 ## Install
 
 ### Install procedures
+### Saving existing configurations
+You may wish to save any customizations before installing over them again. These can be found using the following table
+|Platform|Configuration Location|
+|MacOS|`/Applications/audit-tool.app/Contents/app`|
+|Debian
 ### Windows installations
 
 #### Run the launcher `audit-tool-1.0.exe`
@@ -82,6 +87,8 @@ Open the downloaded package:
 ![Installation](images/2022/01/installer.png)
 
 and drag 'audit-tool.app' to '/Applications'
+
+**See [BUILDING](BUILDING.md)** for important MacOS installation information.
 
 ### Debian installation
 
