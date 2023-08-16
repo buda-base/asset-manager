@@ -7,10 +7,17 @@ The java build platform **maven** is required.
 - Windows - No installation process, a sample installation is shown at (phoenixNAP)[https://phoenixnap.com/kb/install-maven-windows]
   You will also need these - install in order:
   - Windows Java:  See [Oracle JDK 17 downloads](https://www.oracle.com/java/technologies/downloads/#jdk17-windows)
+  - Microsoft .NET Framework 3.5.1 - Control Panel -> Windows -> Programs -> Features
+  ![ControlPanel](.BUILDING_images/WinCP.png)
+  - Wix Toolset 3.11.2 **Use this link only - do not use the Main Wix Download page** [Wix on Github](https://github.com/wixtoolset/wix3/releases/tag/wix3112rtm) Your easiest bet is the `wix311.exe` installable.
+
+
+  You'll find these steps referenced if you search online: BDRC staff does not recommended these, as they don't provide all the .exe files that Wix needs:
+  <s>
   - Windows .NET `winget install Microsoft.DotNet.SDK.6`
   - Windows WIX toolkit `dotnet tool install --global wix`. Then close your terminal window and open another one, to
-use the `wix` that is on the changed path.
-  - 
+use the `wix` that is on the changed path. </s>
+
 ## Build
 All versions of Audit tool can be built using maven. The relevant hierarchy is 
 
@@ -82,4 +89,12 @@ on their own machine. So to build your own update on MAC, have Java (17 recommen
 as shown above, and then run the above building steps. The jpackage command takes about 15 - 20 sec to run. When it completes,
 you should see ![the_audit_tool install dialog](.BUILDING_images/jpackage_success.png)
 
-**Important** be sure to save away any config customizations
+**Important** be sure to save away any config customizations. These are found in 
+|Platform|Location|
+|---|---|
+|Windows|`C:\Program Files\audit-tool\app\`|
+|Mac OS|`/Applications/audit-tool.app/Contents/app`|
+|Debian|`/opt/audit-tool/<audit-tool-release>/lib/app`
+
+It is not recommended to modify `audit-tool.cfg` - this is machine generated configs. 
+`shell.properties` and `log4j2.properties` are where most changes (such as Warning codes) are found.
