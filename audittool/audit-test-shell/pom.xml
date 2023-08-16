@@ -5,7 +5,7 @@
     <parent>
         <artifactId>audit-tool</artifactId>
         <groupId>io.bdrc.audit</groupId>
-        <version>1.0-beta-1</version>
+        <version>1.0</version>
     </parent>
     <properties>
         <project.version>1.0-beta-1</project.version>
@@ -13,10 +13,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>shell</artifactId>
-    <version>1.0-beta-1</version>
-
-    <packaging>jar</packaging>
     <name>audit-test-shell</name>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+
     <build>
         <plugins>
             <plugin>

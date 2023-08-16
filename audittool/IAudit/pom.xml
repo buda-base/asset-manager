@@ -5,11 +5,13 @@
     <parent>
         <artifactId>audit-tool</artifactId>
         <groupId>io.bdrc.audit</groupId>
-        <version>1.0-beta-1</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+
     <artifactId>IAudit</artifactId>
     <name>IAudit</name>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <!-- asset-manager-150 - get compiler standard from parent -->
 <!--    <build>-->
