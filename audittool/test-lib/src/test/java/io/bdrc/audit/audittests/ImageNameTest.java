@@ -30,17 +30,37 @@ public class ImageNameTest extends AuditTestTestBase {
     }
 
     @Test
-    public void SingleHyphenSucceeds() throws IOException {
+    public void NoSepSucceeds() throws IOException {
         fnb.BuildPassesOneSuffix();
         TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
         Assert.assertTrue(tr.Passed());
     }
 
     @Test
-    public void DoubleHyphenSucceeds() throws IOException {
+    public void DoubleHyphenFails() throws IOException {
         fnb.BuildPassesTwoSuffix();
         TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
+        Assert.assertFalse(tr.Passed());
+    }
+
+    @Test
+    public void UnderscoreSepPass() throws IOException {
+        fnb.BuildUsingSep("_");
+        TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
         Assert.assertTrue(tr.Passed());
+    }
+    @Test
+    public void HyphenSepPass() throws IOException {
+        fnb.BuildUsingSep("-");
+        TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
+        Assert.assertTrue(tr.Passed());
+    }
+
+    @Test
+    public void RandomSepFail() throws IOException {
+        fnb.BuildUsingSep("111@");
+        TestResult tr = RunTest(workRoot.getRoot().getAbsolutePath());
+        Assert.assertFalse(tr.Passed());
     }
 
     @Test
