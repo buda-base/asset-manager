@@ -113,6 +113,21 @@ public class EXIFTest extends ImageGroupParents {
                     File fileObject = imageFile.toFile();
                     String fileObjectPathString = fileObject.toString();
 
+                    // JPEG-XL policy: .jxl files are accepted by default. The tool does not
+                    // embed a JPEG-XL decoder, so no EXIF checks are performed. We only confirm
+                    // that a file claiming to be .jxl really carries a JPEG-XL signature; a .jxl
+                    // whose bytes are not JPEG-XL fails so corrupt/mislabeled files are caught.
+                    if (JxlSupport.hasJxlExtension(fileObject)) {
+                        try {
+                            if (!JxlSupport.hasJxlSignature(fileObject)) {
+                                FailTest(LibOutcome.INVALID_JXL, fileObjectPathString);
+                            }
+                        } catch (IOException ioe) {
+                            FailTest(LibOutcome.INVALID_JXL, fileObjectPathString);
+                        }
+                        continue;
+                    }
+
                     try {
 
                         // map reduce pattern:
